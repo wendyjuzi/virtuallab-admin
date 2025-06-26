@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.virtuallab.experiment.dao.ExperimentRecordDao">
+    <insert id="insert" parameterType="com.edu.virtuallab.experiment.model.ExperimentRecord">
+        INSERT INTO experiment_record (student_id, project_id, operation_log, data)
+        VALUES (#{studentId}, #{projectId}, #{operationLog}, #{data})
+    </insert>
+    <update id="update" parameterType="com.edu.virtuallab.experiment.model.ExperimentRecord">
+        UPDATE experiment_record SET student_id=#{studentId}, project_id=#{projectId}, operation_log=#{operationLog}, data=#{data}
+        WHERE id=#{id}
+    </update>
+    <delete id="delete" parameterType="long">
+        DELETE FROM experiment_record WHERE id=#{id}
+    </delete>
+    <select id="selectById" parameterType="long" resultType="com.edu.virtuallab.experiment.model.ExperimentRecord">
+        SELECT * FROM experiment_record WHERE id=#{id}
+    </select>
+    <select id="selectAll" resultType="com.edu.virtuallab.experiment.model.ExperimentRecord">
+        SELECT * FROM experiment_record
+    </select>
+</mapper> 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.virtuallab.score.dao.ScoreDao">
+    <insert id="insert" parameterType="com.edu.virtuallab.score.model.Score">
+        INSERT INTO score (student_id, project_id, auto_score, manual_score, feedback)
+        VALUES (#{studentId}, #{projectId}, #{autoScore}, #{manualScore}, #{feedback})
+    </insert>
+    <update id="update" parameterType="com.edu.virtuallab.score.model.Score">
+        UPDATE score SET student_id=#{studentId}, project_id=#{projectId}, auto_score=#{autoScore}, manual_score=#{manualScore}, feedback=#{feedback}
+        WHERE id=#{id}
+    </update>
+    <delete id="delete" parameterType="long">
+        DELETE FROM score WHERE id=#{id}
+    </delete>
+    <select id="selectById" parameterType="long" resultType="com.edu.virtuallab.score.model.Score">
+        SELECT * FROM score WHERE id=#{id}
+    </select>
+    <select id="selectAll" resultType="com.edu.virtuallab.score.model.Score">
+        SELECT * FROM score
+    </select>
+</mapper> 

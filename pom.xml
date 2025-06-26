@@ -21,14 +21,11 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <skipTests>true</skipTests>
+        <server.port>8080</server.port>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.edu.virtuallab</groupId>
-            <artifactId>xmall-db</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -90,13 +87,13 @@
             <artifactId>logstash-logback-encoder</artifactId>
             <version>4.8</version>
         </dependency>
-        <!--集成druid连接�?->
+        <!--集成druid连接�?->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
             <version>1.2.20</version>
         </dependency>
-        <!--lombok依赖-->
+        <!-lombok依赖-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -112,6 +109,11 @@
             <artifactId>hibernate-validator</artifactId>
             <version>5.3.6.Final</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
         </dependency>
     </dependencies>
     <build>

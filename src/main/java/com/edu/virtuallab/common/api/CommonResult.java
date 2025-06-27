@@ -13,6 +13,7 @@ public class CommonResult<T> {
         this.message = message;
         this.data = data;
     }
+
     public static <T> CommonResult<T> success(T data) {
         return new CommonResult<>(ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), data);
     }
@@ -28,5 +29,24 @@ public class CommonResult<T> {
     public static <T> CommonResult<T> forbidden(T data) {
         return new CommonResult<>(ResultCode.FORBIDDEN.getCode(), ResultCode.FORBIDDEN.getMessage(), data);
     }
-    // getter/setter
-} 
+
+    // 必须补全 getter/setter
+    public long getCode() {
+        return code;
+    }
+    public void setCode(long code) {
+        this.code = code;
+    }
+    public String getMessage() {
+        return message;
+    }
+    public void setMessage(String message) {
+        this.message = message;
+    }
+    public T getData() {
+        return data;
+    }
+    public void setData(T data) {
+        this.data = data;
+    }
+}

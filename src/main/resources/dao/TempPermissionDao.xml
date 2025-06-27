@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.virtuallab.auth.dao.TempPermissionDao">
+
+    <resultMap id="BaseResultMap" type="com.edu.virtuallab.auth.model.TempPermission">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="role_id" property="roleId" jdbcType="BIGINT"/>
+        <result column="permission_id" property="permissionId" jdbcType="BIGINT"/>
+        <result column="reason" property="reason" jdbcType="VARCHAR"/>
+        <result column="start_time" property="startTime" jdbcType="TIMESTAMP"/>
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="grant_by" property="grantBy" jdbcType="BIGINT"/>
+        <result column="grant_reason" property="grantReason" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, user_id, role_id, permission_id, reason, start_time, end_time, status, grant_by, grant_reason, create_time, update_time
+    </sql>
+
+    <!-- 根据用户ID查询临时权限 -->
+    <select id="findByUserId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        SELECT <include refid="Base_Column_List"/>
+        FROM temp_permission
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 查询生效中的临时权限 -->
+    <select id="findActiveByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM temp_permission
+        WHERE user_id = #{userId} 
+          AND start_time &lt;= #{currentTime}
+          AND end_time &gt;= #{currentTime}
+          AND status = 1
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 插入临时权限 -->
+    <insert id="insert" parameterType="com.edu.virtuallab.auth.model.TempPermission" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO temp_permission (
+            user_id, role_id, permission_id, reason, start_time, end_time, status, grant_by, grant_reason, create_time, update_time
+        ) VALUES (
+            #{userId}, #{roleId}, #{permissionId}, #{reason}, #{startTime}, #{endTime}, #{status}, #{grantBy}, #{grantReason}, #{createTime}, #{updateTime}
+        )
+    </insert>
+
+    <!-- 更新临时权限 -->
+    <update id="update" parameterType="com.edu.virtuallab.auth.model.TempPermission">
+        UPDATE temp_permission
+        SET role_id = #{roleId},
+            permission_id = #{permissionId},
+            reason = #{reason},
+            start_time = #{startTime},
+            end_time = #{endTime},
+            status = #{status},
+            grant_by = #{grantBy},
+            grant_reason = #{grantReason},
+            update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除临时权限 -->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM temp_permission WHERE id = #{id}
+    </delete>
+
+    <!-- 批量删除用户的临时权限 -->
+    <delete id="deleteByUserId" parameterType="java.lang.Long">
+        DELETE FROM temp_permission WHERE user_id = #{userId}
+    </delete>
+
+    <!-- 更新过期权限状态 -->
+    <update id="updateExpiredPermissions" parameterType="java.util.Date">
+        UPDATE temp_permission
+        SET status = 2, update_time = NOW()
+        WHERE end_time &lt; #{currentTime} AND status = 1
+    </update>
+
+    <!-- 根据角色ID查询临时权限 -->
+    <select id="findByRoleId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        SELECT <include refid="Base_Column_List"/>
+        FROM temp_permission
+        WHERE role_id = #{roleId}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据权限ID查询临时权限 -->
+    <select id="findByPermissionId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        SELECT <include refid="Base_Column_List"/>
+        FROM temp_permission
+        WHERE permission_id = #{permissionId}
+        ORDER BY create_time DESC
+    </select>
+
+</mapper> 

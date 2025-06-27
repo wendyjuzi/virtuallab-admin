@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.virtuallab.auth.dao.AuthFactorDao">
+
+    <resultMap id="BaseResultMap" type="com.edu.virtuallab.auth.model.AuthFactor">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="factor_type" property="factorType" jdbcType="VARCHAR"/>
+        <result column="factor_value" property="factorValue" jdbcType="VARCHAR"/>
+        <result column="factor_code" property="factorCode" jdbcType="VARCHAR"/>
+        <result column="expire_time" property="expireTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="is_default" property="isDefault" jdbcType="TINYINT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, user_id, factor_type, factor_value, factor_code, expire_time, status, is_default, create_time, update_time
+    </sql>
+
+    <!-- 根据用户ID查询认证因素 -->
+    <select id="findByUserId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        SELECT <include refid="Base_Column_List"/>
+        FROM auth_factor
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据用户ID和认证类型查询 -->
+    <select id="findByUserIdAndType" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM auth_factor
+        WHERE user_id = #{userId} AND factor_type = #{factorType}
+        LIMIT 1
+    </select>
+
+    <!-- 插入认证因素 -->
+    <insert id="insert" parameterType="com.edu.virtuallab.auth.model.AuthFactor" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO auth_factor (
+            user_id, factor_type, factor_value, factor_code, expire_time, status, is_default, create_time, update_time
+        ) VALUES (
+            #{userId}, #{factorType}, #{factorValue}, #{factorCode}, #{expireTime}, #{status}, #{isDefault}, #{createTime}, #{updateTime}
+        )
+    </insert>
+
+    <!-- 更新认证因素 -->
+    <update id="update" parameterType="com.edu.virtuallab.auth.model.AuthFactor">
+        UPDATE auth_factor
+        SET factor_value = #{factorValue},
+            factor_code = #{factorCode},
+            expire_time = #{expireTime},
+            status = #{status},
+            is_default = #{isDefault},
+            update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除认证因素 -->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM auth_factor WHERE id = #{id}
+    </delete>
+
+    <!-- 根据用户ID删除所有认证因素 -->
+    <delete id="deleteByUserId" parameterType="java.lang.Long">
+        DELETE FROM auth_factor WHERE user_id = #{userId}
+    </delete>
+
+    <!-- 验证短信验证码 -->
+    <select id="validateSmsCode" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM auth_factor
+        WHERE user_id = #{userId} 
+          AND factor_type = 'sms'
+          AND factor_value = #{phone}
+          AND factor_code = #{code}
+          AND status = 1
+        LIMIT 1
+    </select>
+
+    <!-- 验证邮箱验证码 -->
+    <select id="validateEmailCode" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM auth_factor
+        WHERE user_id = #{userId} 
+          AND factor_type = 'email'
+          AND factor_value = #{email}
+          AND factor_code = #{code}
+          AND status = 1
+        LIMIT 1
+    </select>
+
+    <!-- 验证指纹 -->
+    <select id="validateFingerprint" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM auth_factor
+        WHERE user_id = #{userId} 
+          AND factor_type = 'fingerprint'
+          AND factor_value = #{fingerprint}
+          AND status = 1
+        LIMIT 1
+    </select>
+
+</mapper> 

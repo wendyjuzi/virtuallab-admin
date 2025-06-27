@@ -14,8 +14,6 @@ public class User {
     private String major; // 专业
     private String grade; // 年级
     private String className; // 班级
-    private String avatar; // 头像
-    private String fingerprint; // 指纹数据
     private Integer status; // 0-禁用 1-正常 2-锁定
     private Integer loginAttempts; // 登录尝试次数
     private Date lastLoginTime; // 最后登录时间
@@ -52,10 +50,6 @@ public class User {
     public void setGrade(String grade) { this.grade = grade; }
     public String getClassName() { return className; }
     public void setClassName(String className) { this.className = className; }
-    public String getAvatar() { return avatar; }
-    public void setAvatar(String avatar) { this.avatar = avatar; }
-    public String getFingerprint() { return fingerprint; }
-    public void setFingerprint(String fingerprint) { this.fingerprint = fingerprint; }
     public Integer getStatus() { return status; }
     public void setStatus(Integer status) { this.status = status; }
     public Integer getLoginAttempts() { return loginAttempts; }

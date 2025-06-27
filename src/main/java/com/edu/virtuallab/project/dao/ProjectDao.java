@@ -11,4 +11,4 @@ public interface ProjectDao {
     int delete(Long id);
     Project selectById(Long id);
     List<Project> selectAll();
-} 
+}

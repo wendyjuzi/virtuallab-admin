@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.virtuallab.auth.dao.UserDao">
+
+    <resultMap id="BaseResultMap" type="com.edu.virtuallab.auth.model.User">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="real_name" property="realName" jdbcType="VARCHAR"/>
+        <result column="student_id" property="studentId" jdbcType="VARCHAR"/>
+        <result column="department" property="department" jdbcType="VARCHAR"/>
+        <result column="major" property="major" jdbcType="VARCHAR"/>
+        <result column="grade" property="grade" jdbcType="VARCHAR"/>
+        <result column="class_name" property="className" jdbcType="VARCHAR"/>
+        <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
+        <result column="fingerprint" property="fingerprint" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="login_attempts" property="loginAttempts" jdbcType="INTEGER"/>
+        <result column="last_login_time" property="lastLoginTime" jdbcType="TIMESTAMP"/>
+        <result column="last_login_ip" property="lastLoginIp" jdbcType="VARCHAR"/>
+        <result column="lock_time" property="lockTime" jdbcType="TIMESTAMP"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, username, password, phone, email, real_name, student_id, department, major, grade, class_name, 
+        avatar, fingerprint, status, login_attempts, last_login_time, last_login_ip, lock_time, create_time, update_time
+    </sql>
+
+    <!-- 根据ID查询用户 -->
+    <select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE id = #{id}
+    </select>
+
+    <!-- 根据用户名查询用户 -->
+    <select id="findByUsername" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE username = #{username}
+    </select>
+
+    <!-- 查询所有用户 -->
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据手机号查询用户 -->
+    <select id="findByPhone" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE phone = #{phone}
+    </select>
+
+    <!-- 根据邮箱查询用户 -->
+    <select id="findByEmail" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE email = #{email}
+    </select>
+
+    <!-- 根据学号/工号查询用户 -->
+    <select id="findByStudentId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE student_id = #{studentId}
+    </select>
+
+    <!-- 根据院系查询用户 -->
+    <select id="findByDepartment" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE department = #{department}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据专业查询用户 -->
+    <select id="findByMajor" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE major = #{major}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据班级查询用户 -->
+    <select id="findByClassName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE class_name = #{className}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据状态查询用户 -->
+    <select id="findByStatus" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE status = #{status}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 分页查询用户 -->
+    <select id="findByPage" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 条件查询用户 -->
+    <select id="findByCondition" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        <where>
+            <if test="username != null and username != ''">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="realName != null and realName != ''">
+                AND real_name LIKE CONCAT('%', #{realName}, '%')
+            </if>
+            <if test="department != null and department != ''">
+                AND department = #{department}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 插入用户 -->
+    <insert id="insert" parameterType="com.edu.virtuallab.auth.model.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user (
+            username, password, phone, email, real_name, student_id, department, major, grade, class_name,
+            avatar, fingerprint, status, login_attempts, last_login_time, last_login_ip, lock_time, create_time, update_time
+        ) VALUES (
+            #{username}, #{password}, #{phone}, #{email}, #{realName}, #{studentId}, #{department}, #{major}, #{grade}, #{className},
+            #{avatar}, #{fingerprint}, #{status}, #{loginAttempts}, #{lastLoginTime}, #{lastLoginIp}, #{lockTime}, #{createTime}, #{updateTime}
+        )
+    </insert>
+
+    <!-- 更新用户 -->
+    <update id="update" parameterType="com.edu.virtuallab.auth.model.User">
+        UPDATE user
+        SET username = #{username},
+            password = #{password},
+            phone = #{phone},
+            email = #{email},
+            real_name = #{realName},
+            student_id = #{studentId},
+            department = #{department},
+            major = #{major},
+            grade = #{grade},
+            class_name = #{className},
+            avatar = #{avatar},
+            fingerprint = #{fingerprint},
+            status = #{status},
+            login_attempts = #{loginAttempts},
+            last_login_time = #{lastLoginTime},
+            last_login_ip = #{lastLoginIp},
+            lock_time = #{lockTime},
+            update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除用户 -->
+    <delete id="delete" parameterType="java.lang.Long">
+        DELETE FROM user WHERE id = #{id}
+    </delete>
+
+    <!-- 更新用户状态 -->
+    <update id="updateStatus">
+        UPDATE user
+        SET status = #{status}, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 更新登录信息 -->
+    <update id="updateLoginInfo">
+        UPDATE user
+        SET last_login_time = #{lastLoginTime},
+            last_login_ip = #{lastLoginIp},
+            login_attempts = #{loginAttempts},
+            update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 锁定用户 -->
+    <update id="lockUser">
+        UPDATE user
+        SET status = 2, lock_time = #{lockTime}, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 解锁用户 -->
+    <update id="unlockUser" parameterType="java.lang.Long">
+        UPDATE user
+        SET status = 1, lock_time = NULL, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 重置登录尝试次数 -->
+    <update id="resetLoginAttempts" parameterType="java.lang.Long">
+        UPDATE user
+        SET login_attempts = 0, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 更新指纹数据 -->
+    <update id="updateFingerprint">
+        UPDATE user
+        SET fingerprint = #{fingerprint}, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+</mapper> 

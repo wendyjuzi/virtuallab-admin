@@ -3,6 +3,7 @@ package com.edu.virtuallab.experiment.dao;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface ExperimentProjectDao {
@@ -11,4 +12,11 @@ public interface ExperimentProjectDao {
     int delete(Long id);
     ExperimentProject selectById(Long id);
     List<ExperimentProject> selectAll();
+
+    // 多条件搜索方法
+    List<ExperimentProject> search(
+            @Param("category") String category,
+            @Param("level") String level,
+            @Param("keyword") String keyword
+    );
 } 

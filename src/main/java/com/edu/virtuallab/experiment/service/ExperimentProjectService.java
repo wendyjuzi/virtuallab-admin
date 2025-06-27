@@ -9,4 +9,6 @@ public interface ExperimentProjectService {
     int delete(Long id);
     ExperimentProject getById(Long id);
     List<ExperimentProject> listAll();
+    List<ExperimentProject> search(String category, String level, String keyword);
+
 } 

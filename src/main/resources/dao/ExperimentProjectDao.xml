@@ -1,21 +1,53 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.edu.virtuallab.experiment.dao.ExperimentProjectDao">
+
+    <!-- 插入实验项目 -->
     <insert id="insert" parameterType="com.edu.virtuallab.experiment.model.ExperimentProject">
-        INSERT INTO experiment_project (name, category, description)
-        VALUES (#{name}, #{category}, #{description})
+        INSERT INTO experiment_project
+        (name, category, description, level, image_url, video_url, created_at, updated_at)
+        VALUES
+            (#{name}, #{category}, #{description}, #{level}, #{imageUrl}, #{videoUrl}, NOW(), NOW())
     </insert>
+
+    <!-- 更新实验项目 -->
     <update id="update" parameterType="com.edu.virtuallab.experiment.model.ExperimentProject">
-        UPDATE experiment_project SET name=#{name}, category=#{category}, description=#{description}
-        WHERE id=#{id}
+        UPDATE experiment_project
+        SET
+            name = #{name},
+            category = #{category},
+            description = #{description},
+            level = #{level},
+            image_url = #{imageUrl},
+            video_url = #{videoUrl},
+            updated_at = NOW()
+        WHERE id = #{id}
     </update>
+
+    <!-- 删除实验项目 -->
     <delete id="delete" parameterType="long">
-        DELETE FROM experiment_project WHERE id=#{id}
+        DELETE FROM experiment_project WHERE id = #{id}
     </delete>
+
+    <!-- 根据ID查找 -->
     <select id="selectById" parameterType="long" resultType="com.edu.virtuallab.experiment.model.ExperimentProject">
-        SELECT * FROM experiment_project WHERE id=#{id}
+        SELECT * FROM experiment_project WHERE id = #{id}
     </select>
+
+    <!-- 查询全部 -->
     <select id="selectAll" resultType="com.edu.virtuallab.experiment.model.ExperimentProject">
         SELECT * FROM experiment_project
     </select>
-</mapper> 
+
+    <!-- 多条件搜索 -->
+    <select id="search" resultType="com.edu.virtuallab.experiment.model.ExperimentProject">
+        SELECT * FROM experiment_project
+        WHERE
+            (#{category} IS NULL OR category = #{category})
+          AND (#{level} IS NULL OR level = #{level})
+          AND (#{keyword} IS NULL OR name LIKE CONCAT('%', #{keyword}, '%'))
+    </select>
+
+</mapper>

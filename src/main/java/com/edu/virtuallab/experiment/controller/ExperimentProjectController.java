@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import java.util.List;
 
 @RestController
@@ -42,5 +44,14 @@ public class ExperimentProjectController {
     @GetMapping("/list")
     public List<ExperimentProject> listAll() {
         return projectService.listAll();
+    }
+
+    @GetMapping("/search")
+    public List<ExperimentProject> search(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String level,
+            @RequestParam(required = false) String keyword
+    ) {
+        return projectService.search(category, level, keyword);
     }
 } 

@@ -36,4 +36,9 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
     public List<ExperimentProject> listAll() {
         return projectDao.selectAll();
     }
+
+    @Override
+    public List<ExperimentProject> search(String category, String level, String keyword) {
+        return projectDao.search(category, level, keyword);
+    }
 } 

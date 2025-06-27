@@ -15,4 +15,5 @@ public interface NotificationMapper extends BaseMapper<Notification> {
     // ?status可能有问题
     int updateStatus(@Param("notificationId") Long notificationId,
                      @Param("status") Boolean status);
+
 }

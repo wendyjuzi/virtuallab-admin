@@ -1,0 +1,9 @@
+package com.edu.virtuallab.audit.dao;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.edu.virtuallab.audit.model.ProjectAuditLog;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface ProjectAuditLogMapper extends BaseMapper<ProjectAuditLog> {
+}

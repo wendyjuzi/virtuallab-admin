@@ -52,6 +52,17 @@ public class ExperimentProjectController {
             @RequestParam(required = false) String level,
             @RequestParam(required = false) String keyword
     ) {
+        // 为防止前端传null，service层也可以处理
+        if (category != null && category.trim().isEmpty()) {
+            category = null;
+        }
+        if (level != null && level.trim().isEmpty()) {
+            level = null;
+        }
+        if (keyword != null && keyword.trim().isEmpty()) {
+            keyword = null;
+        }
         return projectService.search(category, level, keyword);
     }
+
 } 

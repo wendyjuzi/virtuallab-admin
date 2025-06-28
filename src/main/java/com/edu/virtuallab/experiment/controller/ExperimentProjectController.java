@@ -1,8 +1,10 @@
 package com.edu.virtuallab.experiment.controller;
 
+import com.edu.virtuallab.experiment.dto.ExperimentProjectPublishRequest;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
 import com.edu.virtuallab.experiment.service.ExperimentProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,6 +65,18 @@ public class ExperimentProjectController {
             keyword = null;
         }
         return projectService.search(category, level, keyword);
+    }
+//    @PostMapping("/publish")
+//    public ResponseEntity<?> publishProjectToClass(
+//            @RequestParam Long projectId,
+//            @RequestBody List<Long> classIds) {
+//        projectService.publishToClasses(projectId, classIds);
+//        return ResponseEntity.ok().build();
+//    }
+
+    @PostMapping("/publish")
+    public int publishProject(@RequestBody ExperimentProjectPublishRequest request) {
+        return projectService.publishProject(request);
     }
 
 } 

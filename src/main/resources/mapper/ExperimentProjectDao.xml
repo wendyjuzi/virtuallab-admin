@@ -5,12 +5,12 @@
 <mapper namespace="com.edu.virtuallab.experiment.dao.ExperimentProjectDao">
 
     <!-- 插入实验项目 -->
-    <insert id="insert" parameterType="com.edu.virtuallab.experiment.model.ExperimentProject">
-        INSERT INTO experiment_project
-        (name, category, description, level, image_url, video_url, created_at, updated_at)
-        VALUES
-            (#{name}, #{category}, #{description}, #{level}, #{imageUrl}, #{videoUrl}, NOW(), NOW())
-    </insert>
+<!--    <insert id="insert" parameterType="com.edu.virtuallab.experiment.model.ExperimentProject">-->
+<!--        INSERT INTO experiment_project-->
+<!--        (name, category, description, level, image_url, video_url, created_at, updated_at)-->
+<!--        VALUES-->
+<!--            (#{name}, #{category}, #{description}, #{level}, #{imageUrl}, #{videoUrl}, NOW(), NOW())-->
+<!--    </insert>-->
 
     <!-- 更新实验项目 -->
     <update id="update" parameterType="com.edu.virtuallab.experiment.model.ExperimentProject">
@@ -55,6 +55,15 @@
             AND (name LIKE CONCAT('%', #{keyword}, '%') OR description LIKE CONCAT('%', #{keyword}, '%'))
         </if>
     </select>
+
+    <!-- 插入实验项目：主键自动回填 -->
+    <insert id="insert" parameterType="com.edu.virtuallab.experiment.model.ExperimentProject"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO experiment_project
+        (name, category, description, level, image_url, video_url, created_at, updated_at)
+        VALUES
+            (#{name}, #{category}, #{description}, #{level}, #{imageUrl}, #{videoUrl}, NOW(), NOW())
+    </insert>
 
 
 </mapper>

@@ -10,4 +10,6 @@ public interface PermissionService {
     boolean create(Permission permission);
     boolean update(Permission permission);
     boolean delete(Long id);
+    // 新增方法：检查用户是否有项目访问权限
+    boolean hasProjectAccess(Long projectId);
 } 

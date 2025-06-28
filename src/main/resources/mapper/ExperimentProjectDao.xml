@@ -42,12 +42,19 @@
     </select>
 
     <!-- 多条件搜索 -->
-    <select id="search" resultType="com.edu.virtuallab.experiment.model.ExperimentProject">
+    <select id="search" resultType="com.edu.virtuallab.experiment.model.ExperimentProject" parameterType="map">
         SELECT * FROM experiment_project
-        WHERE
-            (#{category} IS NULL OR category = #{category})
-          AND (#{level} IS NULL OR level = #{level})
-          AND (#{keyword} IS NULL OR name LIKE CONCAT('%', #{keyword}, '%'))
+        WHERE 1=1
+        <if test="category != null and category != ''">
+            AND category = #{category}
+        </if>
+        <if test="level != null and level != ''">
+            AND level = #{level}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (name LIKE CONCAT('%', #{keyword}, '%') OR description LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
     </select>
+
 
 </mapper>

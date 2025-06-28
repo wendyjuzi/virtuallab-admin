@@ -2,11 +2,15 @@ package com.edu.virtuallab.auth.service.impl;
 
 import com.edu.virtuallab.auth.dao.UserDao;
 import com.edu.virtuallab.auth.dao.UserRoleDao;
+import com.edu.virtuallab.auth.dao.RoleDao;
 import com.edu.virtuallab.auth.model.User;
 import com.edu.virtuallab.auth.model.UserRole;
+import com.edu.virtuallab.auth.model.Role;
 import com.edu.virtuallab.auth.service.UserService;
+import com.edu.virtuallab.auth.model.UserRegisterDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
@@ -15,6 +19,8 @@ public class UserServiceImpl implements UserService {
     private UserDao userDao;
     @Autowired
     private UserRoleDao userRoleDao;
+    @Autowired
+    private RoleDao roleDao;
 
     @Override
     public User getById(Long id) {
@@ -32,8 +38,35 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean register(User user) {
-        return userDao.insert(user) > 0;
+    @Transactional
+    public boolean register(UserRegisterDTO dto) {
+        User user = new User();
+        user.setUsername(dto.getUsername());
+        user.setPassword(dto.getPassword());
+        user.setPhone(dto.getPhone());
+        user.setEmail(dto.getEmail());
+        user.setRealName(dto.getRealName());
+        user.setStudentId(dto.getStudentId());
+        user.setDepartment(dto.getDepartment());
+        user.setMajor(dto.getMajor());
+        user.setGrade(dto.getGrade());
+        user.setClassName(dto.getClassName());
+        int userResult = userDao.insert(user);
+        if (userResult <= 0) {
+            throw new RuntimeException("用户注册失败");
+        }
+        Role role = roleDao.findByCode(dto.getRoleCode());
+        if (role == null) {
+            throw new IllegalArgumentException("角色不存在");
+        }
+        UserRole userRole = new UserRole();
+        userRole.setUserId(user.getId());
+        userRole.setRoleId(role.getId());
+        int urResult = userRoleDao.insert(userRole);
+        if (urResult <= 0) {
+            throw new RuntimeException("用户角色绑定失败");
+        }
+        return true;
     }
 
     @Override

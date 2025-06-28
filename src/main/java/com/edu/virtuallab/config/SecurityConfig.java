@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 public class SecurityConfig {
@@ -16,8 +17,13 @@ public class SecurityConfig {
                 .antMatchers(
                         "/user/register",
                         "/user/login",
-                        "/experiment/**"
+                        "/experiment/**",
+                        "/api/upload/image",   // 加上上传路径，放行
+                        "/upload/**"   // ✅ 添加这一行
+
                 ).permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll() // ✅ 放行预检请求
+
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().disable();

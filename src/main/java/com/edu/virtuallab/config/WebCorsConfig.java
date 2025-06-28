@@ -11,6 +11,7 @@ public class WebCorsConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000")  // 根据你的前端地址修改
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")           // ✅ 允许所有请求头
                 .allowCredentials(true);
     }
 }

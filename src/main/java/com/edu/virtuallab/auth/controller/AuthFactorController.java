@@ -45,7 +45,10 @@ public class AuthFactorController {
     
     // 发送短信验证码
     @PostMapping("/sms/send")
-    public CommonResult<Boolean> sendSmsCode(@RequestParam Long userId, @RequestParam String phone) {
+    public CommonResult<Boolean> sendSmsCode(@RequestParam Long userId, @RequestParam String phone, @RequestParam(required = false) String userType) {
+        if (userType == null || !"admin".equalsIgnoreCase(userType)) {
+            return CommonResult.failed("只有管理员注册时才允许发送短信验证码");
+        }
         boolean result = authFactorService.sendSmsCode(userId, phone);
         return CommonResult.success(result);
     }
@@ -61,7 +64,10 @@ public class AuthFactorController {
     
     // 发送邮箱验证码
     @PostMapping("/email/send")
-    public CommonResult<Boolean> sendEmailCode(@RequestParam Long userId, @RequestParam String email) {
+    public CommonResult<Boolean> sendEmailCode(@RequestParam Long userId, @RequestParam String email, @RequestParam(required = false) String userType) {
+        if (userType == null || !"admin".equalsIgnoreCase(userType)) {
+            return CommonResult.failed("只有管理员注册时才允许发送邮箱验证码");
+        }
         boolean result = authFactorService.sendEmailCode(userId, email);
         return CommonResult.success(result);
     }

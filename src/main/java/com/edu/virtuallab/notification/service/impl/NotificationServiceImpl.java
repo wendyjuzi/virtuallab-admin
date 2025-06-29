@@ -1,11 +1,11 @@
 package com.edu.virtuallab.notification.service.impl;
 
 import com.edu.virtuallab.common.enums.NotificationType;
+import com.edu.virtuallab.experiment.model.ExperimentProject;
+import com.edu.virtuallab.experiment.dao.ExperimentProjectDao; // 需要添加的导入
 import com.edu.virtuallab.notification.dao.NotificationMapper;
 import com.edu.virtuallab.notification.model.Notification;
 import com.edu.virtuallab.notification.service.NotificationService;
-import com.edu.virtuallab.project.model.Project;
-import com.edu.virtuallab.project.dao.ProjectDao;
 import com.edu.virtuallab.auth.dao.UserDao;
 import com.edu.virtuallab.auth.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,84 +16,102 @@ import java.util.List;
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
-    @Autowired
-    private NotificationMapper notificationMapper;
+    private final NotificationMapper notificationMapper;
+    private final UserDao userDao;
+    private final ExperimentProjectDao experimentProjectDao; // 添加的依赖
 
     @Autowired
-    private ProjectDao projectDao;
-
-    @Autowired
-    private UserDao userDao;
+    public NotificationServiceImpl(NotificationMapper notificationMapper,
+                                   UserDao userDao,
+                                   ExperimentProjectDao experimentProjectDao) {
+        this.notificationMapper = notificationMapper;
+        this.userDao = userDao;
+        this.experimentProjectDao = experimentProjectDao;
+    }
 
     @Override
-    public void sendProjectAuditNotification(Long projectId, NotificationType type, Long receiverId) {
-        Project project = projectDao.selectById(projectId);
+    public void sendProjectAuditNotification(Long projectId, Long uploaderId) {
+        User uploader = userDao.findById(uploaderId);
+        if (uploader == null) return;
+
+        Notification notification = new Notification();
+        notification.setType(NotificationType.fromValue("project_submitted"));
+        notification.setTitle("新实验项目待审核");
+        notification.setContent(String.format(
+                "教师 %s 提交了新实验项目等待审核",
+                uploader.getRealName()
+        ));
+        notification.setLink("/admin/experiment/project/audit/" + projectId);
+
+        // 发送给所有管理员 - 需要实现 findAdmins() 方法
+        List<User> admins = userDao.findAdmins();
+        for (User admin : admins) {
+            Notification copy = notification.copy();
+            copy.setUserId(admin.getId());
+            notificationMapper.insert(copy);
+        }
+    }
+
+    @Override
+    public void sendProjectAuditResultNotification(
+            Long projectId,
+            boolean approved,
+            String comment) {
+
+        ExperimentProject project = experimentProjectDao.selectById(projectId);
         if (project == null) return;
 
         Notification notification = new Notification();
-        notification.setType(type);
-        notification.setRelatedId(projectId);
+        notification.setType(approved ?
+                NotificationType.PROJECT_APPROVED :
+                NotificationType.PROJECT_REJECTED);
+        notification.setTitle(approved ? "实验项目审核通过" : "实验项目审核驳回");
+        notification.setContent(approved ?
+                "您的实验项目已通过审核" :
+                "您的实验项目被驳回" + (comment != null ? "，原因：" + comment : ""));
+        notification.setLink("/experiment/project/detail/" + projectId);
+        notification.setUserId(project.getUploaderId());
 
-        switch (type) {
-            case PROJECT_SUBMITTED:
-                User teacher = userDao.findById(project.getUploaderId());
-                notification.setTitle("新项目待审核");
-                notification.setContent(String.format(
-                        "教师 %s 提交了新项目【%s】等待审核",
-                        teacher.getRealName(),
-                        project.getName()
-                ));
-                // 系统通知，不需要特定接收者
-                break;
-
-            case PROJECT_APPROVED:
-                notification.setUserId(project.getUploaderId());
-                notification.setTitle("项目审核通过");
-                notification.setContent(String.format(
-                        "您的项目【%s】已通过审核",
-                        project.getName()
-                ));
-                break;
-
-            case PROJECT_REJECTED:
-                notification.setUserId(project.getUploaderId());
-                notification.setTitle("项目审核驳回");
-                notification.setContent(String.format(
-                        "您的项目【%s】被驳回，原因：%s",
-                        project.getName(),
-                        project.getAuditComment()
-                ));
-                break;
-
-            case PROJECT_PUBLISHED:
-                notification.setUserId(receiverId);
-                notification.setTitle("新实训项目发布");
-                notification.setContent(String.format(
-                        "您有新的实训项目【%s】待完成",
-                        project.getName()
-                ));
-                break;
-        }
-
-        notification.setLink("/project/detail/" + projectId);
         notificationMapper.insert(notification);
     }
 
     @Override
+    public void sendProjectPublishNotification(Long projectId, List<Long> classIds) {
+        ExperimentProject project = experimentProjectDao.selectById(projectId);
+        if (project == null) return;
+
+        Notification notification = new Notification();
+        notification.setType(NotificationType.PROJECT_PUBLISHED);
+        notification.setTitle("实验项目已发布");
+        notification.setContent(String.format(
+                "实验项目【%s】已发布到您的班级",
+                project.getName()
+        ));
+        notification.setLink("/experiment/project/detail/" + projectId);
+
+        // 获取所有相关班级的师生 - 需要实现 findUserIdsByClassIds() 方法
+        List<Long> userIds = userDao.findUserIdsByClassIds(classIds);
+        for (Long userId : userIds) {
+            Notification copy = notification.copy();
+            copy.setUserId(userId);
+            notificationMapper.insert(copy);
+        }
+    }
+
+    // 实现接口的其他方法
+    @Override
     public Notification createNotification(Notification notification) {
         notificationMapper.insert(notification);
-        return notification; // 返回插入后的对象（包含生成的ID）
+        return notification;
     }
 
     @Override
     public List<Notification> getUnreadNotifications(Long userId) {
-        // 实现获取未读通知的逻辑
-        return notificationMapper.selectUnreadByUserId(userId);
+        return notificationMapper.findUnreadByUserId(userId);
     }
 
     @Override
     public void markAsRead(Long notificationId) {
-        // 实现标记为已读的逻辑
-        notificationMapper.updateStatus(notificationId, true); // 假设true表示已读
+        notificationMapper.markAsRead(notificationId);
     }
 }

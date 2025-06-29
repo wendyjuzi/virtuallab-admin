@@ -63,4 +63,12 @@ public interface UserDao {
     
     // 更新指纹数据
     int updateFingerprint(@Param("id") Long id, @Param("fingerprint") String fingerprint);
-} 
+
+    // 在 UserDao 接口中添加以下方法：
+
+    // 查询所有管理员用户
+    List<User> findAdmins();
+
+    // 根据班级ID列表查询用户ID
+    List<Long> findUserIdsByClassIds(@Param("classIds") List<Long> classIds);
+}

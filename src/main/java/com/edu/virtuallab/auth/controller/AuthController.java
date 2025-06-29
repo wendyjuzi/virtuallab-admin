@@ -51,6 +51,8 @@ public class AuthController {
         return authService.loginWithFingerprint(username, fingerprintData);
     }
 
+    // 暂时注释掉短信注册功能
+    /*
     @PostMapping("/sendSmsCode")
     public CommonResult<Boolean> sendSmsCode(@RequestParam String phone, @RequestParam(required = false) String userType) {
         if (userType == null || !"admin".equalsIgnoreCase(userType)) {
@@ -59,6 +61,7 @@ public class AuthController {
         boolean result = authFactorService.sendSmsCodeForRegister(phone);
         return CommonResult.success(result);
     }
+    */
 
     @GetMapping("/currentUser")
     public CommonResult<Map<String, Object>> getCurrentUser() {

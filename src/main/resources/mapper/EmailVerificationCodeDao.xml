@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.virtuallab.auth.dao.EmailVerificationCodeDao">
+
+    <resultMap id="BaseResultMap" type="com.edu.virtuallab.auth.model.EmailVerificationCode">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="expire_time" property="expireTime" jdbcType="TIMESTAMP"/>
+        <result column="used" property="used" jdbcType="BOOLEAN"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, email, code, create_time, expire_time, used, type
+    </sql>
+
+    <insert id="insert" parameterType="com.edu.virtuallab.auth.model.EmailVerificationCode" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO email_verification_code (email, code, create_time, expire_time, used, type)
+        VALUES (#{email}, #{code}, #{createTime}, #{expireTime}, #{used}, #{type})
+    </insert>
+
+    <select id="findLatestByEmailAndType" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM email_verification_code
+        WHERE email = #{email} AND type = #{type}
+        ORDER BY create_time DESC
+        LIMIT 1
+    </select>
+
+    <select id="findByEmail" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM email_verification_code
+        WHERE email = #{email}
+        ORDER BY create_time DESC
+    </select>
+
+    <update id="markAsUsed">
+        UPDATE email_verification_code
+        SET used = true
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteExpiredCodes">
+        DELETE FROM email_verification_code
+        WHERE expire_time &lt; NOW()
+    </delete>
+
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM email_verification_code
+        WHERE id = #{id}
+    </select>
+
+</mapper> 

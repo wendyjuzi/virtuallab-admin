@@ -81,25 +81,27 @@ public class AuthFactorServiceImpl implements AuthFactorService {
         return authFactorDao.update(authFactor) > 0 || authFactorDao.insert(authFactor) > 0;
     }
     
-    // 发送短信验证码（注册时使用，不需要userId）
+    // 暂时注释掉短信注册功能
+    /*
     @Override
     public boolean sendSmsCodeForRegister(String phone) {
-        // 生成6位随机验证码
-        String code = generateRandomCode(6);
+        // 验证手机号格式
+        if (!isValidPhone(phone)) {
+            throw new BusinessException("手机号格式不正确");
+        }
         
-        // 设置过期时间为5分钟后
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, 5);
-        Date expireTime = calendar.getTime();
-        
-        // 注册时使用临时存储，这里简化处理，实际项目中应该用Redis等缓存
+        // TODO: 调用短信服务发送验证码
         // TODO: 使用Redis存储验证码，key为 "sms:register:" + phone
-        System.out.println("注册时发送短信验证码到 " + phone + ": " + code);
-        System.out.println("验证码过期时间: " + expireTime);
         
-        // 临时返回true，实际项目中需要调用短信服务
         return true;
     }
+    
+    @Override
+    public boolean validateSmsCodeForRegister(String phone, String code) {
+        // TODO: 从Redis获取验证码，key为 "sms:register:" + phone
+        return true;
+    }
+    */
     
     @Override
     public boolean sendEmailCode(Long userId, String email) {
@@ -164,15 +166,14 @@ public class AuthFactorServiceImpl implements AuthFactorService {
     }
     
     // 验证短信验证码（注册时使用，不需要userId）
+    // 暂时注释掉短信注册功能
+    /*
     @Override
     public boolean validateSmsCodeForRegister(String phone, String code) {
-        // 注册时验证码验证，这里简化处理，实际项目中应该从Redis等缓存中获取
         // TODO: 从Redis获取验证码，key为 "sms:register:" + phone
-        System.out.println("注册时验证短信验证码: " + phone + ", 验证码: " + code);
-        
-        // 临时返回true，实际项目中需要验证Redis中的验证码
         return true;
     }
+    */
     
     @Override
     public boolean validateEmailCode(Long userId, String email, String code) {

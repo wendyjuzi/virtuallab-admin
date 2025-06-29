@@ -207,8 +207,6 @@
         WHERE id = #{id}
     </update>
 
-    <!-- 在 UserDao.xml 中添加以下内容 -->
-
     <!-- 查询所有管理员用户 -->
     <select id="findAdmins" resultMap="BaseResultMap">
         SELECT u.*
@@ -226,6 +224,69 @@
         <foreach item="classId" collection="classIds" open="(" separator="," close=")">
             #{classId}
         </foreach>
+    </select>
+
+    <!-- 根据院系ID查询用户 -->
+    <select id="findByDepartmentId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE department_id = #{departmentId}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据院系名称统计用户数量 -->
+    <select id="countByDepartment" resultType="java.lang.Integer" parameterType="java.lang.String">
+        SELECT COUNT(*)
+        FROM user
+        WHERE department = #{department}
+    </select>
+
+    <!-- 条件查询用户（分页） -->
+    <select id="findByConditions" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        <where>
+            <if test="username != null and username != ''">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="realName != null and realName != ''">
+                AND real_name LIKE CONCAT('%', #{realName}, '%')
+            </if>
+            <if test="department != null and department != ''">
+                AND department = #{department}
+            </if>
+            <if test="userType != null and userType != ''">
+                AND user_type = #{userType}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <!-- 统计条件查询用户数量 -->
+    <select id="countByConditions" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM user
+        <where>
+            <if test="username != null and username != ''">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="realName != null and realName != ''">
+                AND real_name LIKE CONCAT('%', #{realName}, '%')
+            </if>
+            <if test="department != null and department != ''">
+                AND department = #{department}
+            </if>
+            <if test="userType != null and userType != ''">
+                AND user_type = #{userType}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
     </select>
 
 </mapper> 

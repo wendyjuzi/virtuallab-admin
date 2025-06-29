@@ -49,4 +49,12 @@ public class CommonResult<T> {
     public void setData(T data) {
         this.data = data;
     }
+
+    /**
+     * 判断操作是否成功
+     * @return 如果code等于SUCCESS的code则返回true，否则返回false
+     */
+    public boolean isSuccess() {
+        return this.code == ResultCode.SUCCESS.getCode();
+    }
 }

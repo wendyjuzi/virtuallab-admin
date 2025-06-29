@@ -71,4 +71,28 @@ public interface UserDao {
 
     // 根据班级ID列表查询用户ID
     List<Long> findUserIdsByClassIds(@Param("classIds") List<Long> classIds);
+
+    // 新增
+    int deleteById(Long id);
+
+    List<User> findByDepartmentId(Long departmentId);
+
+    List<User> findByConditions(@Param("username") String username,
+                               @Param("realName") String realName,
+                               @Param("department") String department,
+                               @Param("userType") String userType,
+                               @Param("status") Integer status,
+                               @Param("offset") int offset,
+                               @Param("size") int size);
+
+    int countByConditions(@Param("username") String username,
+                         @Param("realName") String realName,
+                         @Param("department") String department,
+                         @Param("userType") String userType,
+                         @Param("status") Integer status);
+
+    /**
+     * 根据院系名称统计用户数量
+     */
+    int countByDepartment(@Param("department") String department);
 }

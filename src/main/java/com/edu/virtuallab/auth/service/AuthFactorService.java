@@ -30,11 +30,17 @@ public interface AuthFactorService {
     // 发送邮箱验证码
     boolean sendEmailCode(Long userId, String email);
     
+    // 发送邮箱验证码（注册时使用，不需要userId）
+    boolean sendEmailCodeForRegister(String email);
+    
     // 验证短信验证码
     boolean validateSmsCode(Long userId, String phone, String code);
     
     // 验证邮箱验证码
     boolean validateEmailCode(Long userId, String email, String code);
+    
+    // 验证邮箱验证码（注册时使用，不需要userId）
+    boolean validateEmailCodeForRegister(String email, String code);
     
     // 验证指纹
     boolean validateFingerprint(Long userId, String fingerprint);

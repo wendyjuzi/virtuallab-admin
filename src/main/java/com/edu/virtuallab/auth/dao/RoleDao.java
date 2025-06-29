@@ -52,4 +52,13 @@ public interface RoleDao {
     
     // 查询用户的所有角色
     List<Role> findByUserId(@Param("userId") Long userId);
+    
+    // 新增
+    int deleteById(Long id);
+    
+    // 根据ID列表批量查询角色
+    List<Role> findByIds(@Param("ids") List<Long> ids);
+    
+    // 根据院系ID查询角色
+    List<Role> findByDepartmentId(@Param("departmentId") Long departmentId);
 } 

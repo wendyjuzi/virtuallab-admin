@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.virtuallab.auth.dao.DepartmentDao">
+
+    <resultMap id="BaseResultMap" type="com.edu.virtuallab.auth.model.Department">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="parent_id" property="parentId" jdbcType="BIGINT"/>
+        <result column="level" property="level" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="contact_person" property="contactPerson" jdbcType="VARCHAR"/>
+        <result column="contact_phone" property="contactPhone" jdbcType="VARCHAR"/>
+        <result column="contact_email" property="contactEmail" jdbcType="VARCHAR"/>
+        <result column="sort" property="sort" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, name, code, description, parent_id, level, status, contact_person, contact_phone, 
+        contact_email, sort, create_time, update_time
+    </sql>
+
+    <insert id="insert" parameterType="com.edu.virtuallab.auth.model.Department" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO department (
+            name, code, description, parent_id, level, status, contact_person, contact_phone, 
+            contact_email, sort, create_time, update_time
+        ) VALUES (
+            #{name}, #{code}, #{description}, #{parentId}, #{level}, #{status}, #{contactPerson}, 
+            #{contactPhone}, #{contactEmail}, #{sort}, #{createTime}, #{updateTime}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.edu.virtuallab.auth.model.Department">
+        UPDATE department
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="code != null">code = #{code},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="level != null">level = #{level},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="contactPerson != null">contact_person = #{contactPerson},</if>
+            <if test="contactPhone != null">contact_phone = #{contactPhone},</if>
+            <if test="contactEmail != null">contact_email = #{contactEmail},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM department WHERE id = #{id}
+    </delete>
+
+    <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM department
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM department
+        WHERE code = #{code}
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM department
+        ORDER BY sort ASC, create_time DESC
+    </select>
+
+    <select id="findByParentId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM department
+        WHERE parent_id = #{parentId}
+        ORDER BY sort ASC, create_time DESC
+    </select>
+
+    <select id="findByLevel" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM department
+        WHERE level = #{level}
+        ORDER BY sort ASC, create_time DESC
+    </select>
+
+    <select id="findByStatus" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM department
+        WHERE status = #{status}
+        ORDER BY sort ASC, create_time DESC
+    </select>
+
+    <select id="findByPage" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM department
+        ORDER BY sort ASC, create_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM department
+    </select>
+
+</mapper> 

@@ -56,7 +56,7 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
     }
 
     @Override
-    public int publishProject(ExperimentProjectPublishRequest request) {
+    public int publishProject(ExperimentProjectPublishRequest request, String createdBy) {
         ExperimentProject project = new ExperimentProject();
         project.setName(request.getName());
         project.setDescription(request.getDescription());
@@ -64,6 +64,9 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
         project.setLevel(request.getLevel());
         project.setImageUrl(request.getImageUrl());
         project.setVideoUrl(request.getVideoUrl());
+
+        // ✅ 设置创建者用户名
+        project.setCreatedBy(createdBy);
 
         // 1. 插入实验项目信息
         projectDao.insert(project);
@@ -83,8 +86,14 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
             }
         }
 
-
         return 1; // 成功
     }
+
+
+    @Override
+    public List<ExperimentProject> getProjectsByCreatedBy(String createdBy) {
+        return projectDao.getProjectsByCreatedBy(createdBy);
+    }
+
 
 } 

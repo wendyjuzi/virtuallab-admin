@@ -4,6 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 public class JwtUtil {
@@ -29,4 +30,21 @@ public class JwtUtil {
                 .getBody()
                 .getSubject();
     }
+    public static String getUsernameFromToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            return getUsernameFromToken(token);
+        }
+        return null;
+    }
+    public static String getUsernameFromRequest(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            return getUsernameFromToken(token); // 你已有这个方法解析用户名
+        }
+        return null;
+    }
+
 } 

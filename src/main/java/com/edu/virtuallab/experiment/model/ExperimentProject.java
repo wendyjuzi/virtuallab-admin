@@ -2,7 +2,7 @@ package com.edu.virtuallab.experiment.model;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
-
+import java.util.Date;
 import java.time.LocalDateTime;
 
 @Data
@@ -17,13 +17,15 @@ public class ExperimentProject {
     private String level;
     private String imageUrl;
     private String videoUrl;
-
+//    private Date createdAt;
+//    private Date updatedAt;
+//    private Long teacherId;
+    private String createdBy; // 教师用户名
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updatedAt;
-
     // 新增审核字段
     private Long uploaderId; // 上传者ID
     private String auditStatus; // 审核状态: draft/pending/approved/rejected
@@ -32,4 +34,39 @@ public class ExperimentProject {
     private LocalDateTime auditTime; // 审核时间
     private String publishStatus; // 发布状态: unpublished/published
     private LocalDateTime publishTime; // 发布时间
+
+    // getter & setter
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+
+
+    public String getVideoUrl() { return videoUrl; }
+    public void setVideoUrl(String videoUrl) { this.videoUrl = videoUrl; }
+
+//    public Date getCreatedAt() { return createdAt; }
+//    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
+//
+//    public Date getUpdatedAt() { return updatedAt; }
+//    public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
+
+//    public Long getTeacherId() { return teacherId; }
+//    public void setTeacherId(Long teacherId) { this.teacherId = teacherId; }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
 }

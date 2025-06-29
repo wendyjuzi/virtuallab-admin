@@ -223,4 +223,16 @@ public interface SystemAdminService {
      * 获取角色权限
      */
     List<Permission> getRolePermissions(Long roleId);
+    
+    // ==================== 统计功能 ====================
+    
+    /**
+     * 获取活跃用户数量（最近7天登录的用户）
+     */
+    int getActiveUserCount();
+    
+    /**
+     * 获取今日登录数量
+     */
+    int getTodayLoginCount();
 } 

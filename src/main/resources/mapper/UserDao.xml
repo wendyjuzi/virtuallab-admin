@@ -140,20 +140,22 @@
     <!-- 更新用户 -->
     <update id="update" parameterType="com.edu.virtuallab.auth.model.User">
         UPDATE user
-        SET username = #{username},
-            password = #{password},
-            phone = #{phone},
-            email = #{email},
-            real_name = #{realName},
-            student_id = #{studentId},
-            department = #{department},
-            major = #{major},
-            status = #{status},
-            login_attempts = #{loginAttempts},
-            last_login_time = #{lastLoginTime},
-            last_login_ip = #{lastLoginIp},
-            lock_time = #{lockTime},
-            update_time = #{updateTime}
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="realName != null">real_name = #{realName},</if>
+            <if test="studentId != null">student_id = #{studentId},</if>
+            <if test="department != null">department = #{department},</if>
+            <if test="major != null">major = #{major},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="loginAttempts != null">login_attempts = #{loginAttempts},</if>
+            <if test="lastLoginTime != null">last_login_time = #{lastLoginTime},</if>
+            <if test="lastLoginIp != null">last_login_ip = #{lastLoginIp},</if>
+            <if test="lockTime != null">lock_time = #{lockTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
         WHERE id = #{id}
     </update>
 
@@ -287,6 +289,22 @@
                 AND status = #{status}
             </if>
         </where>
+    </select>
+
+    <!-- 统计活跃用户数量（最近指定时间登录的用户） -->
+    <select id="countActiveUsers" resultType="java.lang.Integer" parameterType="java.util.Date">
+        SELECT COUNT(DISTINCT id)
+        FROM user
+        WHERE last_login_time >= #{since}
+          AND status = 1
+    </select>
+
+    <!-- 统计今日登录数量 -->
+    <select id="countTodayLogins" resultType="java.lang.Integer" parameterType="java.util.Date">
+        SELECT COUNT(*)
+        FROM user
+        WHERE last_login_time >= #{todayStart}
+          AND status = 1
     </select>
 
 </mapper> 

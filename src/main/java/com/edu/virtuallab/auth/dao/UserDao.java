@@ -95,4 +95,14 @@ public interface UserDao {
      * 根据院系名称统计用户数量
      */
     int countByDepartment(@Param("department") String department);
+    
+    /**
+     * 统计活跃用户数量（最近指定时间登录的用户）
+     */
+    int countActiveUsers(@Param("since") java.util.Date since);
+    
+    /**
+     * 统计今日登录数量
+     */
+    int countTodayLogins(@Param("todayStart") java.util.Date todayStart);
 }

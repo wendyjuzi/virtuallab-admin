@@ -5,9 +5,16 @@ import com.edu.virtuallab.experiment.dto.ExperimentProjectPublishRequest;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
 import com.edu.virtuallab.experiment.dao.ExperimentProjectDao;
 import com.edu.virtuallab.experiment.service.ExperimentProjectService;
+import com.edu.virtuallab.experiment.dao.StudentClassDao;
+import com.edu.virtuallab.experiment.dao.StudentProjectProgressDao;
+import com.edu.virtuallab.experiment.model.StudentProjectProgress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ExperimentProjectServiceImpl implements ExperimentProjectService {
@@ -17,6 +24,12 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
     private ExperimentProjectClassDao projectClassDao;
     @Autowired
     private ExperimentProjectClassDao experimentProjectClassDao;
+    @Autowired
+    private StudentClassDao studentClassDao; // ✅ 解决 Cannot resolve symbol
+
+    @Autowired
+    private StudentProjectProgressDao studentProjectProgressDao; // ✅ 解决 Cannot resolve symbol
+
 
     @Override
     public int create(ExperimentProject project) {
@@ -84,6 +97,37 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
                 System.out.println("插入失败！");
                 e.printStackTrace(); // 打印具体异常
             }
+        }
+        // 3. 查询这些班级的所有学生
+        System.out.println("开始查询班级对应的学生ID...");
+        List<Long> studentsInClasses = studentClassDao.findStudentIdsByClassIds(request.getClassIds());
+        System.out.println("查询到学生ID列表: " + studentsInClasses);
+
+        Set<Long> studentIds = new HashSet<>(studentsInClasses);
+        System.out.println("去重后学生ID集合大小: " + studentIds.size());
+
+        // 4. 构造进度记录
+        List<StudentProjectProgress> progressList = studentIds.stream().map(studentId -> {
+            StudentProjectProgress progress = new StudentProjectProgress();
+            progress.setProjectId(project.getId());
+            progress.setStudentId(studentId);
+            progress.setStatus("not_started"); // 初始状态
+            return progress;
+        }).collect(Collectors.toList());
+
+        System.out.println("准备批量插入进度记录，数量: " + progressList.size());
+
+        // 5. 批量插入进度记录
+        if (!progressList.isEmpty()) {
+            try {
+                studentProjectProgressDao.insertBatch(progressList);
+                System.out.println("批量插入进度记录成功");
+            } catch (Exception e) {
+                System.out.println("批量插入进度记录失败");
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("没有进度记录需要插入");
         }
 
         return 1; // 成功

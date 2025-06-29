@@ -8,6 +8,14 @@
         INSERT INTO experiment_project_class (project_id, class_id)
         VALUES (#{projectId}, #{classId})
     </insert>
+    <select id="findStudentIdsByClassIds" resultType="java.lang.Long" parameterType="list">
+        SELECT DISTINCT student_id
+        FROM student_class
+        WHERE class_id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 
 
 

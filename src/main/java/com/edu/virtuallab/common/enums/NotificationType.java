@@ -1,5 +1,8 @@
 package com.edu.virtuallab.common.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum NotificationType {
     PROJECT_SUBMITTED("project_submitted"),  // 项目提交审核
     PROJECT_APPROVED("project_approved"),  // 项目审核通过
@@ -13,10 +16,14 @@ public enum NotificationType {
         this.value = value;
     }
 
+    // 确保这个注解用于序列化
+    @JsonValue
     public String getValue() {
         return value;
     }
 
+    // 确保这个注解用于反序列化
+    @JsonCreator
     public static NotificationType fromValue(String value) {
         for (NotificationType type : values()) {
             if (type.value.equalsIgnoreCase(value)) {

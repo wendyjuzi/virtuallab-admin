@@ -18,6 +18,8 @@ import java.util.List;
 @Api(tags = "通知管理")
 public class NotificationController {
 
+    //删除通知有问题//获取通知详情有问题//创建通知？
+
     @Autowired
     private NotificationService notificationService;
 
@@ -28,8 +30,7 @@ public class NotificationController {
 
     @ApiOperation("获取用户未读通知")
     @GetMapping("/unread")
-    public CommonResult<List<Notification>> getUnreadNotifications() {
-        Long userId = getCurrentUserId();
+    public CommonResult<List<Notification>> getUnreadNotifications(@RequestParam Long userId) {
         List<Notification> unread = notificationService.getUnreadNotifications(userId);
         return CommonResult.success(unread);
     }

@@ -12,6 +12,8 @@ public class ExperimentProject {
     private String videoUrl;
     private Date createdAt;
     private Date updatedAt;
+//    private Long teacherId;
+    private String createdBy; // 教师用户名
 
     // getter & setter
     public Long getId() { return id; }
@@ -40,4 +42,15 @@ public class ExperimentProject {
 
     public Date getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
+
+//    public Long getTeacherId() { return teacherId; }
+//    public void setTeacherId(Long teacherId) { this.teacherId = teacherId; }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
 }

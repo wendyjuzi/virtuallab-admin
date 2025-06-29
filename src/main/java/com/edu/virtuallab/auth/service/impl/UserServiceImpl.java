@@ -8,6 +8,7 @@ import com.edu.virtuallab.auth.model.UserRole;
 import com.edu.virtuallab.auth.model.Role;
 import com.edu.virtuallab.auth.service.UserService;
 import com.edu.virtuallab.auth.model.UserRegisterDTO;
+import com.edu.virtuallab.auth.service.AuthFactorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,8 @@ public class UserServiceImpl implements UserService {
     private UserRoleDao userRoleDao;
     @Autowired
     private RoleDao roleDao;
+    @Autowired
+    private AuthFactorService authFactorService;
 
     @Override
     public User getById(Long id) {
@@ -40,6 +43,20 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean register(UserRegisterDTO dto) {
+        // 管理员注册需校验短信或邮箱验证码
+        if ("admin".equalsIgnoreCase(dto.getUserType())) {
+            boolean smsValid = false;
+            boolean emailValid = false;
+            if (dto.getSmsCode() != null && dto.getPhone() != null) {
+                smsValid = authFactorService.validateSmsCode(null, dto.getPhone(), dto.getSmsCode());
+            }
+            if (dto.getEmailCode() != null && dto.getEmail() != null) {
+                emailValid = authFactorService.validateEmailCode(null, dto.getEmail(), dto.getEmailCode());
+            }
+            if (!smsValid && !emailValid) {
+                throw new RuntimeException("管理员注册需短信或邮箱验证码校验通过");
+            }
+        }
         User user = new User();
         user.setUsername(dto.getUsername());
         user.setPassword(dto.getPassword());

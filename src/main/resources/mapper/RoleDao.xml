@@ -126,7 +126,7 @@
 
     <!-- 查询用户的所有角色 -->
     <select id="findByUserId" resultMap="BaseResultMap" parameterType="java.lang.Long">
-        SELECT r.<include refid="Base_Column_List"/>
+        SELECT r.id, r.name, r.code, r.description, r.type, r.level, r.status, r.parent_id, r.create_time, r.update_time
         FROM role r
         INNER JOIN user_role ur ON r.id = ur.role_id
         WHERE ur.user_id = #{userId} AND r.status = 1

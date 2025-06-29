@@ -65,8 +65,12 @@ public class ProjectAuditServiceImpl implements ProjectAuditService {
         NotificationType notifyType = status == AuditStatus.APPROVED ?
                 NotificationType.PROJECT_APPROVED : NotificationType.PROJECT_REJECTED;
 
-        notificationService.sendProjectAuditNotification(
-                project.getId(), notifyType, project.getUploaderId());
+        // 发送通知 - 使用正确的方法
+        notificationService.sendProjectAuditResultNotification(
+                project.getId(),
+                status == AuditStatus.APPROVED, // 审核是否通过
+                comment                         // 审核意见
+        );
     }
 
     // 提交项目审核

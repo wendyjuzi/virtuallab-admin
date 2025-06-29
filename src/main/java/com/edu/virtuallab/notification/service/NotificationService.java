@@ -1,8 +1,6 @@
 package com.edu.virtuallab.notification.service;
 
-import com.edu.virtuallab.common.enums.NotificationType;
 import com.edu.virtuallab.notification.model.Notification;
-
 import java.util.List;
 
 public interface NotificationService {
@@ -16,6 +14,14 @@ public interface NotificationService {
     // 标记通知为已读
     void markAsRead(Long notificationId);
 
-    // 发送项目审核通知
-    void sendProjectAuditNotification(Long projectId, NotificationType type, Long receiverId);
+    // 发送项目审核通知（修改方法签名以匹配实现）
+    void sendProjectAuditNotification(Long projectId, Long uploaderId);
+
+    // 添加缺失的方法声明
+    void sendProjectAuditResultNotification(
+            Long projectId,
+            boolean approved,
+            String comment);
+
+    void sendProjectPublishNotification(Long projectId, List<Long> classIds);
 }

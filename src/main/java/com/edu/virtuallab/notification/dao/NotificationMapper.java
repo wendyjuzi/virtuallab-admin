@@ -16,4 +16,10 @@ public interface NotificationMapper extends BaseMapper<Notification> {
     int updateStatus(@Param("notificationId") Long notificationId,
                      @Param("status") Boolean status);
 
+    // 查询用户未读通知
+    List<Notification> findUnreadByUserId(@Param("userId") Long userId);
+
+    // 标记通知为已读
+    void markAsRead(@Param("notificationId") Long notificationId);
+
 }

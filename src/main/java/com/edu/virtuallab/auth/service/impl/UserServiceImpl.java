@@ -68,6 +68,7 @@ public class UserServiceImpl implements UserService {
         user.setMajor(dto.getMajor());
         user.setGrade(dto.getGrade());
         user.setClassName(dto.getClassName());
+        user.setStatus(User.STATUS_NORMAL);
         int userResult = userDao.insert(user);
         if (userResult <= 0) {
             throw new RuntimeException("用户注册失败");

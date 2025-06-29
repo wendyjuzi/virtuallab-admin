@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import com.edu.virtuallab.auth.service.AuthFactorService;
 
 @RestController
 @RequestMapping("/auth")
@@ -26,6 +27,9 @@ public class AuthController {
 
     @Autowired
     private RoleService roleService;
+
+    @Autowired
+    private AuthFactorService authFactorService;
 
     @PostMapping("/login/password")
     public CommonResult<Map<String, Object>> loginWithPassword(@RequestBody LoginDTO loginDTO) {
@@ -48,8 +52,12 @@ public class AuthController {
     }
 
     @PostMapping("/sendSmsCode")
-    public CommonResult<Boolean> sendSmsCode(@RequestParam String phone) {
-        return authService.sendSmsCode(phone);
+    public CommonResult<Boolean> sendSmsCode(@RequestParam String phone, @RequestParam(required = false) String userType) {
+        if (userType == null || !"admin".equalsIgnoreCase(userType)) {
+            return CommonResult.failed("只有管理员注册时才允许发送短信验证码");
+        }
+        boolean result = authFactorService.sendSmsCodeForRegister(phone);
+        return CommonResult.success(result);
     }
 
     @GetMapping("/currentUser")

@@ -3,6 +3,7 @@ package com.edu.virtuallab.auth.service.impl;
 import com.edu.virtuallab.auth.model.User;
 import com.edu.virtuallab.auth.service.AuthService;
 import com.edu.virtuallab.auth.dao.UserDao;
+import com.edu.virtuallab.auth.service.EmailVerificationService;
 import com.edu.virtuallab.common.api.CommonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,6 +30,8 @@ public class AuthServiceImpl implements AuthService {
     private UserDao userDao;
     @Autowired
     private RoleService roleService;
+    @Autowired
+    private EmailVerificationService emailVerificationService;
 
     /**
      * 密码登录方法
@@ -126,6 +129,62 @@ public class AuthServiceImpl implements AuthService {
         // 注意：生产环境需要对接短信服务提供商
         // 这里仅做演示，默认发送成功
         return CommonResult.success(Boolean.TRUE);
+    }
+
+    /**
+     * 邮箱验证码登录方法
+     * @param email 邮箱
+     * @param code 验证码
+     * @return 登录结果
+     */
+    @Override
+    public CommonResult<Map<String, Object>> loginWithEmail(String email, String code) {
+        // 1. 验证邮箱验证码
+        CommonResult<Boolean> verifyResult = emailVerificationService.verifyCode(email, code, "LOGIN");
+        if (!verifyResult.isSuccess()) {
+            return CommonResult.failed(verifyResult.getMessage());
+        }
+
+        // 2. 查询用户
+        User user = userDao.findByEmail(email);
+        if (user == null) {
+            return CommonResult.failed("用户不存在");
+        }
+
+        // 3. 校验用户状态
+        if (user.getStatus() == null || user.getStatus() != User.STATUS_NORMAL) {
+            return CommonResult.failed("用户状态异常");
+        }
+
+        // 4. 设置Spring Security认证信息
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(user.getUsername(), null, Collections.emptyList());
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        // 5. 生成JWT token
+        String token = JwtUtil.generateToken(user.getUsername());
+
+        // 6. 查询用户角色
+        List<Role> roles = roleService.getRolesByUserId(user.getId());
+        List<String> roleCodes = roles.stream().map(Role::getCode).toList();
+
+        // 7. 构建返回结果
+        Map<String, Object> result = new HashMap<>();
+        result.put("token", token);
+        result.put("user", user);
+        result.put("roles", roleCodes);
+        return CommonResult.success(result);
+    }
+
+    /**
+     * 发送邮箱验证码
+     * @param email 邮箱
+     * @param type 验证码类型
+     * @return 发送结果
+     */
+    @Override
+    public CommonResult<Boolean> sendEmailCode(String email, String type) {
+        return emailVerificationService.sendVerificationCode(email, type);
     }
 
     /**

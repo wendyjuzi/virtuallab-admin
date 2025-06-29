@@ -9,5 +9,7 @@ public interface AuthService {
     CommonResult<Boolean> loginWithSms(String phone, String code);
     CommonResult<Boolean> loginWithFingerprint(String username, String fingerprintData);
     CommonResult<Boolean> sendSmsCode(String phone);
+    CommonResult<Map<String, Object>> loginWithEmail(String email, String code);
+    CommonResult<Boolean> sendEmailCode(String email, String type);
     User getCurrentUser();
 } 

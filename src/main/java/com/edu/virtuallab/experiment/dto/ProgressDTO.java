@@ -1,4 +1,4 @@
-package com.edu.virtuallab.progress.dto;
+package com.edu.virtuallab.experiment.dto;
 
 import lombok.Data;
 

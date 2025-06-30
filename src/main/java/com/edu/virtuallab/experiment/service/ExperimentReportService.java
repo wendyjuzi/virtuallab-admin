@@ -1,12 +1,11 @@
 package com.edu.virtuallab.experiment.service;
 
 import com.edu.virtuallab.experiment.model.ExperimentReport;
-import java.util.List;
 
 public interface ExperimentReportService {
-    int create(ExperimentReport report);
-    int update(ExperimentReport report);
-    int delete(Long id);
-    ExperimentReport getById(Long id);
-    List<ExperimentReport> listAll();
-} 
+    ExperimentReport getReportBySession(String sessionId);
+    void saveReportContent(String sessionId, String manualContent);
+    void saveReportAttachment(String sessionId, String attachmentPath);
+    void submitReport(String sessionId);
+
+}

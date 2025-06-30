@@ -59,19 +59,16 @@ public class NotificationController {
 
     @ApiOperation("批量标记为已读")
     @PostMapping("/mark-all-read")
-    public CommonResult<Void> markAllAsRead() {
-        Long userId = getCurrentUserId();
-        // 实现批量标记为已读
-        // notificationService.markAllAsRead(userId);
-        // 修改：使用构造方法创建Void结果
-        return new CommonResult<>(ResultCode.SUCCESS.getCode(), "所有通知已标记为已读", null);
+    public CommonResult<Void> markAllAsRead(@RequestParam Long userId) {
+        notificationService.markAllAsRead(userId);
+        return CommonResult.success(null);
     }
 
     @ApiOperation("删除通知")
     @DeleteMapping("/{notificationId}")
     public CommonResult<Void> deleteNotification(@PathVariable Long notificationId) {
         // 实现删除通知
-        // notificationService.deleteNotification(notificationId);
+        notificationService.deleteNotification(notificationId);
         // 修改：使用构造方法创建Void结果
         return new CommonResult<>(ResultCode.SUCCESS.getCode(), "通知已删除", null);
     }
@@ -80,10 +77,9 @@ public class NotificationController {
     @GetMapping("/{notificationId}")
     public CommonResult<Notification> getNotificationDetail(@PathVariable Long notificationId) {
         // 实现获取详情
-        // Notification notification = notificationService.getNotification(notificationId);
-        // return CommonResult.success(notification);
+        Notification notification = notificationService.getNotification(notificationId);
+        return CommonResult.success(notification);
         // 使用构造方法返回带消息的未实现提示
-        return new CommonResult<>(ResultCode.SUCCESS.getCode(), "待实现", null);
     }
 
     @ApiOperation("创建通知（内部使用）")

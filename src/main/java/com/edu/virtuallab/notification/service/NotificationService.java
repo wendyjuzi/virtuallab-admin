@@ -24,4 +24,9 @@ public interface NotificationService {
             String comment);
 
     void sendProjectPublishNotification(Long projectId, List<Long> classIds);
+
+    void deleteNotification(Long notificationId);
+    Notification getNotification(Long notificationId);
+    void markAllAsRead(Long userId);
+
 }

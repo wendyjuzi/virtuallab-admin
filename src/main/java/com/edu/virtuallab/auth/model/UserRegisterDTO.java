@@ -12,6 +12,9 @@ public class UserRegisterDTO {
     private String grade;
     private String className;
     private String roleCode;
+    private String userType; // 用户类型：user/admin
+    private String smsCode; // 短信验证码（管理员用）
+    private String emailCode; // 邮箱验证码（管理员用）
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
@@ -35,4 +38,10 @@ public class UserRegisterDTO {
     public void setClassName(String className) { this.className = className; }
     public String getRoleCode() { return roleCode; }
     public void setRoleCode(String roleCode) { this.roleCode = roleCode; }
+    public String getUserType() { return userType; }
+    public void setUserType(String userType) { this.userType = userType; }
+    public String getSmsCode() { return smsCode; }
+    public void setSmsCode(String smsCode) { this.smsCode = smsCode; }
+    public String getEmailCode() { return emailCode; }
+    public void setEmailCode(String emailCode) { this.emailCode = emailCode; }
 } 

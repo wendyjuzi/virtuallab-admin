@@ -63,4 +63,46 @@ public interface UserDao {
     
     // 更新指纹数据
     int updateFingerprint(@Param("id") Long id, @Param("fingerprint") String fingerprint);
-} 
+
+    // 在 UserDao 接口中添加以下方法：
+
+    // 查询所有管理员用户
+    List<User> findAdmins();
+
+    // 根据班级ID列表查询用户ID
+    List<Long> findUserIdsByClassIds(@Param("classIds") List<Long> classIds);
+
+    // 新增
+    int deleteById(Long id);
+
+    List<User> findByDepartmentId(Long departmentId);
+
+    List<User> findByConditions(@Param("username") String username,
+                               @Param("realName") String realName,
+                               @Param("department") String department,
+                               @Param("userType") String userType,
+                               @Param("status") Integer status,
+                               @Param("offset") int offset,
+                               @Param("size") int size);
+
+    int countByConditions(@Param("username") String username,
+                         @Param("realName") String realName,
+                         @Param("department") String department,
+                         @Param("userType") String userType,
+                         @Param("status") Integer status);
+
+    /**
+     * 根据院系名称统计用户数量
+     */
+    int countByDepartment(@Param("department") String department);
+    
+    /**
+     * 统计活跃用户数量（最近指定时间登录的用户）
+     */
+    int countActiveUsers(@Param("since") java.util.Date since);
+    
+    /**
+     * 统计今日登录数量
+     */
+    int countTodayLogins(@Param("todayStart") java.util.Date todayStart);
+}

@@ -1,5 +1,6 @@
 package com.edu.virtuallab.experiment.service;
 
+import com.edu.virtuallab.experiment.dto.ExperimentProjectPublishRequest;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
 import java.util.List;
 
@@ -10,5 +11,8 @@ public interface ExperimentProjectService {
     ExperimentProject getById(Long id);
     List<ExperimentProject> listAll();
     List<ExperimentProject> search(String category, String level, String keyword);
+    void publishToClasses(Long projectId, List<Long> classIds);
+    int publishProject(ExperimentProjectPublishRequest request, String createdBy);
+    List<ExperimentProject> getProjectsByCreatedBy(String createdBy);
 
-} 
+}

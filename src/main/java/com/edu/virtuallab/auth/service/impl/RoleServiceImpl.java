@@ -59,4 +59,9 @@ public class RoleServiceImpl implements RoleService {
         }
         return success;
     }
+
+    @Override
+    public List<Role> getRolesByUserId(Long userId) {
+        return roleDao.findByUserId(userId);
+    }
 } 

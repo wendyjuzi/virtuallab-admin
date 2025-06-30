@@ -19,4 +19,6 @@ public interface ExperimentProjectDao {
             @Param("level") String level,
             @Param("keyword") String keyword
     );
+    List<ExperimentProject> getProjectsByCreatedBy(String createdBy);
+
 } 

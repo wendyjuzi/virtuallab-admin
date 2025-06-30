@@ -1,17 +1,39 @@
 package com.edu.virtuallab.experiment.model;
 
+import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
 import java.util.Date;
+import java.time.LocalDateTime;
 
+@Data
+@TableName("experiment_project")
 public class ExperimentProject {
+    @TableId(type = IdType.AUTO)
     private Long id;
+
     private String name;
     private String category;
     private String description;
     private String level;
     private String imageUrl;
     private String videoUrl;
-    private Date createdAt;
-    private Date updatedAt;
+//    private Date createdAt;
+//    private Date updatedAt;
+//    private Long teacherId;
+    private String createdBy; // 教师用户名
+    @TableField(fill = FieldFill.INSERT)
+    private LocalDateTime createdAt;
+
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updatedAt;
+    // 新增审核字段
+    private Long uploaderId; // 上传者ID
+    private String auditStatus; // 审核状态: draft/pending/approved/rejected
+    private String auditComment; // 审核意见
+    private Long auditorId; // 审核人ID
+    private LocalDateTime auditTime; // 审核时间
+    private String publishStatus; // 发布状态: unpublished/published
+    private LocalDateTime publishTime; // 发布时间
 
     // getter & setter
     public Long getId() { return id; }
@@ -26,18 +48,25 @@ public class ExperimentProject {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public String getLevel() { return level; }
-    public void setLevel(String level) { this.level = level; }
 
-    public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public String getVideoUrl() { return videoUrl; }
     public void setVideoUrl(String videoUrl) { this.videoUrl = videoUrl; }
 
-    public Date getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
+//    public Date getCreatedAt() { return createdAt; }
+//    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
+//
+//    public Date getUpdatedAt() { return updatedAt; }
+//    public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
 
-    public Date getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
+//    public Long getTeacherId() { return teacherId; }
+//    public void setTeacherId(Long teacherId) { this.teacherId = teacherId; }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
 }

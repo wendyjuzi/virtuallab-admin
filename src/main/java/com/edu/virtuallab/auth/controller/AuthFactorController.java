@@ -1,7 +1,9 @@
 package com.edu.virtuallab.auth.controller;
 
 import com.edu.virtuallab.auth.model.AuthFactor;
+import com.edu.virtuallab.auth.model.EmailSendRequest;
 import com.edu.virtuallab.auth.service.AuthFactorService;
+import com.edu.virtuallab.auth.service.EmailVerificationService;
 import com.edu.virtuallab.common.api.CommonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,9 @@ public class AuthFactorController {
     
     @Autowired
     private AuthFactorService authFactorService;
+    
+    @Autowired
+    private EmailVerificationService emailVerificationService;
     
     // 获取用户的认证因素列表
     @GetMapping("/user/{userId}")
@@ -43,43 +48,44 @@ public class AuthFactorController {
         return CommonResult.success(result);
     }
     
-    // 发送短信验证码
+    // ==================== 短信验证码接口 ====================
+    
+    // 暂时注释掉短信注册功能
+    /*
+    // 发送短信验证码（注册时使用，不需要userId）
+    @PostMapping("/sms/send/register")
+    public CommonResult<Boolean> sendSmsCodeForRegister(@RequestParam String phone, @RequestParam(required = false) String userType) {
+        if (userType == null || !"admin".equalsIgnoreCase(userType)) {
+            return CommonResult.failed("只有管理员注册时才允许发送短信验证码");
+        }
+        boolean result = authFactorService.sendSmsCodeForRegister(phone);
+        return CommonResult.success(result);
+    }
+    
+    // 验证短信验证码（注册时使用，不需要userId）
+    @PostMapping("/sms/validate/register")
+    public CommonResult<Boolean> validateSmsCodeForRegister(@RequestParam String phone, @RequestParam String code) {
+        boolean result = authFactorService.validateSmsCodeForRegister(phone, code);
+        return CommonResult.success(result);
+    }
+    */
+    
+    // 发送短信验证码（已登录用户使用）
     @PostMapping("/sms/send")
-    public CommonResult<Boolean> sendSmsCode(@RequestParam Long userId, @RequestParam String phone) {
+    public CommonResult<Boolean> sendSmsCode(@RequestParam(required = false) Long userId, @RequestParam String phone, @RequestParam(required = false) String userType) {
+        if (userType == null || !"admin".equalsIgnoreCase(userType)) {
+            return CommonResult.failed("只有管理员注册时才允许发送短信验证码");
+        }
         boolean result = authFactorService.sendSmsCode(userId, phone);
         return CommonResult.success(result);
     }
     
-    // 验证短信验证码
+    // 验证短信验证码（已登录用户使用）
     @PostMapping("/sms/validate")
-    public CommonResult<Boolean> validateSmsCode(@RequestParam Long userId, 
+    public CommonResult<Boolean> validateSmsCode(@RequestParam(required = false) Long userId, 
                                                 @RequestParam String phone, 
                                                 @RequestParam String code) {
         boolean result = authFactorService.validateSmsCode(userId, phone, code);
-        return CommonResult.success(result);
-    }
-    
-    // 发送邮箱验证码
-    @PostMapping("/email/send")
-    public CommonResult<Boolean> sendEmailCode(@RequestParam Long userId, @RequestParam String email) {
-        boolean result = authFactorService.sendEmailCode(userId, email);
-        return CommonResult.success(result);
-    }
-    
-    // 验证邮箱验证码
-    @PostMapping("/email/validate")
-    public CommonResult<Boolean> validateEmailCode(@RequestParam Long userId, 
-                                                  @RequestParam String email, 
-                                                  @RequestParam String code) {
-        boolean result = authFactorService.validateEmailCode(userId, email, code);
-        return CommonResult.success(result);
-    }
-    
-    // 验证指纹
-    @PostMapping("/fingerprint/validate")
-    public CommonResult<Boolean> validateFingerprint(@RequestParam Long userId, 
-                                                    @RequestParam String fingerprint) {
-        boolean result = authFactorService.validateFingerprint(userId, fingerprint);
         return CommonResult.success(result);
     }
     

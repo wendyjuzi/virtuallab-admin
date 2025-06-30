@@ -1,8 +1,11 @@
 package com.edu.virtuallab.experiment.controller;
 
+import com.edu.virtuallab.auth.util.JwtUtil;
+import com.edu.virtuallab.experiment.dto.ExperimentProjectPublishRequest;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
 import com.edu.virtuallab.experiment.service.ExperimentProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -65,4 +69,26 @@ public class ExperimentProjectController {
         return projectService.search(category, level, keyword);
     }
 
-} 
+
+    @PostMapping("/publish")
+    public int publishProject(HttpServletRequest request, @RequestBody ExperimentProjectPublishRequest req) {
+        String authHeader = request.getHeader("Authorization");
+        System.out.println("Authorization Header = " + authHeader); // 打印出来看看
+
+        String username = JwtUtil.getUsernameFromRequest(request);
+        if (username == null) {
+            throw new RuntimeException("用户未登录");
+        }
+        return projectService.publishProject(req, username);
+    }
+
+    @GetMapping("/my-projects")
+    public List<ExperimentProject> getMyProjects(HttpServletRequest request) {
+        String username = JwtUtil.getUsernameFromRequest(request);
+        if (username == null) {
+            throw new RuntimeException("用户未登录");
+        }
+        return projectService.getProjectsByCreatedBy(username);
+    }
+
+}

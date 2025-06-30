@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.edu.virtuallab.experiment.dao.StudentProjectProgressDao">
+
+    <!-- 插入一条学生项目进度记录 -->
+    <insert id="insert" parameterType="map">
+        INSERT INTO student_project_progress (project_id, student_id, status)
+        VALUES (#{projectId}, #{studentId}, #{status})
+    </insert>
+
+    <!-- 批量插入（可选） -->
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO student_project_progress (project_id, student_id, status)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.projectId}, #{item.studentId}, #{item.status})
+        </foreach>
+    </insert>
+
+    <!-- 查询某个项目的所有学生进度 -->
+    <select id="findByProjectId" parameterType="long" resultType="com.edu.virtuallab.experiment.model.StudentProjectProgress">
+        SELECT id, project_id, student_id, status, submit_time, score, comment
+        FROM student_project_progress
+        WHERE project_id = #{projectId}
+    </select>
+
+<!--    &lt;!&ndash; 可选：更新评分和评语 &ndash;&gt;-->
+<!--    <update id="updateScoreAndComment" parameterType="map">-->
+<!--        UPDATE student_project_progress-->
+<!--        SET score = #{score},-->
+<!--            comment = #{comment}-->
+<!--        WHERE project_id = #{projectId} AND student_id = #{studentId}-->
+<!--    </update>-->
+
+<!--    &lt;!&ndash; 可选：删除某项目的所有记录 &ndash;&gt;-->
+<!--    <delete id="deleteByProjectId" parameterType="long">-->
+<!--        DELETE FROM student_project_progress-->
+<!--        WHERE project_id = #{projectId}-->
+<!--    </delete>-->
+
+</mapper>

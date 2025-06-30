@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/user")
@@ -96,11 +97,11 @@ public class UserController {
     @ApiOperation("用户注册")
     public CommonResult<Boolean> register(@RequestBody UserRegisterDTO dto) {
         try {
-            boolean success = userService.register(dto);
-            if (success) {
+        boolean success = userService.register(dto);
+        if (success) {
                 return CommonResult.success(true);
-            } else {
-                return CommonResult.failed("注册失败");
+        } else {
+            return CommonResult.failed("注册失败");
             }
         } catch (Exception e) {
             return CommonResult.failed("注册失败: " + e.getMessage());
@@ -406,5 +407,12 @@ public class UserController {
         } catch (Exception e) {
             return CommonResult.failed("检查学号/工号失败: " + e.getMessage());
         }
+    }
+
+    @PostMapping("/logout")
+    @ApiOperation("退出登录")
+    public CommonResult<Boolean> logout(HttpServletRequest request) {
+        request.getSession().invalidate();
+        return CommonResult.success(true);
     }
 } 

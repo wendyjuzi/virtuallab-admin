@@ -11,6 +11,8 @@ import com.edu.virtuallab.auth.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -98,20 +100,77 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    // 实现接口的其他方法
+    // 创建通知
     @Override
     public Notification createNotification(Notification notification) {
+        // 设置默认值
+        if (notification.getCreatedAt() == null) {
+            notification.setCreatedAt(new Date());
+        }
+        if (notification.getIsRead() == null) {
+            notification.setIsRead(false);
+        }
+
+        // 插入数据库
         notificationMapper.insert(notification);
-        return notification;
+
+        // 返回包含ID的完整通知对象
+        return notificationMapper.selectById(notification.getId());
     }
 
+    // 获取未读通知
     @Override
     public List<Notification> getUnreadNotifications(Long userId) {
+        // 验证用户ID有效性
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("无效的用户ID");
+        }
+
+        // 查询未读通知
         return notificationMapper.findUnreadByUserId(userId);
     }
 
+    // 标记通知为已读
     @Override
     public void markAsRead(Long notificationId) {
-        notificationMapper.markAsRead(notificationId);
+        // 验证通知ID有效性
+        if (notificationId == null || notificationId <= 0) {
+            throw new IllegalArgumentException("无效的通知ID");
+        }
+
+        // 检查通知是否存在
+        Notification notification = notificationMapper.selectById(notificationId);
+        if (notification == null) {
+            throw new RuntimeException("通知不存在: " + notificationId);
+        }
+
+        // 更新为已读状态
+        notification.setIsRead(true);
+        notificationMapper.update(notification);
+    }
+
+
+    @Override
+    public void deleteNotification(Long notificationId) {
+        if (notificationId == null || notificationId <= 0) {
+            throw new IllegalArgumentException("无效的通知ID");
+        }
+        notificationMapper.delete(notificationId);
+    }
+
+    @Override
+    public Notification getNotification(Long notificationId) {
+        if (notificationId == null || notificationId <= 0) {
+            throw new IllegalArgumentException("无效的通知ID");
+        }
+        return notificationMapper.selectById(notificationId);
+    }
+
+    @Override
+    public void markAllAsRead(Long userId) {
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("无效的用户ID");
+        }
+        notificationMapper.markAllAsRead(userId);
     }
 }

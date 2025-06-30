@@ -164,4 +164,9 @@ public interface UserService {
      * 检查学号/工号是否存在
      */
     boolean isStudentIdExists(String studentId);
+    
+    /**
+     * 根据邮箱获取用户信息
+     */
+    User getByEmail(String email);
 } 

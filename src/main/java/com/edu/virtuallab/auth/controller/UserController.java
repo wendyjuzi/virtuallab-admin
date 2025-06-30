@@ -2,15 +2,19 @@ package com.edu.virtuallab.auth.controller;
 
 import com.edu.virtuallab.auth.model.User;
 import com.edu.virtuallab.auth.model.UserRegisterDTO;
+import com.edu.virtuallab.auth.service.EmailVerificationService;
 import com.edu.virtuallab.auth.service.UserService;
 import com.edu.virtuallab.common.api.CommonResult;
 import com.edu.virtuallab.common.api.PageResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -18,6 +22,12 @@ import javax.servlet.http.HttpServletRequest;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EmailVerificationService emailVerificationService;
 
     @GetMapping("/{id}")
     @ApiOperation("根据ID获取用户信息")
@@ -412,7 +422,11 @@ public class UserController {
     @PostMapping("/logout")
     @ApiOperation("退出登录")
     public CommonResult<Boolean> logout(HttpServletRequest request) {
-        request.getSession().invalidate();
-        return CommonResult.success(true);
+        try {
+            // 这里可以添加登出逻辑，比如清除token等
+            return CommonResult.success(true);
+        } catch (Exception e) {
+            return CommonResult.failed("退出登录失败: " + e.getMessage());
+        }
     }
 } 

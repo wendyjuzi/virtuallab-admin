@@ -12,7 +12,7 @@ public interface ExperimentProjectService {
     List<ExperimentProject> listAll();
     List<ExperimentProject> search(String category, String level, String keyword);
     void publishToClasses(Long projectId, List<Long> classIds);
-    int publishProject(ExperimentProjectPublishRequest request, String createdBy);
+    Long publishProject(ExperimentProjectPublishRequest request, String createdBy);
     List<ExperimentProject> getProjectsByCreatedBy(String createdBy);
 
 }

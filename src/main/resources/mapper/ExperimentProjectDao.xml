@@ -60,10 +60,11 @@
     <insert id="insert" parameterType="com.edu.virtuallab.experiment.model.ExperimentProject"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO experiment_project
-        (name, category, description, level, image_url, video_url, created_at, updated_at, created_by)
+        (name, category, description, level, image_url, video_url, collaboration_type, created_at, updated_at, created_by)
         VALUES
-            (#{name}, #{category}, #{description}, #{level}, #{imageUrl}, #{videoUrl}, NOW(), NOW(), #{createdBy})
+            (#{name}, #{category}, #{description}, #{level}, #{imageUrl}, #{videoUrl}, #{projectType}, NOW(), NOW(), #{createdBy})
     </insert>
+
 
     <select id="getProjectsByCreatedBy" resultType="com.edu.virtuallab.experiment.model.ExperimentProject">
         SELECT * FROM experiment_project

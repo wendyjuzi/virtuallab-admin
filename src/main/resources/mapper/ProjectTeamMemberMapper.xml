@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.edu.virtuallab.experiment.dao.ProjectTeamMemberDao">
+
+    <!-- 插入新成员 -->
+    <insert id="insertMember" parameterType="com.edu.virtuallab.experiment.model.ProjectTeamMember" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO project_team_member (team_id, student_id, joined_at)
+        VALUES (#{teamId}, #{studentId}, NOW())
+    </insert>
+
+    <!-- 批量插入成员 -->
+    <insert id="insertMembersBatch" parameterType="java.util.List">
+        INSERT INTO project_team_member (team_id, student_id, joined_at)
+        VALUES
+        <foreach collection="list" item="member" separator=",">
+            (#{member.teamId}, #{member.studentId}, NOW())
+        </foreach>
+    </insert>
+
+    <!-- 根据小组ID查询成员列表 -->
+    <select id="findMembersByTeamId" resultType="com.edu.virtuallab.experiment.model.ProjectTeamMember" parameterType="long">
+        SELECT id, team_id, student_id, joined_at
+        FROM project_team_member
+        WHERE team_id = #{teamId}
+    </select>
+
+    <!-- 查询学生在某项目中的小组 -->
+    <select id="findTeamByStudentAndProject" resultType="com.edu.virtuallab.experiment.model.ProjectTeam" parameterType="map">
+        SELECT pt.*
+        FROM project_team pt
+                 JOIN project_team_member ptm ON pt.id = ptm.team_id
+        WHERE pt.project_id = #{projectId} AND ptm.student_id = #{studentId}
+    </select>
+
+    <!-- 删除小组成员 -->
+    <delete id="deleteMemberById" parameterType="long">
+        DELETE FROM project_team_member WHERE id = #{id}
+    </delete>
+
+    <!-- 删除某个成员（studentId）从某个小组（teamId） -->
+    <delete id="deleteMemberByTeamAndStudent" parameterType="map">
+        DELETE FROM project_team_member WHERE team_id = #{teamId} AND student_id = #{studentId}
+    </delete>
+
+</mapper>

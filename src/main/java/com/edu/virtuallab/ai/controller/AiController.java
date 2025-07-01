@@ -1,7 +1,8 @@
 package com.edu.virtuallab.ai.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.net.URI;
@@ -11,29 +12,34 @@ import java.net.http.HttpResponse;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/ai")
-@RequiredArgsConstructor
+@RequestMapping("/ai")
 public class AiController {
 
-    private final String apiKey = "sk-1HX9z9ijmL2DbZq5aCtavdI9iepxXjEs8o8MsHDMDtj4NzW7"; // 替换为你的 OpenAI 密钥
+    @Value("${zhipu.api.url}")
+    private String zhipuUrl;
+
+    @Value("${zhipu.api.key}")
+    private String zhipuApiKey;
+
+    @Value("${zhipu.api.model}")
+    private String zhipuModel;
 
     @PostMapping("/chat")
-    public Map<String, String> chat(@RequestBody Map<String, String> body) throws IOException, InterruptedException {
+    public Map<String, String> chatZhipu(@RequestBody Map<String, String> body) throws IOException, InterruptedException {
         String userInput = body.get("message");
 
         String requestBody = """
         {
-          \"model\": \"gpt-4\",
-          \"messages\": [
-            { \"role\": \"system\", \"content\": \"你是虚拟实验室中的智能助教，负责帮助学生解答实验相关问题。\" },
-            { \"role\": \"user\", \"content\": \"%s\" }
+          "model": "%s",
+          "messages": [
+            { "role": "user", "content": "%s" }
           ]
         }
-        """.formatted(userInput);
+        """.formatted(zhipuModel, userInput);
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.openai.com/v1/chat/completions"))
-                .header("Authorization", "Bearer " + apiKey)
+                .uri(URI.create(zhipuUrl))
+                .header("Authorization", "Bearer " + zhipuApiKey)
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                 .build();
@@ -41,9 +47,24 @@ public class AiController {
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        ObjectMapper mapper = new ObjectMapper();
-        String reply = mapper.readTree(response.body()).at("/choices/0/message/content").asText();
+        // 打印智谱原始响应
+        System.out.println("Zhipu原始响应: " + response.body());
 
+        ObjectMapper mapper = new ObjectMapper();
+        String reply = "";
+        try {
+            JsonNode root = mapper.readTree(response.body());
+            if (root.has("error")) {
+                reply = "智谱接口错误：" + root.get("error").toString();
+            } else {
+                reply = root.at("/choices/0/message/content").asText();
+                if (reply == null || reply.isEmpty()) {
+                    reply = "智谱未返回内容，原始响应：" + response.body();
+                }
+            }
+        } catch (Exception e) {
+            reply = "智谱响应解析异常：" + e.getMessage() + "，原始响应：" + response.body();
+        }
         return Map.of("reply", reply);
     }
-} 
+}

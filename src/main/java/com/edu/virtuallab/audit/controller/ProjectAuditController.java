@@ -57,7 +57,7 @@ public class ProjectAuditController {
             @PathVariable Long projectId) {
 
         List<ProjectAuditLog> history = projectAuditService.getAuditHistory(projectId);
-        return CommonResult.success(history);
+        return CommonResult.success(history, "资源更新成功");
     }
 
     @ApiOperation("发布项目")

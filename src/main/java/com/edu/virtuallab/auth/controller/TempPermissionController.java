@@ -4,10 +4,8 @@ import com.edu.virtuallab.auth.model.TempPermission;
 import com.edu.virtuallab.auth.service.TempPermissionService;
 import com.edu.virtuallab.common.api.CommonResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,7 +13,7 @@ import java.util.List;
  * 用于管理用户的临时权限分配、撤销、查询等功能
  */
 @RestController
-@RequestMapping("/api/temp-permission")
+@RequestMapping("/temp-permission")
 public class TempPermissionController {
     
     @Autowired
@@ -31,7 +29,7 @@ public class TempPermissionController {
         try {
             boolean result = tempPermissionService.grantTempPermission(tempPermission);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("临时权限分配失败");
             }
@@ -50,7 +48,7 @@ public class TempPermissionController {
         try {
             boolean result = tempPermissionService.revokeTempPermission(id);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("临时权限撤销失败");
             }
@@ -69,7 +67,7 @@ public class TempPermissionController {
         try {
             boolean result = tempPermissionService.revokeByUserId(userId);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("用户临时权限撤销失败");
             }
@@ -87,7 +85,7 @@ public class TempPermissionController {
     public CommonResult<List<TempPermission>> findByUserId(@PathVariable Long userId) {
         try {
             List<TempPermission> tempPermissions = tempPermissionService.findByUserId(userId);
-            return CommonResult.success(tempPermissions);
+            return CommonResult.success(tempPermissions, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("查询用户临时权限异常：" + e.getMessage());
         }
@@ -102,7 +100,7 @@ public class TempPermissionController {
     public CommonResult<List<TempPermission>> findActiveByUserId(@PathVariable Long userId) {
         try {
             List<TempPermission> tempPermissions = tempPermissionService.findActiveByUserId(userId);
-            return CommonResult.success(tempPermissions);
+            return CommonResult.success(tempPermissions, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("查询用户生效临时权限异常：" + e.getMessage());
         }
@@ -117,7 +115,7 @@ public class TempPermissionController {
     public CommonResult<List<TempPermission>> findByRoleId(@PathVariable Long roleId) {
         try {
             List<TempPermission> tempPermissions = tempPermissionService.findByRoleId(roleId);
-            return CommonResult.success(tempPermissions);
+            return CommonResult.success(tempPermissions, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("查询角色临时权限异常：" + e.getMessage());
         }
@@ -132,7 +130,7 @@ public class TempPermissionController {
     public CommonResult<List<TempPermission>> findByPermissionId(@PathVariable Long permissionId) {
         try {
             List<TempPermission> tempPermissions = tempPermissionService.findByPermissionId(permissionId);
-            return CommonResult.success(tempPermissions);
+            return CommonResult.success(tempPermissions, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("查询权限临时分配异常：" + e.getMessage());
         }
@@ -148,7 +146,7 @@ public class TempPermissionController {
     public CommonResult<Boolean> hasTempPermission(@RequestParam Long userId, @RequestParam Long permissionId) {
         try {
             boolean hasPermission = tempPermissionService.hasTempPermission(userId, permissionId);
-            return CommonResult.success(hasPermission);
+            return CommonResult.success(hasPermission, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("检查临时权限异常：" + e.getMessage());
         }
@@ -164,7 +162,7 @@ public class TempPermissionController {
     public CommonResult<Boolean> hasTempRole(@RequestParam Long userId, @RequestParam Long roleId) {
         try {
             boolean hasRole = tempPermissionService.hasTempRole(userId, roleId);
-            return CommonResult.success(hasRole);
+            return CommonResult.success(hasRole, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("检查临时角色异常：" + e.getMessage());
         }
@@ -179,7 +177,7 @@ public class TempPermissionController {
     public CommonResult<List<Long>> getActivePermissionIds(@PathVariable Long userId) {
         try {
             List<Long> permissionIds = tempPermissionService.getActivePermissionIds(userId);
-            return CommonResult.success(permissionIds);
+            return CommonResult.success(permissionIds, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("获取用户临时权限ID异常：" + e.getMessage());
         }
@@ -194,7 +192,7 @@ public class TempPermissionController {
     public CommonResult<List<Long>> getActiveRoleIds(@PathVariable Long userId) {
         try {
             List<Long> roleIds = tempPermissionService.getActiveRoleIds(userId);
-            return CommonResult.success(roleIds);
+            return CommonResult.success(roleIds, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("获取用户临时角色ID异常：" + e.getMessage());
         }
@@ -208,7 +206,7 @@ public class TempPermissionController {
     public CommonResult<String> updateExpiredPermissions() {
         try {
             tempPermissionService.updateExpiredPermissions();
-            return CommonResult.success("过期权限状态更新成功");
+            return CommonResult.success("过期权限状态更新成功", "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("更新过期权限状态异常：" + e.getMessage());
         }
@@ -230,7 +228,7 @@ public class TempPermissionController {
                 }
             }
             if (allSuccess) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("批量分配临时权限失败");
             }

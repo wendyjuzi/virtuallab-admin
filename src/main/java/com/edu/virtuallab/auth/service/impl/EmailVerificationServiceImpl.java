@@ -39,7 +39,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
             CommonResult<Boolean> sendResult = emailService.sendVerificationCode(email, code, type);
             
             if (sendResult.isSuccess()) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("邮件发送失败: " + sendResult.getMessage());
             }
@@ -76,7 +76,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
             // 标记验证码为已使用
             emailVerificationCodeDao.markAsUsed(verificationCode.getId());
             
-            return CommonResult.success(true);
+            return CommonResult.success(true, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("验证失败: " + e.getMessage());
         }

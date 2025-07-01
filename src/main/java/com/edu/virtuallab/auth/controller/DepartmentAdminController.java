@@ -32,7 +32,7 @@ public class DepartmentAdminController {
                                                   @RequestParam Long adminUserId) {
         try {
             User user = departmentAdminService.createDepartmentUser(userCreateDTO, adminUserId);
-            return CommonResult.success(user);
+            return CommonResult.success(user, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("创建用户失败: " + e.getMessage());
         }
@@ -44,7 +44,7 @@ public class DepartmentAdminController {
                                                               @RequestParam Long adminUserId) {
         try {
             List<User> users = departmentAdminService.batchCreateDepartmentUsers(userCreateDTOs, adminUserId);
-            return CommonResult.success(users);
+            return CommonResult.success(users, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("批量创建用户失败: " + e.getMessage());
         }
@@ -55,7 +55,7 @@ public class DepartmentAdminController {
     public CommonResult<Boolean> updateDepartmentUser(@RequestBody User user, @RequestParam Long adminUserId) {
         try {
             boolean result = departmentAdminService.updateDepartmentUser(user, adminUserId);
-            return CommonResult.success(result);
+            return CommonResult.success(result, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("修改用户失败: " + e.getMessage());
         }
@@ -68,7 +68,7 @@ public class DepartmentAdminController {
                                                       @RequestParam Long adminUserId) {
         try {
             boolean result = departmentAdminService.disableDepartmentUser(userId, reason, adminUserId);
-            return CommonResult.success(result);
+            return CommonResult.success(result, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("停用用户失败: " + e.getMessage());
         }
@@ -79,7 +79,7 @@ public class DepartmentAdminController {
     public CommonResult<Boolean> enableDepartmentUser(@PathVariable Long userId, @RequestParam Long adminUserId) {
         try {
             boolean result = departmentAdminService.enableDepartmentUser(userId, adminUserId);
-            return CommonResult.success(result);
+            return CommonResult.success(result, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("启用用户失败: " + e.getMessage());
         }
@@ -92,7 +92,7 @@ public class DepartmentAdminController {
                                                             @RequestParam Long adminUserId) {
         try {
             boolean result = departmentAdminService.resetDepartmentUserPassword(userId, newPassword, adminUserId);
-            return CommonResult.success(result);
+            return CommonResult.success(result, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("重置密码失败: " + e.getMessage());
         }
@@ -105,7 +105,7 @@ public class DepartmentAdminController {
                                                    @RequestParam Long adminUserId) {
         try {
             boolean result = departmentAdminService.lockDepartmentUser(userId, reason, adminUserId);
-            return CommonResult.success(result);
+            return CommonResult.success(result, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("锁定用户失败: " + e.getMessage());
         }
@@ -116,7 +116,7 @@ public class DepartmentAdminController {
     public CommonResult<Boolean> unlockDepartmentUser(@PathVariable Long userId, @RequestParam Long adminUserId) {
         try {
             boolean result = departmentAdminService.unlockDepartmentUser(userId, adminUserId);
-            return CommonResult.success(result);
+            return CommonResult.success(result, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("解锁用户失败: " + e.getMessage());
         }
@@ -131,7 +131,7 @@ public class DepartmentAdminController {
                                                             @RequestParam Long adminUserId) {
         try {
             boolean result = departmentAdminService.assignRolesToDepartmentUser(userId, roleIds, adminUserId);
-            return CommonResult.success(result);
+            return CommonResult.success(result, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("分配角色失败: " + e.getMessage());
         }
@@ -147,7 +147,7 @@ public class DepartmentAdminController {
                                                                      @RequestParam Long adminUserId) {
         try {
             boolean result = departmentAdminService.setDepartmentUserTemporaryPermission(userId, roleId, startTime, endTime, reason, adminUserId);
-            return CommonResult.success(result);
+            return CommonResult.success(result, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("设置临时权限失败: " + e.getMessage());
         }
@@ -160,7 +160,7 @@ public class DepartmentAdminController {
                                                                 @RequestParam Long adminUserId) {
         try {
             boolean result = departmentAdminService.adjustDepartmentUserPermissions(userId, permissionIds, adminUserId);
-            return CommonResult.success(result);
+            return CommonResult.success(result, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("调整权限失败: " + e.getMessage());
         }
@@ -175,7 +175,7 @@ public class DepartmentAdminController {
                                                          @RequestParam Long adminUserId) {
         try {
             boolean result = departmentAdminService.manageDepartmentResource(resourceId, operation, adminUserId);
-            return CommonResult.success(result);
+            return CommonResult.success(result, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("管理资源失败: " + e.getMessage());
         }
@@ -189,7 +189,7 @@ public class DepartmentAdminController {
                                                           @RequestParam Long adminUserId) {
         try {
             boolean result = departmentAdminService.approveDepartmentResource(resourceId, approvalResult, comment, adminUserId);
-            return CommonResult.success(result);
+            return CommonResult.success(result, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("审核资源失败: " + e.getMessage());
         }
@@ -202,7 +202,7 @@ public class DepartmentAdminController {
                                                       @RequestParam Long adminUserId) {
         try {
             boolean result = departmentAdminService.manageDepartmentScore(scoreId, operation, adminUserId);
-            return CommonResult.success(result);
+            return CommonResult.success(result, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("管理成绩失败: " + e.getMessage());
         }
@@ -213,7 +213,7 @@ public class DepartmentAdminController {
     public CommonResult<String> generateDepartmentScoreReport(@RequestParam Long adminUserId) {
         try {
             String reportPath = departmentAdminService.generateDepartmentScoreReport(adminUserId);
-            return CommonResult.success(reportPath);
+            return CommonResult.success(reportPath, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("生成成绩报表失败: " + e.getMessage());
         }
@@ -230,7 +230,7 @@ public class DepartmentAdminController {
                                                         @RequestParam Long adminUserId) {
         try {
             boolean result = departmentAdminService.submitPermissionRequest(requestType, description, userIds, permissionIds, adminUserId);
-            return CommonResult.success(result);
+            return CommonResult.success(result, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("提交权限申请失败: " + e.getMessage());
         }
@@ -244,7 +244,7 @@ public class DepartmentAdminController {
                                                    @RequestParam Long adminUserId) {
         try {
             boolean result = departmentAdminService.reportUserAbnormal(userId, abnormalType, description, adminUserId);
-            return CommonResult.success(result);
+            return CommonResult.success(result, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("上报异常失败: " + e.getMessage());
         }
@@ -255,7 +255,7 @@ public class DepartmentAdminController {
     public CommonResult<List<Object>> getPermissionRequestStatus(@RequestParam Long adminUserId) {
         try {
             List<Object> status = departmentAdminService.getPermissionRequestStatus(adminUserId);
-            return CommonResult.success(status);
+            return CommonResult.success(status, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("获取申请状态失败: " + e.getMessage());
         }
@@ -274,7 +274,7 @@ public class DepartmentAdminController {
                                                                @RequestParam(defaultValue = "10") int size) {
         try {
             PageResult<User> users = departmentAdminService.getDepartmentUserList(username, realName, userType, status, adminUserId, page, size);
-            return CommonResult.success(users);
+            return CommonResult.success(users, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("查询用户列表失败: " + e.getMessage());
         }
@@ -285,7 +285,7 @@ public class DepartmentAdminController {
     public CommonResult<List<Role>> getDepartmentUserRoles(@PathVariable Long userId, @RequestParam Long adminUserId) {
         try {
             List<Role> roles = departmentAdminService.getDepartmentUserRoles(userId, adminUserId);
-            return CommonResult.success(roles);
+            return CommonResult.success(roles, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("获取用户角色失败: " + e.getMessage());
         }
@@ -296,7 +296,7 @@ public class DepartmentAdminController {
     public CommonResult<List<Role>> getDepartmentAssignableRoles(@RequestParam Long adminUserId) {
         try {
             List<Role> roles = departmentAdminService.getDepartmentAssignableRoles(adminUserId);
-            return CommonResult.success(roles);
+            return CommonResult.success(roles, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("获取可分配角色失败: " + e.getMessage());
         }
@@ -307,7 +307,7 @@ public class DepartmentAdminController {
     public CommonResult<List<Permission>> getDepartmentAssignablePermissions(@RequestParam Long adminUserId) {
         try {
             List<Permission> permissions = departmentAdminService.getDepartmentAssignablePermissions(adminUserId);
-            return CommonResult.success(permissions);
+            return CommonResult.success(permissions, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("获取可分配权限失败: " + e.getMessage());
         }
@@ -325,7 +325,7 @@ public class DepartmentAdminController {
                                                                              @RequestParam(defaultValue = "10") int size) {
         try {
             PageResult<OperationLog> logs = departmentAdminService.getDepartmentOperationLogs(username, operation, module, startTime, endTime, adminUserId, page, size);
-            return CommonResult.success(logs);
+            return CommonResult.success(logs, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("获取操作日志失败: " + e.getMessage());
         }
@@ -336,7 +336,7 @@ public class DepartmentAdminController {
     public CommonResult<Object> getDepartmentUserStatistics(@RequestParam Long adminUserId) {
         try {
             Object statistics = departmentAdminService.getDepartmentUserStatistics(adminUserId);
-            return CommonResult.success(statistics);
+            return CommonResult.success(statistics, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("获取用户统计失败: " + e.getMessage());
         }
@@ -347,7 +347,7 @@ public class DepartmentAdminController {
     public CommonResult<Object> getDepartmentPermissionUsageStatistics(@RequestParam Long adminUserId) {
         try {
             Object statistics = departmentAdminService.getDepartmentPermissionUsageStatistics(adminUserId);
-            return CommonResult.success(statistics);
+            return CommonResult.success(statistics, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("获取权限使用统计失败: " + e.getMessage());
         }

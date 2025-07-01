@@ -257,9 +257,6 @@
             <if test="department != null and department != ''">
                 AND department = #{department}
             </if>
-            <if test="userType != null and userType != ''">
-                AND user_type = #{userType}
-            </if>
             <if test="status != null">
                 AND status = #{status}
             </if>
@@ -281,9 +278,6 @@
             </if>
             <if test="department != null and department != ''">
                 AND department = #{department}
-            </if>
-            <if test="userType != null and userType != ''">
-                AND user_type = #{userType}
             </if>
             <if test="status != null">
                 AND status = #{status}

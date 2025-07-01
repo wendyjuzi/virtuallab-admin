@@ -33,7 +33,7 @@ public class ExperimentProjectAuditController {
             @RequestParam  Long userId) {
 
         auditService.submitForAudit(projectId, userId);
-        return CommonResult.success("实验项目已提交审核");
+        return CommonResult.success("实验项目已提交审核", "资源更新成功");
     }
 
     @ApiOperation("审核实验项目")
@@ -46,7 +46,7 @@ public class ExperimentProjectAuditController {
             @RequestParam  Long auditorId) {
 
         auditService.auditProject(projectId, status, comment, auditorId);
-        return CommonResult.success("实验项目审核操作已完成");
+        return CommonResult.success("实验项目审核操作已完成", "资源更新成功");
     }
 
     @ApiOperation("发布实验项目到班级")
@@ -58,7 +58,7 @@ public class ExperimentProjectAuditController {
             @RequestParam  Long publisherId) {
 
         auditService.publishProject(projectId, classIds, publisherId);
-        return CommonResult.success("实验项目已成功发布到指定班级");
+        return CommonResult.success("实验项目已成功发布到指定班级", "资源更新成功");
     }
 
     @ApiOperation("获取待审核实验项目列表")
@@ -66,7 +66,7 @@ public class ExperimentProjectAuditController {
     @PreAuthorize("hasAuthority('experiment:project:approve')")
     public CommonResult<List<ExperimentProject>> getPendingProjects() {
         List<ExperimentProject> projects = auditService.getPendingProjects();
-        return CommonResult.success(projects);
+        return CommonResult.success(projects, "资源更新成功");
     }
 
     @ApiOperation("获取实验项目审核历史")
@@ -75,7 +75,7 @@ public class ExperimentProjectAuditController {
             @PathVariable Long projectId) {
 
         List<ExperimentProjectAuditLog> history = auditService.getAuditHistory(projectId);
-        return CommonResult.success(history);
+        return CommonResult.success(history, "资源更新成功");
     }
 
     @ApiOperation("获取已发布班级")
@@ -84,6 +84,6 @@ public class ExperimentProjectAuditController {
             @PathVariable Long projectId) {
 
         List<Long> classIds = auditService.getPublishedClasses(projectId);
-        return CommonResult.success(classIds);
+        return CommonResult.success(classIds, "资源更新成功");
     }
 }

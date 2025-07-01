@@ -61,4 +61,6 @@ public interface RoleDao {
     
     // 根据院系ID查询角色
     List<Role> findByDepartmentId(@Param("departmentId") Long departmentId);
+
+    List<Role> selectRolesByUserId(@Param("userId") Long userId);
 } 

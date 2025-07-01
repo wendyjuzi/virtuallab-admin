@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.virtuallab.resource.dao.ResourceCommentDao">
+    <insert id="insert" parameterType="com.edu.virtuallab.resource.model.ResourceComment">
+        INSERT INTO resource_comment (resource_id, user_id, content, create_time)
+        VALUES (#{resourceId}, #{userId}, #{content}, #{createTime})
+    </insert>
+
+    <select id="getCommentsByResourceId" parameterType="long" resultType="com.edu.virtuallab.resource.model.ResourceComment">
+        SELECT * FROM resource_comment
+        WHERE resource_id = #{resourceId} ORDER BY create_time DESC LIMIT 100
+    </select>
+
+    <select id="selectById" parameterType="long" resultType="com.edu.virtuallab.resource.model.ResourceComment">
+        SELECT * FROM resource_comment WHERE id = #{id}
+    </select>
+
+    <update id="update" parameterType="com.edu.virtuallab.resource.model.ResourceComment">
+        UPDATE resource_comment
+        SET resource_id = #{resourceId}, user_id = #{userId}, 
+            content = #{content}, create_time = #{createTime}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM resource_comment WHERE id = #{id}
+    </delete>
+</mapper>

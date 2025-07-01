@@ -505,8 +505,12 @@ public class SystemAdminServiceImpl implements SystemAdminService {
         int offset = (page - 1) * size;
         List<User> users = userDao.findByConditions(username, realName, department, userType, status, offset, size);
         int total = userDao.countByConditions(username, realName, department, userType, status);
-        
         return new PageResult<>(total, users);
+    }
+    
+    @Override
+    public User getUserById(Long id) {
+        return userDao.findById(id);
     }
     
     @Override

@@ -205,6 +205,11 @@ public interface SystemAdminService {
                                 String userType, Integer status, int page, int size);
     
     /**
+     * 根据ID获取用户信息
+     */
+    User getUserById(Long id);
+    
+    /**
      * 获取角色列表
      */
     List<Role> getRoleList();

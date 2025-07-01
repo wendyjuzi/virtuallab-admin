@@ -43,7 +43,7 @@ public class EmailServiceImpl implements EmailService {
 
             mailSender.send(message);
             LOGGER.info("验证码邮件发送成功 -> " + to);
-            return CommonResult.success(true);
+            return CommonResult.success(true, "资源更新成功");
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.severe("验证码邮件发送失败: " + e.getMessage());
@@ -70,7 +70,7 @@ public class EmailServiceImpl implements EmailService {
 
             mailSender.send(message);
             LOGGER.info("注册成功邮件发送成功 -> " + to);
-            return CommonResult.success(true);
+            return CommonResult.success(true, "资源更新成功");
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.severe("注册成功邮件发送失败: " + e.getMessage());
@@ -97,7 +97,7 @@ public class EmailServiceImpl implements EmailService {
 
             mailSender.send(message);
             LOGGER.info("密码重置邮件发送成功 -> " + to);
-            return CommonResult.success(true);
+            return CommonResult.success(true, "资源更新成功");
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.severe("密码重置邮件发送失败: " + e.getMessage());

@@ -12,6 +12,7 @@ public interface ExperimentReportDao extends BaseMapper<ExperimentReport> {
     @Select("SELECT * FROM experiment_report WHERE session_id = #{sessionId}")
     @Results(id = "reportMap", value = {
             @Result(column = "session_id", property = "sessionId"),
+            @Result(column = "student_id", property = "studentId"),
             @Result(column = "manual_content", property = "manualContent"),
             @Result(column = "created_at", property = "createdAt"),
             @Result(column = "updated_at", property = "updatedAt"),
@@ -28,9 +29,9 @@ public interface ExperimentReportDao extends BaseMapper<ExperimentReport> {
     int updateManualContent(@Param("sessionId") String sessionId, @Param("content") String content);
 
     @Update("UPDATE experiment_report SET attachment = #{attachment}, updated_at = NOW() WHERE session_id = #{sessionId}")
-    int updateAttachment(@Param("sessionId") String sessionId, @Param("attachment") String attachment);
+    int updateAttachment(@Param("sessionId") String sessionId, @Param("attachment") byte[] attachment);
 
-    @Update("UPDATE experiment_report SET status = 'SUBMITTED', updated_at = NOW() WHERE session_id = #{sessionId}")
+    @Update("UPDATE experiment_report SET status = 'SUBMITTED', updated_at = NOW() WHERE session_id = #{sessionId} AND status = 'DRAFT'")
     int submitBySessionId(@Param("sessionId") String sessionId);
 
 }

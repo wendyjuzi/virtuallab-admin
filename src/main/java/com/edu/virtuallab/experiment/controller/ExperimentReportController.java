@@ -1,22 +1,28 @@
 package com.edu.virtuallab.experiment.controller;
 
+import com.edu.virtuallab.common.exception.BusinessException;
 import com.edu.virtuallab.experiment.model.ExperimentReport;
 import com.edu.virtuallab.experiment.service.ExperimentReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.UUID;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/experiment/report")
 public class ExperimentReportController {
+
+    private final ExperimentReportService experimentReportService;
+    // 构造器注入
+    public ExperimentReportController(ExperimentReportService experimentReportService) {
+        this.experimentReportService = experimentReportService;
+    }
 
     @Autowired
     private ExperimentReportService experimentreportService;
@@ -32,7 +38,13 @@ public class ExperimentReportController {
         return ResponseEntity.ok(experimentReport != null ? experimentReport : new ExperimentReport());
     }
 
-    @PostMapping("/content/{sessionId}")
+    @GetMapping("/{sessionId}/details")
+    public ResponseEntity<ExperimentReport> getReportDetails(@PathVariable String sessionId) {
+        ExperimentReport experimentReport = experimentreportService.getReportBySession(sessionId);
+        return ResponseEntity.ok(experimentReport);
+    }
+
+    @PostMapping("/{sessionId}/save")
     public ResponseEntity<Void> saveContent(
             @PathVariable String sessionId,
             @RequestParam String manualContent) {
@@ -40,41 +52,51 @@ public class ExperimentReportController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/attachment/{sessionId}")
+    // 获取附件列表
+    @GetMapping("/{sessionId}/attachments")
+    public ResponseEntity<List<String>> listAttachments(@PathVariable String sessionId) {
+        return ResponseEntity.ok(experimentReportService.listAttachments(sessionId));
+    }
+
+    // 下载单个附件
+    @GetMapping("/{sessionId}/attachments/{filename}")
+    public ResponseEntity<byte[]> downloadAttachment(
+            @PathVariable String sessionId,
+            @PathVariable String filename) {
+        byte[] fileData = experimentReportService.downloadAttachment(sessionId, filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(fileData);
+    }
+
+    // 上传附件
+    @PostMapping("/{sessionId}/attachments")
     public ResponseEntity<String> uploadAttachment(
             @PathVariable String sessionId,
             @RequestParam("file") MultipartFile file) {
-
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("文件不能为空");
-        }
-
         try {
-            // 确保上传目录存在
-            Path uploadPath = Paths.get(uploadDir);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-
-            // 生成唯一文件名
-            String orginalFilename = file.getOriginalFilename();
-            String fileExtension = orginalFilename.substring(orginalFilename.lastIndexOf("."));
-            String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
-
-            // 保存文件
-            Path filePath = uploadPath.resolve(uniqueFileName);
-            file.transferTo(filePath);
-
-            // 更新数据库记录
-            experimentreportService.saveReportAttachment(sessionId, uniqueFileName);
-
-            return ResponseEntity.ok(uniqueFileName);
+            experimentReportService.saveReportAttachment(sessionId, file);
+            return ResponseEntity.ok("附件上传成功");
+        } catch (BusinessException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (IOException e) {
-            return ResponseEntity.badRequest().body("文件上传失败: " + e.getMessage());
+            return ResponseEntity.internalServerError()
+                    .body("文件处理错误: " + e.getMessage());
         }
     }
 
-    @PostMapping("/submit/{sessionId}")
+    // 删除附件
+    @DeleteMapping("/{sessionId}/attachments/{filename}")
+    public ResponseEntity<Void> deleteAttachment(
+            @PathVariable String sessionId,
+            @PathVariable String filename) {
+        experimentReportService.deleteAttachment(sessionId, filename);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{sessionId}/submit")
     public ResponseEntity<Void> submitReport(@PathVariable String sessionId) {
         experimentreportService.submitReport(sessionId);
         return ResponseEntity.ok().build();

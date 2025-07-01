@@ -407,4 +407,14 @@ public class UserController {
             return CommonResult.failed("检查学号/工号失败: " + e.getMessage());
         }
     }
+
+    @GetMapping("/student/{studentId}")
+    @ApiOperation("根据学号获取用户信息")
+    public CommonResult<User> getUserByStudentId(@PathVariable String studentId) {
+        User user = userService.findByStudentId(studentId);
+        if (user != null) {
+            return CommonResult.success(user); // 直接返回 User 实体
+        }
+        return CommonResult.failed("用户不存在");
+    }
 } 

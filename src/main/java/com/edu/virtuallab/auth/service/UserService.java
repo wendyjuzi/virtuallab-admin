@@ -164,4 +164,11 @@ public interface UserService {
      * 检查学号/工号是否存在
      */
     boolean isStudentIdExists(String studentId);
-} 
+
+    /**
+     * 根据学号查询用户信息
+     * @param studentId 学号
+     * @return user
+     */
+    User findByStudentId(String studentId);
+}

@@ -1,14 +1,18 @@
 package com.edu.virtuallab.experiment.service.impl;
 
+import com.edu.virtuallab.common.exception.BusinessException;
 import com.edu.virtuallab.experiment.dao.ExperimentReportDao;
 import com.edu.virtuallab.experiment.model.ExperimentReport;
 import com.edu.virtuallab.experiment.service.ExperimentReportService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
+import java.io.IOException;
+import java.util.*;
 
 
 @Slf4j
@@ -17,6 +21,9 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
 
     @Autowired
     private ExperimentReportDao experimentReportDao;
+
+    @Value("${file.upload-dir:uploads")
+    private String uploadDir;
 
     @Transactional(readOnly = true)
     public ExperimentReport getReportBySession(String sessionId) {
@@ -47,42 +54,50 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
 
     @Override
     @Transactional
-    public void saveReportAttachment(String sessionId, String attachmentPath) {
-        try {
-            log.info("保存报告附件，sessionId: {}, 附件路径: {}", sessionId, attachmentPath);
+    public void saveReportAttachment(String sessionId, MultipartFile file) throws IOException {
+        ExperimentReport experimentReport = experimentReportDao.findBySessionId(sessionId);
+        experimentReportDao.updateById(experimentReport);
+    }
 
-            int updated = experimentReportDao.updateAttachment(sessionId, attachmentPath);
+    @Override
+    @Transactional(readOnly = true)
+    public byte[] downloadAttachment(String sessionId, String filename) {
+        ExperimentReport experimentReport = experimentReportDao.findBySessionId(sessionId);
+        return null;
+    }
 
-            if (updated == 0) {
-                log.warn("没有记录被更新，将创建新报告记录");
-                ExperimentReport report = createDefaultReport(sessionId);
-                report.setAttachment(attachmentPath);
-                experimentReportDao.insert(report);
-            }
+    @Transactional(readOnly = true)
+    public List<String> listAttachments(String sessionId) {
+        ExperimentReport experimentReport = experimentReportDao.findBySessionId(sessionId);
+        return null;
+    }
 
-        } catch (Exception e) {
-            log.error("保存报告附件失败", e);
-            throw new RuntimeException("保存附件失败: " + e.getMessage());
-        }
+    @Override
+    @Transactional
+    public void deleteAttachment(String sessionId, String filename) {
+        ExperimentReport report = experimentReportDao.findBySessionId(sessionId);
     }
 
     @Override
     @Transactional
     public void submitReport(String sessionId) {
-        try {
-            log.info("提交实验报告，sessionId: {}", sessionId);
-
-            int updated = experimentReportDao.submitBySessionId(sessionId);
-
-            if (updated == 0) {
-                log.error("提交失败，报告不存在，sessionId: {}", sessionId);
-                throw new IllegalArgumentException("报告不存在");
-            }
-
-        } catch (Exception e) {
-            log.error("提交报告失败", e);
-            throw new RuntimeException("提交报告失败: " + e.getMessage());
+        // 1. 先查询当前报告状态
+        ExperimentReport report = experimentReportDao.findBySessionId(sessionId);
+        if (report == null) {
+            throw new IllegalArgumentException("报告不存在，sessionId: " + sessionId);
         }
+
+        // 2. 只有草稿状态的报告允许提交
+        if (!"DRAFT".equals(report.getStatus())) {
+            throw new IllegalStateException("报告已提交或锁定，无法重复提交");
+        }
+
+        // 3. 更新状态为 SUBMITTED
+        int updated = experimentReportDao.submitBySessionId(sessionId);
+        if (updated == 0) {
+            throw new RuntimeException("提交失败，请重试");
+        }
+        log.info("报告提交成功，sessionId: {}", sessionId);
     }
 
     // 创建默认报告结构
@@ -101,18 +116,5 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
         report.setCreatedAt(new Date());
         report.setUpdatedAt(new Date());
         return report;
-    }
-
-    // 确保所有字段不为null
-    private void initializeNullFields(ExperimentReport report) {
-        if (report.getManualContent() == null) {
-            report.setManualContent("");
-        }
-        if (report.getAttachment() == null) {
-            report.setAttachment("[]");
-        }
-        if (report.getStatus() == null) {
-            report.setStatus("DRAFT");
-        }
     }
 }

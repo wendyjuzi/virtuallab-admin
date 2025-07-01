@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/experiment/project/audit")
+@RequestMapping("/experiment/project/audit")
 @Api(tags = "实验项目审核管理")
 public class ExperimentProjectAuditController {
 
@@ -85,5 +85,29 @@ public class ExperimentProjectAuditController {
 
         List<Long> classIds = auditService.getPublishedClasses(projectId);
         return CommonResult.success(classIds, "资源更新成功");
+    }
+
+    @ApiOperation("获取所有实验项目")
+    @GetMapping("/all")
+    @PreAuthorize("hasAuthority('experiment:project:view')")
+    public CommonResult<List<ExperimentProject>> getAllProjects() {
+        List<ExperimentProject> projects = auditService.getAllProjects();
+        return CommonResult.success(projects);
+    }
+
+    @ApiOperation("获取已通过审核的实验项目列表")
+    @GetMapping("/approved")
+    @PreAuthorize("hasAuthority('experiment:project:view')")
+    public CommonResult<List<ExperimentProject>> getApprovedProjects() {
+        List<ExperimentProject> projects = auditService.getApprovedProjects();
+        return CommonResult.success(projects);
+    }
+
+    @ApiOperation("获取已驳回的实验项目列表")
+    @GetMapping("/rejected")
+    @PreAuthorize("hasAuthority('experiment:project:view')")
+    public CommonResult<List<ExperimentProject>> getRejectedProjects() {
+        List<ExperimentProject> projects = auditService.getRejectedProjects();
+        return CommonResult.success(projects);
     }
 }

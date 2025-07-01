@@ -1,5 +1,6 @@
 package com.edu.virtuallab.notification.service;
 
+import com.edu.virtuallab.common.api.PageResult;
 import com.edu.virtuallab.notification.model.Notification;
 import java.util.List;
 
@@ -28,5 +29,6 @@ public interface NotificationService {
     void deleteNotification(Long notificationId);
     Notification getNotification(Long notificationId);
     void markAllAsRead(Long userId);
-
+    // 在 NotificationService 接口中添加方法声明
+    List<Notification> getAllNotifications(Long userId);
 }

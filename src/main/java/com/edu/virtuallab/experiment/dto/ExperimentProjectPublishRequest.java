@@ -12,5 +12,7 @@ public class ExperimentProjectPublishRequest {
     private String imageUrl;
     private String videoUrl;
     private List<Long> classIds;
+    private String projectType; // 值可能是 "personal" 或 "team"
+
 }
 

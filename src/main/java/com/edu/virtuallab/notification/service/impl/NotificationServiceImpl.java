@@ -1,5 +1,8 @@
 package com.edu.virtuallab.notification.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.edu.virtuallab.notification.model.PageResult;
 import com.edu.virtuallab.common.enums.NotificationType;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
 import com.edu.virtuallab.experiment.dao.ExperimentProjectDao; // 需要添加的导入
@@ -72,7 +75,7 @@ public class NotificationServiceImpl implements NotificationService {
                 "您的实验项目已通过审核" :
                 "您的实验项目被驳回" + (comment != null ? "，原因：" + comment : ""));
         notification.setLink("/experiment/project/detail/" + projectId);
-        notification.setUserId(project.getUploaderId());
+//        notification.setUserId(project.getUploaderId());
 
         notificationMapper.insert(notification);
     }
@@ -172,5 +175,18 @@ public class NotificationServiceImpl implements NotificationService {
             throw new IllegalArgumentException("无效的用户ID");
         }
         notificationMapper.markAllAsRead(userId);
+    }
+
+    @Override
+    public List<Notification> getAllNotifications(Long userId) {
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("无效的用户ID");
+        }
+
+        QueryWrapper<Notification> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userId)
+                .orderByDesc("created_at");
+
+        return notificationMapper.selectList(queryWrapper);
     }
 }

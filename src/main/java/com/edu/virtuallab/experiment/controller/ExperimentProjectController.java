@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/experiment/project")
@@ -70,17 +72,24 @@ public class ExperimentProjectController {
     }
 
 
+    // Controller 层
     @PostMapping("/publish")
-    public int publishProject(HttpServletRequest request, @RequestBody ExperimentProjectPublishRequest req) {
-        String authHeader = request.getHeader("Authorization");
-        System.out.println("Authorization Header = " + authHeader); // 打印出来看看
-
+    public Map<String, Object> publishProject(HttpServletRequest request, @RequestBody ExperimentProjectPublishRequest req) {
         String username = JwtUtil.getUsernameFromRequest(request);
         if (username == null) {
             throw new RuntimeException("用户未登录");
         }
-        return projectService.publishProject(req, username);
+
+        Long projectId = projectService.publishProject(req, username);
+
+        Map<String, Object> res = new HashMap<>();
+        res.put("code", 200);
+        res.put("msg", "发布成功");
+        res.put("projectId", projectId);
+        return res;
     }
+
+
 
     @GetMapping("/my-projects")
     public List<ExperimentProject> getMyProjects(HttpServletRequest request) {

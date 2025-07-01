@@ -29,7 +29,6 @@ public class ExperimentProject {
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updatedAt;
     // 新增审核字段
-    private Long uploaderId; // 上传者ID
     private String auditStatus; // 审核状态: draft/pending/approved/rejected
     private String auditComment; // 审核意见
     private Long auditorId; // 审核人ID

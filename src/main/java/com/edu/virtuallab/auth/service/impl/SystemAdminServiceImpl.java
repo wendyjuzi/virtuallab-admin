@@ -544,4 +544,29 @@ public class SystemAdminServiceImpl implements SystemAdminService {
         log.setCreateTime(new Date());
         operationLogDao.insert(log);
     }
+    
+    // ==================== 统计功能 ====================
+    
+    @Override
+    public int getActiveUserCount() {
+        // 获取最近7天登录的用户数量
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, -7);
+        Date sevenDaysAgo = calendar.getTime();
+        
+        return userDao.countActiveUsers(sevenDaysAgo);
+    }
+    
+    @Override
+    public int getTodayLoginCount() {
+        // 获取今日登录数量
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date todayStart = calendar.getTime();
+        
+        return userDao.countTodayLogins(todayStart);
+    }
 } 

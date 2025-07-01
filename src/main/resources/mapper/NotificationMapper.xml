@@ -15,10 +15,9 @@
     </resultMap>
 
     <!-- 查询用户未读通知 -->
-    <select id="findUnreadByUserId" resultMap="BaseResultMap">
-        SELECT *
-        FROM notification
-        WHERE user_id = #{userId} AND is_read = 0
+    <select id="findUnreadByUserId" resultType="com.edu.virtuallab.notification.model.Notification">
+        SELECT * FROM notification
+        WHERE user_id = #{userId} AND is_read = false
         ORDER BY created_at DESC
     </select>
 
@@ -30,4 +29,32 @@
     </update>
 
     <!-- 其他SQL映射... -->
+
+    <insert id="insert" parameterType="Notification" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO notification (
+            user_id, type, title, content, is_read, link, related_id, created_at
+        ) VALUES (
+                     #{userId}, #{type}, #{title}, #{content}, #{isRead}, #{link}, #{relatedId}, #{createdAt}
+                 )
+    </insert>
+
+    <select id="selectById" resultType="Notification">
+        SELECT * FROM notification WHERE id = #{id}
+    </select>
+
+    <update id="update" parameterType="Notification">
+        UPDATE notification SET
+                                is_read = #{isRead}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM notification WHERE id = #{id}
+    </delete>
+
+    <update id="markAllAsRead">
+        UPDATE notification
+        SET is_read = true
+        WHERE user_id = #{userId} AND is_read = false
+    </update>
 </mapper>

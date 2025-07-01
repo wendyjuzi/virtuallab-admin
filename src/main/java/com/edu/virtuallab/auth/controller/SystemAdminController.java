@@ -12,7 +12,9 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 系统管理员权限管理控制器
@@ -24,6 +26,34 @@ public class SystemAdminController {
     
     @Autowired
     private SystemAdminService systemAdminService;
+    
+    // ==================== 统计数据 ====================
+    
+    @GetMapping("/statistics/overview")
+    @ApiOperation("获取系统概览统计")
+    public CommonResult<Map<String, Object>> getSystemStatistics() {
+        try {
+            Map<String, Object> statistics = new HashMap<>();
+            
+            // 获取用户统计
+            PageResult<User> userPage = systemAdminService.getUserList(null, null, null, null, null, 1, 1);
+            statistics.put("totalUsers", userPage.getTotal());
+            
+            // 获取活跃用户数（最近7天登录的用户）
+            statistics.put("activeUsers", systemAdminService.getActiveUserCount());
+            
+            // 获取院系数量
+            List<Department> departments = systemAdminService.getDepartmentList();
+            statistics.put("totalDepartments", departments.size());
+            
+            // 获取今日登录数
+            statistics.put("todayLogins", systemAdminService.getTodayLoginCount());
+            
+            return CommonResult.success(statistics);
+        } catch (Exception e) {
+            return CommonResult.failed("获取统计数据失败: " + e.getMessage());
+        }
+    }
     
     // ==================== 账号全生命周期管理 ====================
     
@@ -209,6 +239,17 @@ public class SystemAdminController {
         }
     }
     
+    @DeleteMapping("/temporary-permissions/{userRoleId}")
+    @ApiOperation("回收临时权限")
+    public CommonResult<Boolean> revokeTemporaryPermission(@PathVariable Long userRoleId) {
+        try {
+            boolean result = systemAdminService.revokeTemporaryPermission(userRoleId);
+            return CommonResult.success(result);
+        } catch (Exception e) {
+            return CommonResult.failed("回收临时权限失败: " + e.getMessage());
+        }
+    }
+    
     // ==================== 院系管理员管理 ====================
     
     @PostMapping("/department-admins")
@@ -235,14 +276,37 @@ public class SystemAdminController {
         }
     }
     
+    @PostMapping("/department-admins/{userId}/adjust-permissions")
+    @ApiOperation("调整院系管理员权限")
+    public CommonResult<Boolean> adjustDepartmentAdminPermissions(@PathVariable Long userId,
+                                                                 @RequestBody List<Long> permissionIds) {
+        try {
+            boolean result = systemAdminService.adjustDepartmentAdminPermissions(userId, permissionIds);
+            return CommonResult.success(result);
+        } catch (Exception e) {
+            return CommonResult.failed("调整权限失败: " + e.getMessage());
+        }
+    }
+    
+    @PostMapping("/department-admins/{userId}/disable")
+    @ApiOperation("停用院系管理员")
+    public CommonResult<Boolean> disableDepartmentAdmin(@PathVariable Long userId) {
+        try {
+            boolean result = systemAdminService.disableDepartmentAdmin(userId);
+            return CommonResult.success(result);
+        } catch (Exception e) {
+            return CommonResult.failed("停用院系管理员失败: " + e.getMessage());
+        }
+    }
+    
     // ==================== 院系管理 ====================
     
     @PostMapping("/departments")
     @ApiOperation("创建院系")
     public CommonResult<Department> createDepartment(@RequestBody Department department) {
         try {
-            Department createdDepartment = systemAdminService.createDepartment(department);
-            return CommonResult.success(createdDepartment);
+            Department createdDept = systemAdminService.createDepartment(department);
+            return CommonResult.success(createdDept);
         } catch (Exception e) {
             return CommonResult.failed("创建院系失败: " + e.getMessage());
         }
@@ -308,8 +372,8 @@ public class SystemAdminController {
                                                    @RequestParam(required = false) String startTime,
                                                    @RequestParam(required = false) String endTime) {
         try {
-            String filePath = systemAdminService.exportOperationLogs(username, operation, module, startTime, endTime);
-            return CommonResult.success(filePath);
+            String exportFile = systemAdminService.exportOperationLogs(username, operation, module, startTime, endTime);
+            return CommonResult.success(exportFile);
         } catch (Exception e) {
             return CommonResult.failed("导出操作日志失败: " + e.getMessage());
         }
@@ -341,8 +405,8 @@ public class SystemAdminController {
     @ApiOperation("生成安全审计报告")
     public CommonResult<String> generateSecurityAuditReport(@RequestParam String startTime, @RequestParam String endTime) {
         try {
-            String reportPath = systemAdminService.generateSecurityAuditReport(startTime, endTime);
-            return CommonResult.success(reportPath);
+            String report = systemAdminService.generateSecurityAuditReport(startTime, endTime);
+            return CommonResult.success(report);
         } catch (Exception e) {
             return CommonResult.failed("生成审计报告失败: " + e.getMessage());
         }
@@ -360,8 +424,8 @@ public class SystemAdminController {
                                                      @RequestParam(defaultValue = "1") int page,
                                                      @RequestParam(defaultValue = "10") int size) {
         try {
-            PageResult<User> users = systemAdminService.getUserList(username, realName, department, userType, status, page, size);
-            return CommonResult.success(users);
+            PageResult<User> userPage = systemAdminService.getUserList(username, realName, department, userType, status, page, size);
+            return CommonResult.success(userPage);
         } catch (Exception e) {
             return CommonResult.failed("查询用户列表失败: " + e.getMessage());
         }

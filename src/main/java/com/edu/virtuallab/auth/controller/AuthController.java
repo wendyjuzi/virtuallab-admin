@@ -2,7 +2,9 @@ package com.edu.virtuallab.auth.controller;
 
 import com.edu.virtuallab.auth.model.User;
 import com.edu.virtuallab.auth.service.AuthService;
+import com.edu.virtuallab.auth.service.UserService;
 import com.edu.virtuallab.common.api.CommonResult;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import com.edu.virtuallab.auth.service.AuthFactorService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RestController
 @RequestMapping("/auth")
@@ -31,6 +34,12 @@ public class AuthController {
     @Autowired
     private AuthFactorService authFactorService;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping("/login/password")
     public CommonResult<Map<String, Object>> loginWithPassword(@RequestBody LoginDTO loginDTO) {
         CommonResult<Map<String, Object>> loginResult = authService.loginWithPassword(loginDTO.getUsername(), loginDTO.getPassword());
@@ -41,13 +50,50 @@ public class AuthController {
         return CommonResult.success(result);
     }
 
+    @PostMapping("/login")
+    @ApiOperation("登录（用户名或邮箱）")
+    public CommonResult<User> login(@RequestParam String account, @RequestParam String password) {
+        User user = userService.getByUsername(account);
+        if (user == null) {
+            user = userService.getByEmail(account);
+        }
+        if (user == null) {
+            return CommonResult.failed("用户不存在");
+        }
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            return CommonResult.failed("密码错误");
+        }
+
+        return CommonResult.success(user);
+    }
+
+    @PostMapping("/login/email")
+    @ApiOperation("邮箱验证码登录")
+    public CommonResult<Map<String, Object>> loginByEmail(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String code = request.get("code");
+        return authService.loginWithEmail(email, code);
+    }
+
+    @PostMapping("/sendEmailCode")
+    @ApiOperation("发送邮箱验证码")
+    public CommonResult<Boolean> sendEmailCode(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String type = request.get("type");
+        return authService.sendEmailCode(email, type);
+    }
+
     @PostMapping("/login/sms")
-    public CommonResult<Boolean> loginWithSms(@RequestParam String phone, @RequestParam String code) {
+    public CommonResult<Boolean> loginWithSms(@RequestBody Map<String, String> request) {
+        String phone = request.get("phone");
+        String code = request.get("code");
         return authService.loginWithSms(phone, code);
     }
 
     @PostMapping("/login/fingerprint")
-    public CommonResult<Boolean> loginWithFingerprint(@RequestParam String username, @RequestParam String fingerprintData) {
+    public CommonResult<Boolean> loginWithFingerprint(@RequestBody Map<String, String> request) {
+        String username = request.get("username");
+        String fingerprintData = request.get("fingerprintData");
         return authService.loginWithFingerprint(username, fingerprintData);
     }
 

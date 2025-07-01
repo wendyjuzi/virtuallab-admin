@@ -253,72 +253,54 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean enableUser(Long userId) {
-        User user = userDao.findById(userId);
-        if (user == null) {
-            throw new BusinessException("用户不存在");
-        }
-
+        User user = new User();
+        user.setId(userId);
         user.setStatus(User.STATUS_NORMAL);
         user.setUpdateTime(new Date());
-
         return userDao.update(user) > 0;
     }
 
     @Override
     @Transactional
     public boolean disableUser(Long userId, String reason) {
-        User user = userDao.findById(userId);
-        if (user == null) {
-            throw new BusinessException("用户不存在");
-        }
-
+        User user = new User();
+        user.setId(userId);
         user.setStatus(User.STATUS_DISABLED);
         user.setUpdateTime(new Date());
-
+        // 这里可以在User模型中添加disableReason字段
+        // user.setDisableReason(reason);
         return userDao.update(user) > 0;
     }
 
     @Override
     @Transactional
     public boolean lockUser(Long userId, String reason) {
-        User user = userDao.findById(userId);
-        if (user == null) {
-            throw new BusinessException("用户不存在");
-        }
-
+        User user = new User();
+        user.setId(userId);
         user.setStatus(User.STATUS_LOCKED);
-        user.setLockTime(new Date());
         user.setUpdateTime(new Date());
-
+        // 这里可以在User模型中添加lockReason字段
+        // user.setLockReason(reason);
         return userDao.update(user) > 0;
     }
 
     @Override
     @Transactional
     public boolean unlockUser(Long userId) {
-        User user = userDao.findById(userId);
-        if (user == null) {
-            throw new BusinessException("用户不存在");
-        }
-
+        User user = new User();
+        user.setId(userId);
         user.setStatus(User.STATUS_NORMAL);
-        user.setLockTime(null);
         user.setUpdateTime(new Date());
-
         return userDao.update(user) > 0;
     }
 
     @Override
     @Transactional
     public boolean updateUserStatus(Long userId, Integer status) {
-        User user = userDao.findById(userId);
-        if (user == null) {
-            throw new BusinessException("用户不存在");
-        }
-
+        User user = new User();
+        user.setId(userId);
         user.setStatus(status);
         user.setUpdateTime(new Date());
-
         return userDao.update(user) > 0;
     }
 
@@ -327,20 +309,19 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean assignRoles(Long userId, List<Long> roleIds) {
-        // 先删除用户原有角色
+        // 先删除现有角色
         userRoleDao.deleteByUserId(userId);
 
         // 分配新角色
-        boolean success = true;
         for (Long roleId : roleIds) {
             UserRole userRole = new UserRole();
             userRole.setUserId(userId);
             userRole.setRoleId(roleId);
             userRole.setCreateTime(new Date());
             userRole.setUpdateTime(new Date());
-            success &= userRoleDao.insert(userRole) > 0;
+            userRoleDao.insert(userRole);
         }
-        return success;
+        return true;
     }
 
     @Override
@@ -393,6 +374,12 @@ public class UserServiceImpl implements UserService {
     public boolean isStudentIdExists(String studentId) {
         return userDao.findByStudentId(studentId) != null;
     }
+
+    @Override
+    public User getByEmail(String email) {
+        return userDao.findByEmail(email);
+    }
+}
 
     @Override
     public User findByStudentId(String studentId){return userDao.findByStudentId(studentId);}

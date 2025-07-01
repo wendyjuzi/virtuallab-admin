@@ -8,6 +8,7 @@ import com.edu.virtuallab.common.api.CommonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -92,6 +93,14 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         }
     }
 
+    @Override
+    public boolean verify(String email, String code) {
+        // 正确写法：先获取List，再取第一个
+        List<EmailVerificationCode> codeList = emailVerificationCodeDao.findByEmail(email);
+        if (codeList == null || codeList.isEmpty()) return false;
+        EmailVerificationCode entity = codeList.get(0); // 取最新或第一个
+        return entity.getCode().equals(code) && !entity.isExpired();
+    }
     /**
      * 生成6位数字验证码
      */

@@ -8,6 +8,7 @@ import com.edu.virtuallab.experiment.service.ExperimentProjectService;
 import com.edu.virtuallab.experiment.dao.StudentClassDao;
 import com.edu.virtuallab.experiment.dao.StudentProjectProgressDao;
 import com.edu.virtuallab.experiment.model.StudentProjectProgress;
+import com.edu.virtuallab.experiment.service.ProjectTeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,9 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
 
     @Autowired
     private StudentProjectProgressDao studentProjectProgressDao; // ✅ 解决 Cannot resolve symbol
+
+    @Autowired
+    private ProjectTeamService projectTeamService;
 
 
     @Override
@@ -69,7 +73,7 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
     }
 
     @Override
-    public int publishProject(ExperimentProjectPublishRequest request, String createdBy) {
+    public Long publishProject(ExperimentProjectPublishRequest request, String createdBy) {
         ExperimentProject project = new ExperimentProject();
         project.setName(request.getName());
         project.setDescription(request.getDescription());
@@ -77,6 +81,7 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
         project.setLevel(request.getLevel());
         project.setImageUrl(request.getImageUrl());
         project.setVideoUrl(request.getVideoUrl());
+        project.setProjectType(request.getProjectType());
 
         // ✅ 设置创建者用户名
         project.setCreatedBy(createdBy);
@@ -130,7 +135,11 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
             System.out.println("没有进度记录需要插入");
         }
 
-        return 1; // 成功
+
+
+//        return 1; // 成功
+        return project.getId();  // 返回自增ID
+
     }
 
 

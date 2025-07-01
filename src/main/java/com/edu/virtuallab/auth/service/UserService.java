@@ -172,3 +172,9 @@ public interface UserService {
      */
     User findByStudentId(String studentId);
 }
+
+    /**
+     * 根据邮箱获取用户信息
+     */
+    User getByEmail(String email);
+}

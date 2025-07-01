@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.edu.virtuallab.experiment.dao.ProjectTeamDao">
+
+    <!-- 插入新小组，返回自动生成ID -->
+    <insert id="insertTeam" parameterType="com.edu.virtuallab.experiment.model.ProjectTeam" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO project_team (project_id, name, created_at)
+        VALUES (#{projectId}, #{teamName}, NOW())
+    </insert>
+
+    <!-- 根据项目ID查询该项目所有小组 -->
+    <select id="findTeamsByProjectId" resultType="com.edu.virtuallab.experiment.model.ProjectTeam" parameterType="long">
+        SELECT id, project_id, name, created_at
+        FROM project_team
+        WHERE project_id = #{projectId}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 根据小组ID查询小组详情 -->
+    <select id="findTeamById" resultType="com.edu.virtuallab.experiment.model.ProjectTeam" parameterType="long">
+        SELECT id, project_id, name, created_at
+        FROM project_team
+        WHERE id = #{id}
+    </select>
+
+    <!-- 删除小组 -->
+    <delete id="deleteTeamById" parameterType="long">
+        DELETE FROM project_team WHERE id = #{id}
+    </delete>
+
+    <!-- 更新小组名称 -->
+    <update id="updateTeamName" parameterType="com.edu.virtuallab.experiment.model.ProjectTeam">
+        UPDATE project_team SET name = #{teamName} WHERE id = #{id}
+    </update>
+
+</mapper>

@@ -30,4 +30,9 @@ public interface EmailVerificationService {
      * @return 是否已验证
      */
     boolean isEmailVerified(String email);
+
+    /**
+     * 校验邮箱验证码
+     */
+    boolean verify(String email, String code);
 } 

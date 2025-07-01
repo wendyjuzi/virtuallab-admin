@@ -3,10 +3,12 @@ package com.edu.virtuallab.auth.util;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
+@Component
 public class JwtUtil {
     private static final String SECRET_KEY = "virtuallab-secret-key-virtuallab-secret-key"; // 至少32位
     private static final long EXPIRATION = 7 * 24 * 60 * 60 * 1000L; // 7天
@@ -30,6 +32,7 @@ public class JwtUtil {
                 .getBody()
                 .getSubject();
     }
+    
     public static String getUsernameFromToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -38,6 +41,7 @@ public class JwtUtil {
         }
         return null;
     }
+    
     public static String getUsernameFromRequest(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -46,5 +50,4 @@ public class JwtUtil {
         }
         return null;
     }
-
 } 

@@ -92,7 +92,7 @@ public class ExperimentProjectAuditController {
     @PreAuthorize("hasAuthority('experiment:project:view')")
     public CommonResult<List<ExperimentProject>> getAllProjects() {
         List<ExperimentProject> projects = auditService.getAllProjects();
-        return CommonResult.success(projects);
+        return CommonResult.success(projects, "资源更新成功");
     }
 
     @ApiOperation("获取已通过审核的实验项目列表")
@@ -100,7 +100,7 @@ public class ExperimentProjectAuditController {
     @PreAuthorize("hasAuthority('experiment:project:view')")
     public CommonResult<List<ExperimentProject>> getApprovedProjects() {
         List<ExperimentProject> projects = auditService.getApprovedProjects();
-        return CommonResult.success(projects);
+        return CommonResult.success(projects, "资源更新成功");
     }
 
     @ApiOperation("获取已驳回的实验项目列表")
@@ -108,6 +108,6 @@ public class ExperimentProjectAuditController {
     @PreAuthorize("hasAuthority('experiment:project:view')")
     public CommonResult<List<ExperimentProject>> getRejectedProjects() {
         List<ExperimentProject> projects = auditService.getRejectedProjects();
-        return CommonResult.success(projects);
+        return CommonResult.success(projects, "资源更新成功");
     }
 }

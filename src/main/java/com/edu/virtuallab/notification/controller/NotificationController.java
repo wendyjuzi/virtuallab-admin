@@ -41,7 +41,7 @@ public class NotificationController {
             @RequestParam Long userId) {
         // 调用服务层方法
         List<Notification> notifications = notificationService.getAllNotifications(userId);
-        return CommonResult.success(notifications);
+        return CommonResult.success(notifications, "资源更新成功");
     }
 
     @ApiOperation("标记通知为已读")

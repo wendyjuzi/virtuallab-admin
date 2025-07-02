@@ -14,5 +14,7 @@ public interface ExperimentProjectService {
     void publishToClasses(Long projectId, List<Long> classIds);
     Long publishProject(ExperimentProjectPublishRequest request, String createdBy);
     List<ExperimentProject> getProjectsByCreatedBy(String createdBy);
+    List<Long> getTeamsByStudentId(Long studentId);
+    Long getStudentIdByUserId(Long userId);
 
 }

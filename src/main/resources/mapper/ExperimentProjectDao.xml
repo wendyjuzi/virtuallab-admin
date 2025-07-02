@@ -71,6 +71,24 @@
         WHERE created_by = #{createdBy}
     </select>
 
+<!--    <select id="getTeamsByStudentId" resultType="com.edu.virtuallab.experiment.model.ExperimentProject">-->
+<!--        SELECT ep.*-->
+<!--        FROM experiment_project ep-->
+<!--                 JOIN project_team pt ON pt.project_id = ep.id-->
+<!--                 JOIN project_team_member ptm ON pt.id = ptm.team_id-->
+<!--        WHERE ptm.student_id = #{studentId}-->
+<!--    </select>-->
+    <select id="getTeamsByStudentId" resultType="Long">
+        SELECT pt.id
+        FROM project_team pt
+                 JOIN project_team_member ptm ON pt.id = ptm.team_id
+        WHERE ptm.student_id = #{studentId}
+    </select>
+
+
+    <select id="getStudentIdByUserId" resultType="long">
+        SELECT student_id FROM user WHERE id = #{userId}
+    </select>
 
 
 </mapper>

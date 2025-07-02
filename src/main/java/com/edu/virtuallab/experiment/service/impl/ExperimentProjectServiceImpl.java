@@ -148,5 +148,13 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
         return projectDao.getProjectsByCreatedBy(createdBy);
     }
 
+    @Override
+    public List<Long> getTeamsByStudentId(Long studentId) {
+        return projectDao.getTeamsByStudentId(studentId);
+    }
 
+    @Override
+    public Long getStudentIdByUserId(Long userId) {
+        return projectDao.getStudentIdByUserId(userId);
+    }
 } 

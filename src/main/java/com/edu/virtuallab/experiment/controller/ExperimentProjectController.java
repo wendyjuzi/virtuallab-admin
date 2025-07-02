@@ -3,6 +3,7 @@ package com.edu.virtuallab.experiment.controller;
 import com.edu.virtuallab.auth.util.JwtUtil;
 import com.edu.virtuallab.experiment.dto.ExperimentProjectPublishRequest;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
+import com.edu.virtuallab.experiment.model.ProjectTeam;
 import com.edu.virtuallab.experiment.service.ExperimentProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -99,5 +100,16 @@ public class ExperimentProjectController {
         }
         return projectService.getProjectsByCreatedBy(username);
     }
+    // 获取当前学生参与的所有实验项目小组聊天
+    @GetMapping("/chat/teams")
+    public List<Long> getTeamsByUserId(@RequestParam Long userId) {
+        Long studentId = projectService.getStudentIdByUserId(userId);
+        List<Long> teams = projectService.getTeamsByStudentId(studentId);
+        System.out.println("Debug: teams = " + teams);
+        return projectService.getTeamsByStudentId(studentId);
+    }
+
+
+
 
 }

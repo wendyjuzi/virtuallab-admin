@@ -20,5 +20,9 @@ public interface ExperimentProjectDao {
             @Param("keyword") String keyword
     );
     List<ExperimentProject> getProjectsByCreatedBy(String createdBy);
+    List<Long> getTeamsByStudentId(@Param("studentId") Long studentId);
+
+    Long getStudentIdByUserId(Long userId);
+
 
 } 

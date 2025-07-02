@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.edu.virtuallab.experiment.dao.ProjectDiscussionDao">
+
+    <insert id="insert" parameterType="com.edu.virtuallab.experiment.model.ProjectDiscussion">
+        INSERT INTO project_discussion (project_id, team_id, user_id, content, created_at)
+        VALUES (#{projectId}, #{teamId}, #{studentId}, #{content}, NOW())
+    </insert>
+
+    <select id="findByTeamId" resultType="com.edu.virtuallab.experiment.model.ProjectDiscussion">
+        SELECT * FROM project_discussion WHERE team_id = #{teamId} ORDER BY created_at ASC
+    </select>
+
+    <select id="findProjectIdByTeamId" resultType="java.lang.Long">
+        SELECT project_id FROM project_team WHERE id = #{teamId}
+    </select>
+    <select id="selectByTeamId" parameterType="long" resultType="com.edu.virtuallab.experiment.dto.ChatMessage">
+        SELECT user_id as studentId, team_id as teamId, content, created_at as createdAt
+        FROM project_discussion
+        WHERE team_id = #{teamId}
+        ORDER BY created_at ASC
+    </select>
+
+</mapper>

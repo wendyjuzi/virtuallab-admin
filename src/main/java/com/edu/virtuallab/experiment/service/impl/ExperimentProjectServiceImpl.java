@@ -82,7 +82,8 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
         project.setLevel(request.getLevel());
         project.setImageUrl(request.getImageUrl());
         project.setVideoUrl(request.getVideoUrl());
-        project.setProjectType(request.getProjectType());
+//        project.setProjectType(request.getProjectType());
+        project.setAuditStatus("pending");
 
         // ✅ 设置创建者用户名
         project.setCreatedBy(createdBy);
@@ -159,6 +160,10 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
     public long countPage(String category) {
         return projectDao.countPage(category);
     }
+    @Override
+    public List<Long> getTeamsByStudentId(Long studentId) {
+        return projectDao.getTeamsByStudentId(studentId);
+    }
 
     @Override
     public void save(ExperimentProject project) {
@@ -186,4 +191,9 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
     public ExperimentProject findById(Long id) {
         return projectDao.findById(id);
     }
-} 
+}
+    @Override
+    public Long getStudentIdByUserId(Long userId) {
+        return projectDao.getStudentIdByUserId(userId);
+    }
+}

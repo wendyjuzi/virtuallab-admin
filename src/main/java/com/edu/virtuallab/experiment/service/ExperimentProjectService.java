@@ -19,6 +19,9 @@ public interface ExperimentProjectService {
      */
     List<ExperimentProject> listPage(String category, String sort, int page, int size);
     long countPage(String category);
+    List<Long> getTeamsByStudentId(Long studentId);
+    Long getStudentIdByUserId(Long userId);
+
     void save(ExperimentProject project);
     void approve(Long id, boolean approve, String comment);
     ExperimentProject findById(Long id);

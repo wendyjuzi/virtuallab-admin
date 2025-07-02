@@ -1,5 +1,6 @@
 package com.edu.virtuallab.experiment.dao;
 
+import com.edu.virtuallab.auth.model.User;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
@@ -23,4 +24,6 @@ public interface ExperimentProjectDao {
 
     List<ExperimentProject> listPage(@Param("category") String category, @Param("sort") String sort, @Param("offset") int offset, @Param("size") int size);
     long countPage(@Param("category") String category);
-} 
+
+    ExperimentProject  findById(@Param("id") Long id);
+}

@@ -27,4 +27,14 @@ public class OperationLogServiceImpl implements OperationLogService {
     public List<OperationLog> listAll() {
         return operationLogDao.findAll();
     }
+
+    @Override
+    public List<OperationLog> getLatestLogs(int limit) {
+        return operationLogDao.selectLatestLogs(limit);
+    }
+
+    @Override
+    public OperationLog getLogById(Long id) {
+        return operationLogDao.findById(id);
+    }
 } 

@@ -27,4 +27,8 @@ public interface OperationLogDao {
                          @Param("module") String module,
                          @Param("startTime") String startTime,
                          @Param("endTime") String endTime);
+
+    List<OperationLog> selectLatestLogs(@Param("limit") int limit);
+
+    OperationLog findById(@Param("id") Long id);
 } 

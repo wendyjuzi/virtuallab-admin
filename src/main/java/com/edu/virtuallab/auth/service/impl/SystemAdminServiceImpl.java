@@ -6,6 +6,7 @@ import com.edu.virtuallab.auth.dto.PermissionTemplateDTO;
 import com.edu.virtuallab.auth.model.*;
 import com.edu.virtuallab.auth.service.*;
 import com.edu.virtuallab.common.api.PageResult;
+import com.edu.virtuallab.common.api.StatisticsDTO;
 import com.edu.virtuallab.common.exception.BusinessException;
 import com.edu.virtuallab.log.dao.OperationLogDao;
 import com.edu.virtuallab.log.model.OperationLog;
@@ -572,5 +573,32 @@ public class SystemAdminServiceImpl implements SystemAdminService {
         Date todayStart = calendar.getTime();
         
         return userDao.countTodayLogins(todayStart);
+    }
+    
+    @Override
+    public StatisticsDTO getStatistics() {
+        StatisticsDTO dto = new StatisticsDTO();
+        // 用户总数
+        int totalUsers = userDao.countByConditions(null, null, null, null, null);
+        // 活跃用户（最近7天登录）
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR, -7);
+        Date since = cal.getTime();
+        int activeUsers = userDao.countActiveUsers(since);
+        // 院系数量
+        int totalDepartments = departmentDao.count();
+        // 今日登录
+        cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        Date todayStart = cal.getTime();
+        int todayLogins = userDao.countTodayLogins(todayStart);
+        dto.setTotalUsers(totalUsers);
+        dto.setActiveUsers(activeUsers);
+        dto.setTotalDepartments(totalDepartments);
+        dto.setTodayLogins(todayLogins);
+        return dto;
     }
 } 

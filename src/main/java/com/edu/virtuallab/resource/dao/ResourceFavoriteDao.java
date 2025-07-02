@@ -14,4 +14,7 @@ public interface ResourceFavoriteDao {
     int countByUserId(@Param("userId") Long userId);
     int updateById(ResourceFavorite resourceFavorite);
     ResourceFavorite selectByUserAndResource(@Param("userId") Long userId, @Param("resourceId") Long resourceId);
+    int countByUserIdAndResourceId(Long userId, Long resourceId);
+    int insertByUserAndResource(Long userId, Long resourceId);
+    int delete(Long userId, Long resourceId);
 }

@@ -6,6 +6,7 @@ import com.edu.virtuallab.auth.model.*;
 import com.edu.virtuallab.auth.service.SystemAdminService;
 import com.edu.virtuallab.common.api.CommonResult;
 import com.edu.virtuallab.common.api.PageResult;
+import com.edu.virtuallab.common.api.StatisticsDTO;
 import com.edu.virtuallab.log.model.OperationLog;
 import com.edu.virtuallab.experiment.model.*;
 import com.edu.virtuallab.experiment.service.*;
@@ -67,6 +68,12 @@ public class SystemAdminController {
         } catch (Exception e) {
             return CommonResult.failed("获取统计数据失败: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/statistics")
+    public CommonResult<StatisticsDTO> getStatistics() {
+        StatisticsDTO dto = systemAdminService.getStatistics();
+        return CommonResult.success(dto, "获取统计数据成功");
     }
 
     // ==================== 账号全生命周期管理 ====================

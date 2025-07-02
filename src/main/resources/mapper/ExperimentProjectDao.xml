@@ -71,6 +71,31 @@
         WHERE created_by = #{createdBy}
     </select>
 
-
+    <select id="listPage" resultType="com.edu.virtuallab.experiment.model.ExperimentProject">
+        SELECT * FROM experiment_project
+        WHERE 1=1
+        <if test="category != null and category != ''">
+            AND category = #{category}
+        </if>
+        <choose>
+            <when test="sort == 'latest'">
+                ORDER BY created_at DESC
+            </when>
+            <when test="sort == 'popular'">
+                ORDER BY views DESC
+            </when>
+            <otherwise>
+                ORDER BY id DESC
+            </otherwise>
+        </choose>
+        LIMIT #{offset}, #{size}
+    </select>
+    <select id="countPage" resultType="long">
+        SELECT COUNT(*) FROM experiment_project
+        WHERE 1=1
+        <if test="category != null and category != ''">
+            AND category = #{category}
+        </if>
+    </select>
 
 </mapper>

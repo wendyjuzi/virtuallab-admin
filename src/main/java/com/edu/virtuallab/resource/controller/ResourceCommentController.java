@@ -2,13 +2,17 @@ package com.edu.virtuallab.resource.controller;
 
 import com.edu.virtuallab.resource.model.ResourceComment;
 import com.edu.virtuallab.resource.service.ResourceCommentService;
-// 添加以下导入
+import com.edu.virtuallab.common.api.CommonResult;
+import com.edu.virtuallab.common.exception.BusinessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import javax.validation.constraints.NotNull;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/resource-comment")
+@Validated
 public class ResourceCommentController {
     @Autowired
     private ResourceCommentService resourceCommentService;

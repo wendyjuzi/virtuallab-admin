@@ -2,12 +2,17 @@ package com.edu.virtuallab.resource.controller;
 
 import com.edu.virtuallab.resource.model.ResourceFavorite;
 import com.edu.virtuallab.resource.service.ResourceFavoriteService;
+import com.edu.virtuallab.common.api.CommonResult;
+import com.edu.virtuallab.common.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import org.springframework.validation.annotation.Validated;
+import javax.validation.constraints.NotNull;
 
 @RestController
-@RequestMapping("/api/resource/favorite")
+@RequestMapping("/resource-favorite")
+@Validated
 public class ResourceFavoriteController {
     @Autowired
     private ResourceFavoriteService resourceFavoriteService;

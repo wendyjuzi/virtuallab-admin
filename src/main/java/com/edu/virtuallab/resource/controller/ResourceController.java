@@ -2,14 +2,19 @@ package com.edu.virtuallab.resource.controller;
 
 import com.edu.virtuallab.resource.model.*;
 import com.edu.virtuallab.resource.service.ResourceService;
+import com.edu.virtuallab.common.api.CommonResult;
+import com.edu.virtuallab.common.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import org.springframework.validation.annotation.Validated;
+import javax.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("/resource")
+@Validated
 public class ResourceController {
     @Autowired
     private ResourceService resourceService;

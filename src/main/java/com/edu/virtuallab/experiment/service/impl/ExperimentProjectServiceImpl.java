@@ -148,5 +148,15 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
         return projectDao.getProjectsByCreatedBy(createdBy);
     }
 
+    @Override
+    public List<ExperimentProject> listPage(String category, String sort, int page, int size) {
+        int offset = (page - 1) * size;
+        return projectDao.listPage(category, sort, offset, size);
+    }
+
+    @Override
+    public long countPage(String category) {
+        return projectDao.countPage(category);
+    }
 
 } 

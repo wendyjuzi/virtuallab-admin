@@ -14,4 +14,7 @@ public interface ResourceLikeDao {
     int countByUserId(@Param("userId") Long userId);
     int updateById(ResourceLike resourceLike);
     ResourceLike selectByUserAndResource(@Param("userId") Long userId, @Param("resourceId") Long resourceId);
+    int countByUserIdAndResourceId(Long userId, Long resourceId);
+    int insertByUserAndResource(Long userId, Long resourceId);
+    int delete(Long userId, Long resourceId);
 }

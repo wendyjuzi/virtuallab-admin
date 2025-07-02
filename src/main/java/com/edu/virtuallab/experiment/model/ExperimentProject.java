@@ -17,7 +17,7 @@ public class ExperimentProject {
     private String level;
     private String imageUrl;
     private String videoUrl;
-    private String projectType; // 值可能是 "personal" 或 "team"
+//    private String projectType; // 值可能是 "personal" 或 "team"
 
     //    private Date createdAt;
 //    private Date updatedAt;
@@ -69,13 +69,13 @@ public class ExperimentProject {
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
-    public String getProjectType() {
-        return projectType;
-    }
-
-    public void setProjectType(String projectType) {
-        this.projectType = projectType;
-    }
+//    public String getProjectType() {
+//        return projectType;
+//    }
+//
+//    public void setProjectType(String projectType) {
+//        this.projectType = projectType;
+//    }
 
 
 }

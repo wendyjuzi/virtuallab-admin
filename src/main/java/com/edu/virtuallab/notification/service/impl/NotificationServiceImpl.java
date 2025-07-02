@@ -93,6 +93,7 @@ public class NotificationServiceImpl implements NotificationService {
                 project.getName()
         ));
         notification.setLink("/experiment/project/detail/" + projectId);
+        notification.setCreatedAt(new Date());
 
         // 获取所有相关班级的师生 - 需要实现 findUserIdsByClassIds() 方法
         List<Long> userIds = userDao.findUserIdsByClassIds(classIds);

@@ -18,7 +18,6 @@ import java.util.List;
 @Api(tags = "通知管理")
 public class NotificationController {
 
-    //删除通知有问题//获取通知详情有问题//创建通知？
 
     @Autowired
     private NotificationService notificationService;

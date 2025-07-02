@@ -14,5 +14,9 @@ public interface ExperimentProjectService {
     void publishToClasses(Long projectId, List<Long> classIds);
     Long publishProject(ExperimentProjectPublishRequest request, String createdBy);
     List<ExperimentProject> getProjectsByCreatedBy(String createdBy);
-
+    /**
+     * 分页获取实验项目列表，支持分类、排序
+     */
+    List<ExperimentProject> listPage(String category, String sort, int page, int size);
+    long countPage(String category);
 }

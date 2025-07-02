@@ -4,6 +4,9 @@ import com.edu.virtuallab.auth.util.JwtUtil;
 import com.edu.virtuallab.experiment.dto.ExperimentProjectPublishRequest;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
 import com.edu.virtuallab.experiment.service.ExperimentProjectService;
+import com.edu.virtuallab.experiment.dto.ExperimentProjectListDTO;
+import com.edu.virtuallab.common.api.PageResult;
+import com.edu.virtuallab.common.api.CommonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/experiment/project")
@@ -48,8 +52,30 @@ public class ExperimentProjectController {
     }
 
     @GetMapping("/list")
-    public List<ExperimentProject> listAll() {
-        return projectService.listAll();
+    public CommonResult<PageResult<ExperimentProjectListDTO>> list(
+            @RequestParam(required = false) String category,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "latest") String sort
+    ) {
+        List<ExperimentProject> projects = projectService.listPage(category, sort, page, size);
+        long total = projectService.countPage(category);
+        // 实体转DTO
+        List<ExperimentProjectListDTO> dtoList = projects.stream().map(p -> {
+            ExperimentProjectListDTO dto = new ExperimentProjectListDTO();
+            dto.setId(p.getId());
+            dto.setTitle(p.getName());
+            dto.setDescription(p.getDescription());
+            dto.setCategory(p.getCategory());
+            dto.setImageUrl(p.getImageUrl());
+            dto.setViews(null); // 预留
+            dto.setLikes(null); // 预留
+            dto.setFavorites(null); // 预留
+            dto.setCreateTime(p.getCreatedAt());
+            return dto;
+        }).collect(Collectors.toList());
+        PageResult<ExperimentProjectListDTO> pageResult = new PageResult<>(total, dtoList);
+        return CommonResult.success(pageResult, "success");
     }
 
     @GetMapping("/search")

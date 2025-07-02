@@ -5,6 +5,7 @@ import com.edu.virtuallab.auth.dto.PermissionTemplateDTO;
 import com.edu.virtuallab.auth.model.*;
 import com.edu.virtuallab.common.api.PageResult;
 import com.edu.virtuallab.log.model.OperationLog;
+import com.edu.virtuallab.common.api.StatisticsDTO;
 
 import java.util.List;
 
@@ -205,6 +206,11 @@ public interface SystemAdminService {
                                 String userType, Integer status, int page, int size);
     
     /**
+     * 根据ID获取用户信息
+     */
+    User getUserById(Long id);
+    
+    /**
      * 获取角色列表
      */
     List<Role> getRoleList();
@@ -235,4 +241,6 @@ public interface SystemAdminService {
      * 获取今日登录数量
      */
     int getTodayLoginCount();
+    
+    StatisticsDTO getStatistics();
 } 

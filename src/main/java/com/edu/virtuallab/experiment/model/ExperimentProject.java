@@ -19,6 +19,8 @@ public class ExperimentProject {
     private String videoUrl;
 //    private String projectType; // 值可能是 "personal" 或 "team"
 
+    private Long uploaderId; // 上传者ID
+
     //    private Date createdAt;
 //    private Date updatedAt;
 //    private Long teacherId;
@@ -77,5 +79,11 @@ public class ExperimentProject {
 //        this.projectType = projectType;
 //    }
 
+    public Long getUploaderId() {
+        return uploaderId;
+    }
+    public void setUploaderId(Long uploaderId) {
+        this.uploaderId = uploaderId;
+    }
 
 }

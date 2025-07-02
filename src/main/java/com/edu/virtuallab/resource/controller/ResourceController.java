@@ -1,20 +1,20 @@
 package com.edu.virtuallab.resource.controller;
 
-import com.edu.virtuallab.resource.model.Resource;
+import com.edu.virtuallab.resource.model.*;
 import com.edu.virtuallab.resource.service.ResourceService;
+import com.edu.virtuallab.common.api.CommonResult;
+import com.edu.virtuallab.common.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import org.springframework.validation.annotation.Validated;
+import javax.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("/resource")
+@Validated
 public class ResourceController {
     @Autowired
     private ResourceService resourceService;
@@ -43,4 +43,26 @@ public class ResourceController {
     public List<Resource> listAll() {
         return resourceService.listAll();
     }
-} 
+
+    // 设置资源共享权限
+    @PostMapping("/share")
+    public ResponseEntity<?> setSharePermission(@RequestBody ResourceShare resourceShare) {
+        int result = resourceService.setSharePermission(resourceShare);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/copy")
+    public ResponseEntity<?> copyResource(@RequestBody ResourceCopy resourceCopy) {
+        return ResponseEntity.ok(resourceService.copyResource(resourceCopy));
+    }
+
+    @PostMapping("/interaction")
+    public ResponseEntity<?> addInteraction(@RequestBody ResourceInteraction interaction) {
+        return ResponseEntity.ok(resourceService.addInteraction(interaction));
+    }
+
+    @GetMapping("/interaction/{resourceId}")
+    public ResponseEntity<?> getInteractions(@PathVariable Long resourceId) {
+        return ResponseEntity.ok(resourceService.getInteractions(resourceId));
+    }
+}

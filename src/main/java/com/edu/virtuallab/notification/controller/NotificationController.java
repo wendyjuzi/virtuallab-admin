@@ -31,7 +31,7 @@ public class NotificationController {
     @GetMapping("/unread")
     public CommonResult<List<Notification>> getUnreadNotifications(@RequestParam Long userId) {
         List<Notification> unread = notificationService.getUnreadNotifications(userId);
-        return CommonResult.success(unread);
+        return CommonResult.success(unread, "资源更新成功");
     }
 
     @ApiOperation("获取用户所有通知")
@@ -40,7 +40,7 @@ public class NotificationController {
             @RequestParam Long userId) {
         // 调用服务层方法
         List<Notification> notifications = notificationService.getAllNotifications(userId);
-        return CommonResult.success(notifications);
+        return CommonResult.success(notifications, "资源更新成功");
     }
 
     @ApiOperation("标记通知为已读")
@@ -55,7 +55,7 @@ public class NotificationController {
     @PostMapping("/mark-all-read")
     public CommonResult<Void> markAllAsRead(@RequestParam Long userId) {
         notificationService.markAllAsRead(userId);
-        return CommonResult.success(null);
+        return CommonResult.success(null, "资源更新成功");
     }
 
     @ApiOperation("删除通知")
@@ -72,7 +72,7 @@ public class NotificationController {
     public CommonResult<Notification> getNotificationDetail(@PathVariable Long notificationId) {
         // 实现获取详情
         Notification notification = notificationService.getNotification(notificationId);
-        return CommonResult.success(notification);
+        return CommonResult.success(notification, "资源更新成功");
         // 使用构造方法返回带消息的未实现提示
     }
 
@@ -80,6 +80,6 @@ public class NotificationController {
     @PostMapping("/internal/create")
     public CommonResult<Notification> createNotification(@RequestBody Notification notification) {
         Notification created = notificationService.createNotification(notification);
-        return CommonResult.success(created);
+        return CommonResult.success(created, "资源更新成功");
     }
 }

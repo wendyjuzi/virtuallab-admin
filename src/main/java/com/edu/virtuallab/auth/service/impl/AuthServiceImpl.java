@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
 import com.edu.virtuallab.auth.util.JwtUtil;
 import com.edu.virtuallab.auth.model.Role;
 import com.edu.virtuallab.auth.service.RoleService;
@@ -84,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
         result.put("token", token);
         result.put("user", user);
         result.put("roles", roleCodes);
-        return CommonResult.success(result);
+        return CommonResult.success(result, "资源更新成功");
     }
     
     /**
@@ -98,7 +98,7 @@ public class AuthServiceImpl implements AuthService {
         // 注意：生产环境需要对接短信验证码服务
         // 这里仅做演示，固定验证码为123456
         if ("123456".equals(code)) {
-            return CommonResult.success(Boolean.TRUE);
+            return CommonResult.success(Boolean.TRUE, "资源更新成功");
         }
         return CommonResult.failed("验证码错误");
     }
@@ -114,7 +114,7 @@ public class AuthServiceImpl implements AuthService {
         // 注意：生产环境需要对接指纹识别设备或服务
         // 这里仅做演示，固定指纹数据为"valid"
         if ("valid".equals(fingerprintData)) {
-            return CommonResult.success(Boolean.TRUE);
+            return CommonResult.success(Boolean.TRUE, "资源更新成功");
         }
         return CommonResult.failed("指纹识别失败");
     }
@@ -128,7 +128,7 @@ public class AuthServiceImpl implements AuthService {
     public CommonResult<Boolean> sendSmsCode(String phone) {
         // 注意：生产环境需要对接短信服务提供商
         // 这里仅做演示，默认发送成功
-        return CommonResult.success(Boolean.TRUE);
+        return CommonResult.success(Boolean.TRUE, "资源更新成功");
     }
 
     /**
@@ -173,7 +173,7 @@ public class AuthServiceImpl implements AuthService {
         result.put("token", token);
         result.put("user", user);
         result.put("roles", roleCodes);
-        return CommonResult.success(result);
+        return CommonResult.success(result, "资源更新成功");
     }
 
     /**

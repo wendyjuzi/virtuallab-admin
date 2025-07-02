@@ -1,7 +1,5 @@
 package com.edu.virtuallab.common.api;
 
-import com.edu.virtuallab.common.api.ResultCode;
-
 public class CommonResult<T> {
     private long code;
     private String message;
@@ -14,7 +12,7 @@ public class CommonResult<T> {
         this.data = data;
     }
 
-    public static <T> CommonResult<T> success(T data) {
+    public static <T> CommonResult<T> success(T data, String 资源更新成功) {
         return new CommonResult<>(ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), data);
     }
     public static <T> CommonResult<T> failed(String message) {

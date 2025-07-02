@@ -40,26 +40,26 @@ public class ExperimentProjectAuditService {
     /**
      * 提交实验项目审核
      */
-    @Transactional
-    public void submitForAudit(Long projectId, Long userId) {
-        ExperimentProject project = projectMapper.selectById(projectId);
-        if (project == null) {
-            throw new BusinessException("实验项目不存在");
-        }
-        if (!"draft".equals(project.getAuditStatus())) {
-            throw new BusinessException("只有草稿状态的项目可以提交审核");
-        }
-
-        // 更新项目状态
-        project.setAuditStatus("pending");
-        projectMapper.updateById(project);
-
-        // 记录审核日志
-        recordAuditLog(projectId, userId, "draft", "pending", "提交审核");
-
-        // 发送通知给管理员
-        notificationService.sendProjectAuditNotification(projectId, project.getUploaderId());
-    }
+//    @Transactional
+//    public void submitForAudit(Long projectId, Long userId) {
+//        ExperimentProject project = projectMapper.selectById(projectId);
+//        if (project == null) {
+//            throw new BusinessException("实验项目不存在");
+//        }
+//        if (!"draft".equals(project.getAuditStatus())) {
+//            throw new BusinessException("只有草稿状态的项目可以提交审核");
+//        }
+//
+//        // 更新项目状态
+//        project.setAuditStatus("pending");
+//        projectMapper.updateById(project);
+//
+//        // 记录审核日志
+//        recordAuditLog(projectId, userId, "draft", "pending", "提交审核");
+//
+//        // 发送通知给管理员
+//        notificationService.sendProjectAuditNotification(projectId, project.getUploaderId());
+//    }
 
     /**
      * 审核实验项目

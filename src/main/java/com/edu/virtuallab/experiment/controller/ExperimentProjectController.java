@@ -50,8 +50,12 @@ public class ExperimentProjectController {
     public ExperimentProject getById(@PathVariable Long id) {
         return projectService.getById(id);
     }
-
     @GetMapping("/list")
+    public List<ExperimentProject> listAll() {
+        return projectService.listAll();
+    }
+
+    @GetMapping("/viewlist")
     public CommonResult<PageResult<ExperimentProjectListDTO>> list(
             @RequestParam(required = false) String category,
             @RequestParam(defaultValue = "1") int page,

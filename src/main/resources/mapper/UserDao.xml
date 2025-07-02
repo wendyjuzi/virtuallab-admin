@@ -257,9 +257,6 @@
             <if test="department != null and department != ''">
                 AND department = #{department}
             </if>
-            <if test="userType != null and userType != ''">
-                AND user_type = #{userType}
-            </if>
             <if test="status != null">
                 AND status = #{status}
             </if>
@@ -282,9 +279,6 @@
             <if test="department != null and department != ''">
                 AND department = #{department}
             </if>
-            <if test="userType != null and userType != ''">
-                AND user_type = #{userType}
-            </if>
             <if test="status != null">
                 AND status = #{status}
             </if>
@@ -306,5 +300,10 @@
         WHERE last_login_time >= #{todayStart}
           AND status = 1
     </select>
+
+    <!-- 根据ID删除用户 -->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM user WHERE id = #{id}
+    </delete>
 
 </mapper> 

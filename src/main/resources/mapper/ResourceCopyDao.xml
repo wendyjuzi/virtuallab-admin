@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.virtuallab.resource.dao.ResourceCopyDao">
+    <insert id="insert" parameterType="com.edu.virtuallab.resource.model.ResourceCopy">
+        INSERT INTO resource_copy (original_id, copy_id, user_id, copy_reason)
+        VALUES (#{originalId}, #{copyId}, #{userId}, #{copyReason})
+    </insert>
+
+    <select id="getCopiesByOriginalId" parameterType="long" resultType="com.edu.virtuallab.resource.model.ResourceCopy">
+        SELECT * FROM resource_copy WHERE original_id = #{originalId}
+    </select>
+
+    <select id="selectById" parameterType="long" resultType="com.edu.virtuallab.resource.model.ResourceCopy">
+        SELECT * FROM resource_copy WHERE id = #{id}
+    </select>
+
+    <update id="update" parameterType="com.edu.virtuallab.resource.model.ResourceCopy">
+        UPDATE resource_copy
+        SET original_id = #{originalId}, copy_id = #{copyId}, user_id = #{userId}, copy_reason = #{copyReason}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM resource_copy WHERE id = #{id}
+    </delete>
+</mapper>

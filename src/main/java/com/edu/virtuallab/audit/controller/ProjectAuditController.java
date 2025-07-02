@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/audit")
+@RequestMapping("/audit")
 @Api(tags = "项目审核管理")
 public class ProjectAuditController {
 
@@ -57,7 +57,7 @@ public class ProjectAuditController {
             @PathVariable Long projectId) {
 
         List<ProjectAuditLog> history = projectAuditService.getAuditHistory(projectId);
-        return CommonResult.success(history);
+        return CommonResult.success(history, "资源更新成功");
     }
 
     @ApiOperation("发布项目")

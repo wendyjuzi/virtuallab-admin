@@ -56,6 +56,11 @@ public class UserServiceImpl implements UserService {
         int offset = (page - 1) * size;
         List<User> users = userDao.findByConditions(username, realName, department, userType, status, offset, size);
         int total = userDao.countByConditions(username, realName, department, userType, status);
+        // 为每个用户补全角色列表
+        for (User user : users) {
+            List<Role> roles = roleDao.selectRolesByUserId(user.getId());
+            user.setRoleList(roles);
+        }
         return new PageResult<>(total, users);
     }
 

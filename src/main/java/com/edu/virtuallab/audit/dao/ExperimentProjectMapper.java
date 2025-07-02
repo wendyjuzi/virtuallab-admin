@@ -23,4 +23,14 @@ public interface ExperimentProjectMapper extends BaseMapper<ExperimentProject> {
     @Update("UPDATE experiment_project SET publish_status = 'published', " +
             "publish_time = NOW() WHERE id = #{id}")
     int publishProject(Long id);
+
+    // 新增方法：获取所有实验项目
+    @Select("SELECT * FROM experiment_project")
+    List<ExperimentProject> selectAll();
+
+    @Select("SELECT * FROM experiment_project WHERE audit_status = 'approved'")
+    List<ExperimentProject> selectApprovedProjects();
+
+    @Select("SELECT * FROM experiment_project WHERE audit_status = 'rejected'")
+    List<ExperimentProject> selectRejectedProjects();
 }

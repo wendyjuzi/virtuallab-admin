@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.virtuallab.resource.dao.ResourceLikeDao">
+    <insert id="insert" parameterType="com.edu.virtuallab.resource.model.ResourceLike" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO resource_like (user_id, resource_id)
+        VALUES (#{userId}, #{resourceId})
+    </insert>
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM resource_like WHERE id = #{id}
+    </delete>
+    <select id="selectById" resultType="com.edu.virtuallab.resource.model.ResourceLike">
+        SELECT * FROM resource_like WHERE id = #{id}
+    </select>
+    <select id="selectByUserId" resultType="com.edu.virtuallab.resource.model.ResourceLike">
+        SELECT id, user_id, resource_id
+        FROM resource_like
+        WHERE user_id = #{userId}
+        ORDER BY id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+    <select id="countByUserId" resultType="int">
+        SELECT COUNT(*) FROM resource_like WHERE user_id = #{userId}
+    </select>
+    <update id="updateById" parameterType="com.edu.virtuallab.resource.model.ResourceLike">
+        UPDATE resource_like
+        SET user_id = #{userId}, resource_id = #{resourceId}
+        WHERE id = #{id}
+    </update>
+    <select id="selectByUserAndResource" resultType="com.edu.virtuallab.resource.model.ResourceLike">
+        SELECT * FROM resource_like WHERE user_id = #{userId} AND resource_id = #{resourceId}
+    </select>
+    <select id="countByUserIdAndResourceId" resultType="int">
+        SELECT COUNT(*) FROM resource_like WHERE user_id = #{userId} AND resource_id = #{resourceId}
+    </select>
+    <insert id="insertByUserAndResource">
+        INSERT IGNORE INTO resource_like (user_id, resource_id) VALUES (#{userId}, #{resourceId})
+    </insert>
+    <delete id="delete">
+        DELETE FROM resource_like WHERE user_id = #{userId} AND resource_id = #{resourceId}
+    </delete>
+</mapper> 

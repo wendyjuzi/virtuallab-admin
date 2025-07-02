@@ -13,8 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -35,7 +33,7 @@ public class UserController {
         try {
             User user = userService.getById(id);
             if (user != null) {
-                return CommonResult.success(user);
+                return CommonResult.success(user, "资源更新成功");
             } else {
                 return CommonResult.failed("用户不存在");
             }
@@ -50,7 +48,7 @@ public class UserController {
         try {
             User user = userService.getByUsername(username);
             if (user != null) {
-                return CommonResult.success(user);
+                return CommonResult.success(user, "资源更新成功");
             } else {
                 return CommonResult.failed("用户不存在");
             }
@@ -64,7 +62,7 @@ public class UserController {
     public CommonResult<List<User>> listAll() {
         try {
             List<User> users = userService.listAll();
-            return CommonResult.success(users);
+            return CommonResult.success(users, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("获取用户列表失败: " + e.getMessage());
         }
@@ -82,7 +80,7 @@ public class UserController {
             @RequestParam(defaultValue = "10") int size) {
         try {
             PageResult<User> result = userService.getUserList(username, realName, department, userType, status, page, size);
-            return CommonResult.success(result);
+            return CommonResult.success(result, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("查询用户列表失败: " + e.getMessage());
         }
@@ -94,7 +92,7 @@ public class UserController {
         try {
             boolean result = userService.createUser(user);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("创建用户失败");
             }
@@ -109,7 +107,7 @@ public class UserController {
         try {
         boolean success = userService.register(dto);
         if (success) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
         } else {
             return CommonResult.failed("注册失败");
             }
@@ -124,7 +122,7 @@ public class UserController {
         try {
             boolean result = userService.update(user);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("更新失败");
             }
@@ -139,7 +137,7 @@ public class UserController {
         try {
             boolean result = userService.delete(id);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("删除失败");
             }
@@ -154,7 +152,7 @@ public class UserController {
         try {
             User user = userService.getCurrentUserProfile(userId);
             if (user != null) {
-                return CommonResult.success(user);
+                return CommonResult.success(user, "资源更新成功");
             } else {
                 return CommonResult.failed("用户不存在");
             }
@@ -169,7 +167,7 @@ public class UserController {
         try {
             boolean result = userService.updateProfile(user);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("更新个人信息失败");
             }
@@ -184,7 +182,7 @@ public class UserController {
         try {
             boolean result = userService.updateAvatar(userId, avatarUrl);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("更新头像失败");
             }
@@ -201,7 +199,7 @@ public class UserController {
         try {
             boolean result = userService.changePassword(userId, oldPassword, newPassword);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("修改密码失败");
             }
@@ -216,7 +214,7 @@ public class UserController {
         try {
             boolean result = userService.resetPassword(userId, newPassword);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("重置密码失败");
             }
@@ -233,7 +231,7 @@ public class UserController {
         try {
             boolean result = userService.updateEmail(userId, newEmail, verificationCode);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("更新邮箱失败");
             }
@@ -250,7 +248,7 @@ public class UserController {
         try {
             boolean result = userService.updatePhone(userId, newPhone, verificationCode);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("更新手机号失败");
             }
@@ -265,7 +263,7 @@ public class UserController {
         try {
             boolean result = userService.enableUser(userId);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("启用用户失败");
             }
@@ -280,7 +278,7 @@ public class UserController {
         try {
             boolean result = userService.disableUser(userId, reason);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("禁用用户失败");
             }
@@ -295,7 +293,7 @@ public class UserController {
         try {
             boolean result = userService.lockUser(userId, reason);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("锁定用户失败");
             }
@@ -310,7 +308,7 @@ public class UserController {
         try {
             boolean result = userService.unlockUser(userId);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("解锁用户失败");
             }
@@ -325,7 +323,7 @@ public class UserController {
         try {
             boolean result = userService.updateUserStatus(userId, status);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("更新用户状态失败");
             }
@@ -340,7 +338,7 @@ public class UserController {
         try {
             boolean result = userService.assignRoles(userId, roleIds);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("分配角色失败");
             }
@@ -354,7 +352,7 @@ public class UserController {
     public CommonResult<List<Long>> getUserRoleIds(@PathVariable Long userId) {
         try {
             List<Long> roleIds = userService.getUserRoleIds(userId);
-            return CommonResult.success(roleIds);
+            return CommonResult.success(roleIds, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("获取用户角色失败: " + e.getMessage());
         }
@@ -366,7 +364,7 @@ public class UserController {
         try {
             boolean result = userService.removeUserRoles(userId, roleIds);
             if (result) {
-                return CommonResult.success(true);
+                return CommonResult.success(true, "资源更新成功");
             } else {
                 return CommonResult.failed("移除角色失败");
             }
@@ -380,7 +378,7 @@ public class UserController {
     public CommonResult<Boolean> isUsernameExists(@PathVariable String username) {
         try {
             boolean exists = userService.isUsernameExists(username);
-            return CommonResult.success(exists);
+            return CommonResult.success(exists, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("检查用户名失败: " + e.getMessage());
         }
@@ -391,7 +389,7 @@ public class UserController {
     public CommonResult<Boolean> isEmailExists(@PathVariable String email) {
         try {
             boolean exists = userService.isEmailExists(email);
-            return CommonResult.success(exists);
+            return CommonResult.success(exists, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("检查邮箱失败: " + e.getMessage());
         }
@@ -402,7 +400,7 @@ public class UserController {
     public CommonResult<Boolean> isPhoneExists(@PathVariable String phone) {
         try {
             boolean exists = userService.isPhoneExists(phone);
-            return CommonResult.success(exists);
+            return CommonResult.success(exists, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("检查手机号失败: " + e.getMessage());
         }
@@ -413,7 +411,7 @@ public class UserController {
     public CommonResult<Boolean> isStudentIdExists(@PathVariable String studentId) {
         try {
             boolean exists = userService.isStudentIdExists(studentId);
-            return CommonResult.success(exists);
+            return CommonResult.success(exists, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("检查学号/工号失败: " + e.getMessage());
         }
@@ -424,7 +422,7 @@ public class UserController {
     public CommonResult<Boolean> logout(HttpServletRequest request) {
         try {
             // 这里可以添加登出逻辑，比如清除token等
-            return CommonResult.success(true);
+            return CommonResult.success(true, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("退出登录失败: " + e.getMessage());
         }

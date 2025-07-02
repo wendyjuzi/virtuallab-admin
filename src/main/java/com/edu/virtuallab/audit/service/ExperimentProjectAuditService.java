@@ -163,5 +163,25 @@ public class ExperimentProjectAuditService {
 
         auditLogMapper.insert(log);
     }
+
+
+    // 新增方法：获取所有实验项目
+    public List<ExperimentProject> getAllProjects() {
+        return projectMapper.selectAll();
+    }
+
+    /**
+     * 获取已通过审核的项目列表
+     */
+    public List<ExperimentProject> getApprovedProjects() {
+        return projectMapper.selectApprovedProjects();
+    }
+
+    /**
+     * 获取已驳回的项目列表
+     */
+    public List<ExperimentProject> getRejectedProjects() {
+        return projectMapper.selectRejectedProjects();
+    }
 }
 

@@ -17,7 +17,9 @@ public class ExperimentProject {
     private String level;
     private String imageUrl;
     private String videoUrl;
-    private String projectType; // 值可能是 "personal" 或 "team"
+//    private String projectType; // 值可能是 "personal" 或 "team"
+
+    private Long uploaderId; // 上传者ID
 
     //    private Date createdAt;
 //    private Date updatedAt;
@@ -29,7 +31,6 @@ public class ExperimentProject {
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updatedAt;
     // 新增审核字段
-    private Long uploaderId; // 上传者ID
     private String auditStatus; // 审核状态: draft/pending/approved/rejected
     private String auditComment; // 审核意见
     private Long auditorId; // 审核人ID
@@ -70,13 +71,19 @@ public class ExperimentProject {
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
-    public String getProjectType() {
-        return projectType;
-    }
+//    public String getProjectType() {
+//        return projectType;
+//    }
+//
+//    public void setProjectType(String projectType) {
+//        this.projectType = projectType;
+//    }
 
-    public void setProjectType(String projectType) {
-        this.projectType = projectType;
+    public Long getUploaderId() {
+        return uploaderId;
     }
-
+    public void setUploaderId(Long uploaderId) {
+        this.uploaderId = uploaderId;
+    }
 
 }

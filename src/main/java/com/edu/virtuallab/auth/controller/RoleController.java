@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/role")
+@RequestMapping("/role")
 public class RoleController {
     @Autowired
     private RoleService roleService;

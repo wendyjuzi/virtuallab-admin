@@ -14,11 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/notification")
+@RequestMapping("/notification")
 @Api(tags = "通知管理")
 public class NotificationController {
 
-    //删除通知有问题//获取通知详情有问题//创建通知？
 
     @Autowired
     private NotificationService notificationService;
@@ -32,21 +31,16 @@ public class NotificationController {
     @GetMapping("/unread")
     public CommonResult<List<Notification>> getUnreadNotifications(@RequestParam Long userId) {
         List<Notification> unread = notificationService.getUnreadNotifications(userId);
-        return CommonResult.success(unread);
+        return CommonResult.success(unread, "资源更新成功");
     }
 
     @ApiOperation("获取用户所有通知")
     @GetMapping("/all")
-    public CommonResult<PageResult<Notification>> getAllNotifications(
-            @RequestParam(defaultValue = "1") Integer pageNum,
-            @RequestParam(defaultValue = "10") Integer pageSize) {
-
-        Long userId = getCurrentUserId();
-        // 分页查询实现
-        // Page<Notification> page = notificationService.getAllNotifications(userId, pageNum, pageSize);
-        // return CommonResult.success(CommonPage.restPage(page));
-        // 使用构造方法返回带消息的未实现提示
-        return new CommonResult<>(ResultCode.SUCCESS.getCode(), "待实现", null);
+    public CommonResult<List<Notification>> getAllNotifications(
+            @RequestParam Long userId) {
+        // 调用服务层方法
+        List<Notification> notifications = notificationService.getAllNotifications(userId);
+        return CommonResult.success(notifications, "资源更新成功");
     }
 
     @ApiOperation("标记通知为已读")
@@ -61,7 +55,7 @@ public class NotificationController {
     @PostMapping("/mark-all-read")
     public CommonResult<Void> markAllAsRead(@RequestParam Long userId) {
         notificationService.markAllAsRead(userId);
-        return CommonResult.success(null);
+        return CommonResult.success(null, "资源更新成功");
     }
 
     @ApiOperation("删除通知")
@@ -78,7 +72,7 @@ public class NotificationController {
     public CommonResult<Notification> getNotificationDetail(@PathVariable Long notificationId) {
         // 实现获取详情
         Notification notification = notificationService.getNotification(notificationId);
-        return CommonResult.success(notification);
+        return CommonResult.success(notification, "资源更新成功");
         // 使用构造方法返回带消息的未实现提示
     }
 
@@ -86,6 +80,6 @@ public class NotificationController {
     @PostMapping("/internal/create")
     public CommonResult<Notification> createNotification(@RequestBody Notification notification) {
         Notification created = notificationService.createNotification(notification);
-        return CommonResult.success(created);
+        return CommonResult.success(created, "资源更新成功");
     }
 }

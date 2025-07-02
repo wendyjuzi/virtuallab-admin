@@ -47,7 +47,7 @@ public class AuthController {
             return CommonResult.failed(loginResult.getMessage());
         }
         Map<String, Object> result = loginResult.getData();
-        return CommonResult.success(result);
+        return CommonResult.success(result, "资源更新成功");
     }
 
     @PostMapping("/login")
@@ -64,7 +64,7 @@ public class AuthController {
             return CommonResult.failed("密码错误");
         }
 
-        return CommonResult.success(user);
+        return CommonResult.success(user, "资源更新成功");
     }
 
     @PostMapping("/login/email")
@@ -120,6 +120,6 @@ public class AuthController {
         Map<String, Object> result = new HashMap<>();
         result.put("user", user);
         result.put("roles", roleCodes);
-        return CommonResult.success(result);
+        return CommonResult.success(result, "资源更新成功");
     }
 } 

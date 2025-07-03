@@ -1,5 +1,6 @@
 package com.edu.virtuallab.experiment.service.impl;
 
+import com.edu.virtuallab.common.exception.BusinessException;
 import com.edu.virtuallab.experiment.dao.ExperimentReportDao;
 import com.edu.virtuallab.experiment.model.ExperimentReport;
 import com.edu.virtuallab.experiment.service.ExperimentReportService;
@@ -99,21 +100,53 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public byte[] downloadAttachment(String sessionId, String filename) {
+    public byte[] downloadAttachment(String sessionId, String filename) throws BusinessException {
         ExperimentReport experimentReport = experimentReportDao.findBySessionId(sessionId);
-        return null;
-    }
 
-    @Transactional(readOnly = true)
-    public List<String> listAttachments(String sessionId) {
-        ExperimentReport experimentReport = experimentReportDao.findBySessionId(sessionId);
-        return null;
+        if(experimentReport == null || !experimentReport.hasAttachment()){
+            throw new BusinessException("附件不存在");
+        }
+
+        try{
+            Path filePath = Paths.get(uploadDir).resolve(
+                    experimentReport.getAttachmentPath().replace("/uploads/"," "));
+                    return Files.readAllBytes(filePath);
+            }catch (IOException e){
+                log.error("下载附件失败", e);
+                throw new BusinessException("下载附件失败:" + e.getMessage());
+            }
     }
 
     @Override
     @Transactional
-    public void deleteAttachment(String sessionId, String filename) {
-        ExperimentReport report = experimentReportDao.findBySessionId(sessionId);
+    public void deleteAttachment(String sessionId, String filename) throws BusinessException{
+        ExperimentReport experimentReport = experimentReportDao.findBySessionId(sessionId);
+        if( experimentReport == null || !experimentReport.hasAttachment()){
+            throw new BusinessException("附件不存在");
+        }
+
+        try{
+            // 删除文件系统中的文件
+            deleteAttachment(experimentReport.getAttachmentPath());
+
+            // 清楚数据库中的附件信息
+            experimentReport.setAttachmentPath(null);
+            experimentReport.setOriginalFilename(null);
+            experimentReport.setFileSize(null);
+            experimentReport.setMimeType(null);
+            experimentReport.setUpdatedAt(new Date());
+
+            experimentReportDao.updateById(experimentReport);
+        }catch (IOException e) {
+            throw new BusinessException("删除附件失败: " + e.getMessage());
+        }
+    }
+
+    private void deleteAttachment(String filePath) throws IOException {
+        if (filePath != null && !filePath.isEmpty()) {
+            Path path = Paths.get(uploadDir).resolve(filePath.replace("/uploads/", ""));
+            Files.deleteIfExists(path);
+        }
     }
 
     @Override

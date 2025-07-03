@@ -12,7 +12,6 @@ public interface ExperimentReportService {
     void saveReportContent(String sessionId, String manualContent);
     void uploadAttachment(String sessionId, MultipartFile file) throws BusinessException, IOException;
     byte[] downloadAttachment(String sessionId, String filename) throws BusinessException;
-    List<String> listAttachments(String sessionId);
     void deleteAttachment(String sessionId, String filename) throws BusinessException;
     void submitReport(String sessionId);
     List<ExperimentReport> getReportList(Long studentId);

@@ -30,7 +30,7 @@
 
     <!-- 其他SQL映射... -->
 
-    <insert id="insert" parameterType="Notification" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" parameterType="com.edu.virtuallab.notification.model.Notification" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO notification (
             user_id, type, title, content, is_read, link, related_id, created_at
         ) VALUES (
@@ -38,11 +38,11 @@
                  )
     </insert>
 
-    <select id="selectById" resultType="Notification">
+    <select id="selectById" resultType="com.edu.virtuallab.notification.model.Notification">
         SELECT * FROM notification WHERE id = #{id}
     </select>
 
-    <update id="update" parameterType="Notification">
+    <update id="update" parameterType="com.edu.virtuallab.notification.model.Notification">
         UPDATE notification SET
                                 is_read = #{isRead}
         WHERE id = #{id}

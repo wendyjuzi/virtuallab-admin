@@ -50,37 +50,37 @@ public class AuthFactorServiceImpl implements AuthFactorService {
         return authFactorDao.deleteByUserId(userId) > 0;
     }
     
-    @Override
-    public boolean sendSmsCode(Long userId, String phone) {
-        // 生成6位随机验证码
-        String code = generateRandomCode(6);
-        
-        // 设置过期时间为5分钟后
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, 5);
-        Date expireTime = calendar.getTime();
-        
-        // 保存或更新验证码
-        AuthFactor authFactor = authFactorDao.findByUserIdAndType(userId, AuthFactor.TYPE_SMS);
-        if (authFactor == null) {
-            authFactor = new AuthFactor();
-            authFactor.setUserId(userId);
-            authFactor.setFactorType(AuthFactor.TYPE_SMS);
-            authFactor.setFactorValue(phone);
-            authFactor.setStatus(1);
-            authFactor.setIsDefault(0);
-        }
-        
-        authFactor.setFactorCode(code);
-        authFactor.setExpireTime(expireTime);
-        authFactor.setUpdateTime(new Date());
-        
-        // TODO: 调用短信服务发送验证码
-        System.out.println("发送短信验证码到 " + phone + ": " + code);
-        
-        return authFactorDao.update(authFactor) > 0 || authFactorDao.insert(authFactor) > 0;
-    }
-    
+//    @Override
+//    public boolean sendSmsCode(Long userId, String phone) {
+//        // 生成6位随机验证码
+//        String code = generateRandomCode(6);
+//
+//        // 设置过期时间为5分钟后
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.add(Calendar.MINUTE, 5);
+//        Date expireTime = calendar.getTime();
+//
+//        // 保存或更新验证码
+//        AuthFactor authFactor = authFactorDao.findByUserIdAndType(userId, AuthFactor.TYPE_SMS);
+//        if (authFactor == null) {
+//            authFactor = new AuthFactor();
+//            authFactor.setUserId(userId);
+//            authFactor.setFactorType(AuthFactor.TYPE_SMS);
+//            authFactor.setFactorValue(phone);
+//            authFactor.setStatus(1);
+//            authFactor.setIsDefault(0);
+//        }
+//
+//        authFactor.setFactorCode(code);
+//        authFactor.setExpireTime(expireTime);
+//        authFactor.setUpdateTime(new Date());
+//
+//        // TODO: 调用短信服务发送验证码
+//        System.out.println("发送短信验证码到 " + phone + ": " + code);
+//
+//        return authFactorDao.update(authFactor) > 0 || authFactorDao.insert(authFactor) > 0;
+//    }
+//
     // 暂时注释掉短信注册功能
     /*
     @Override
@@ -153,18 +153,18 @@ public class AuthFactorServiceImpl implements AuthFactorService {
         // 临时返回true，实际项目中需要调用邮件服务
         return true;
     }
-    
-    @Override
-    public boolean validateSmsCode(Long userId, String phone, String code) {
-        AuthFactor authFactor = authFactorDao.validateSmsCode(userId, phone, code);
-        if (authFactor != null && authFactor.getExpireTime().after(new Date())) {
-            // 验证成功后删除验证码
-            authFactorDao.deleteById(authFactor.getId());
-            return true;
-        }
-        return false;
-    }
-    
+//
+//    @Override
+//    public boolean validateSmsCode(Long userId, String phone, String code) {
+//        AuthFactor authFactor = authFactorDao.validateSmsCode(userId, phone, code);
+//        if (authFactor != null && authFactor.getExpireTime().after(new Date())) {
+//            // 验证成功后删除验证码
+//            authFactorDao.deleteById(authFactor.getId());
+//            return true;
+//        }
+//        return false;
+//    }
+//
     // 验证短信验证码（注册时使用，不需要userId）
     // 暂时注释掉短信注册功能
     /*

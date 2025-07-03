@@ -45,7 +45,8 @@ public class AuthServiceImpl implements AuthService {
         // 1. 查询用户
         User user = userDao.findByUsername(username);
         if (user == null) {
-            return CommonResult.failed("用户不存在");
+            return CommonResult.failed("用户不存在")
+                    ;
         }
 
         // 2. 密码校验（支持bcrypt加密和明文两种方式）
@@ -93,15 +94,15 @@ public class AuthServiceImpl implements AuthService {
      * @param fingerprintData 指纹数据
      * @return 登录结果
      */
-    @Override
-    public CommonResult<Boolean> loginWithFingerprint(String username, String fingerprintData) {
-        // 注意：生产环境需要对接指纹识别设备或服务
-        // 这里仅做演示，固定指纹数据为"valid"
-        if ("valid".equals(fingerprintData)) {
-            return CommonResult.success(Boolean.TRUE, "资源更新成功");
-        }
-        return CommonResult.failed("指纹识别失败");
-    }
+//    @Override
+//    public CommonResult<Boolean> loginWithFingerprint(String username, String fingerprintData) {
+//        // 注意：生产环境需要对接指纹识别设备或服务
+//        // 这里仅做演示，固定指纹数据为"valid"
+//        if ("valid".equals(fingerprintData)) {
+//            return CommonResult.success(Boolean.TRUE, "资源更新成功");
+//        }
+//        return CommonResult.failed("指纹识别失败");
+//    }
 
     /**
      * 邮箱验证码登录方法

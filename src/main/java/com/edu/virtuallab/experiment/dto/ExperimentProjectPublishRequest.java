@@ -25,5 +25,9 @@ public class ExperimentProjectPublishRequest {
     public void setVideoUrl(String videoUrl) { this.videoUrl = videoUrl; }
     public List<Long> getClassIds() { return classIds; }
     public void setClassIds(List<Long> classIds) { this.classIds = classIds; }
+
+    public String getProjectType() {
+        return "";
+    }
 }
 

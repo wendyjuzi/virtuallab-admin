@@ -613,64 +613,7 @@ public class SystemAdminController {
 
     // ==================== 实验报告管理 ====================
 
-    @GetMapping("/experiment-reports")
-    @ApiOperation("获取实验报告列表")
-    public CommonResult<List<ExperimentReport>> getExperimentReports() {
-        try {
-            List<ExperimentReport> reports = experimentReportService.listAll();
-            return CommonResult.success(reports, "资源更新成功");
-        } catch (Exception e) {
-            return CommonResult.failed("获取实验报告失败: " + e.getMessage());
-        }
-    }
 
-    @GetMapping("/experiment-reports/{id}")
-    @ApiOperation("根据ID获取实验报告")
-    public CommonResult<ExperimentReport> getExperimentReportById(@PathVariable Long id) {
-        try {
-            ExperimentReport report = experimentReportService.getById(id);
-            if (report != null) {
-                return CommonResult.success(report, "资源更新成功");
-            } else {
-                return CommonResult.failed("实验报告不存在");
-            }
-        } catch (Exception e) {
-            return CommonResult.failed("获取实验报告失败: " + e.getMessage());
-        }
-    }
-
-    @PostMapping("/experiment-reports")
-    @ApiOperation("创建实验报告")
-    public CommonResult<Integer> createExperimentReport(@RequestBody ExperimentReport report) {
-        try {
-            int result = experimentReportService.create(report);
-            return CommonResult.success(result, "资源更新成功");
-        } catch (Exception e) {
-            return CommonResult.failed("创建实验报告失败: " + e.getMessage());
-        }
-    }
-
-    @PutMapping("/experiment-reports")
-    @ApiOperation("更新实验报告")
-    public CommonResult<Integer> updateExperimentReport(@RequestBody ExperimentReport report) {
-        try {
-            int result = experimentReportService.update(report);
-            return CommonResult.success(result, "资源更新成功");
-        } catch (Exception e) {
-            return CommonResult.failed("更新实验报告失败: " + e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/experiment-reports/{id}")
-    @ApiOperation("删除实验报告")
-    public CommonResult<Integer> deleteExperimentReport(@PathVariable Long id) {
-        try {
-            int result = experimentReportService.delete(id);
-            return CommonResult.success(result, "资源更新成功");
-        } catch (Exception e) {
-            return CommonResult.failed("删除实验报告失败: " + e.getMessage());
-        }
-    }
 
     // ==================== 实验场景管理 ====================
 

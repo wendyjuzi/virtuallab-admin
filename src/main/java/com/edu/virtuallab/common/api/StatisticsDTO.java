@@ -1,17 +1,41 @@
 package com.edu.virtuallab.common.api;
 
-public class StatisticsDTO {
-    private int totalUsers;
-    private int activeUsers;
-    private int totalDepartments;
-    private int todayLogins;
+import lombok.Data;
+import java.util.List;
+import java.util.Map;
 
-    public int getTotalUsers() { return totalUsers; }
-    public void setTotalUsers(int totalUsers) { this.totalUsers = totalUsers; }
-    public int getActiveUsers() { return activeUsers; }
-    public void setActiveUsers(int activeUsers) { this.activeUsers = activeUsers; }
-    public int getTotalDepartments() { return totalDepartments; }
-    public void setTotalDepartments(int totalDepartments) { this.totalDepartments = totalDepartments; }
-    public int getTodayLogins() { return todayLogins; }
-    public void setTodayLogins(int todayLogins) { this.todayLogins = todayLogins; }
+@Data
+public class StatisticsDTO {
+    // 系统状态
+    private Integer onlineUsers;
+    private Integer activeExperiments;
+    private Integer systemLoad;
+    private Integer todayOperations;
+
+    // 权限统计
+    @Data
+    public static class PermissionStat {
+        private String name;
+        private String permission;
+        private Integer count;
+    }
+
+    // 用户行为分析
+    @Data
+    public static class UserBehavior {
+        private List<String> timePoints;
+        private List<Integer> viewData;
+        private List<Integer> createData;
+        private List<Integer> editData;
+        private List<Integer> deleteData;
+    }
+
+    // 系统性能
+    @Data
+    public static class SystemPerformance {
+        private List<String> timePoints;
+        private List<Integer> cpuData;
+        private List<Integer> memoryData;
+        private List<Integer> diskData;
+    }
 } 

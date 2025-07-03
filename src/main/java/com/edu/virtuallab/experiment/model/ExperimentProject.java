@@ -38,6 +38,14 @@ public class ExperimentProject {
     private String publishStatus; // 发布状态: unpublished/published
     private LocalDateTime publishTime; // 发布时间
 
+    private String config; // three.js参数(JSON字符串)
+    private Long creatorId;
+    private String creatorRole; // "ADMIN" or "TEACHER"
+    private String status; // "DRAFT", "PENDING_APPROVAL", "APPROVED", "REJECTED", "PUBLISHED"
+    private String approveComment;
+    private Date createTime;
+    private Date updateTime;
+
     // getter & setter
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -86,4 +94,18 @@ public class ExperimentProject {
         this.uploaderId = uploaderId;
     }
 
+    public String getConfig() { return config; }
+    public void setConfig(String config) { this.config = config; }
+    public Long getCreatorId() { return creatorId; }
+    public void setCreatorId(Long creatorId) { this.creatorId = creatorId; }
+    public String getCreatorRole() { return creatorRole; }
+    public void setCreatorRole(String creatorRole) { this.creatorRole = creatorRole; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public String getApproveComment() { return approveComment; }
+    public void setApproveComment(String approveComment) { this.approveComment = approveComment; }
+    public Date getCreateTime() { return createTime; }
+    public void setCreateTime(Date createTime) { this.createTime = createTime; }
+    public Date getUpdateTime() { return updateTime; }
+    public void setUpdateTime(Date updateTime) { this.updateTime = updateTime; }
 }

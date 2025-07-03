@@ -202,12 +202,7 @@
         WHERE id = #{id}
     </update>
 
-    <!-- 更新指纹数据 -->
-    <update id="updateFingerprint">
-        UPDATE user
-        SET fingerprint = #{fingerprint}, update_time = NOW()
-        WHERE id = #{id}
-    </update>
+
 
     <!-- 查询所有管理员用户 -->
     <select id="findAdmins" resultMap="BaseResultMap">

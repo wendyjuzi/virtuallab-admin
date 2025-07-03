@@ -8,6 +8,8 @@ public class OperationLog {
     private String username; // 操作用户名
     private String operation; // 操作类型
     private String module; // 功能模块
+    private String action; // 具体操作
+    private String target; // 操作目标
     private String description; // 操作描述
     private String requestMethod; // 请求方法
     private String requestUrl; // 请求URL
@@ -19,6 +21,7 @@ public class OperationLog {
     private Integer status; // 操作状态：0-失败 1-成功
     private String errorMessage; // 错误信息
     private Date createTime;
+    private String permissionCode;
 
     // 操作类型常量
     public static final String OPERATION_LOGIN = "LOGIN";
@@ -51,6 +54,10 @@ public class OperationLog {
     public void setOperation(String operation) { this.operation = operation; }
     public String getModule() { return module; }
     public void setModule(String module) { this.module = module; }
+    public String getAction() { return action; }
+    public void setAction(String action) { this.action = action; }
+    public String getTarget() { return target; }
+    public void setTarget(String target) { this.target = target; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
     public String getRequestMethod() { return requestMethod; }
@@ -73,8 +80,10 @@ public class OperationLog {
     public void setErrorMessage(String errorMessage) { this.errorMessage = errorMessage; }
     public Date getCreateTime() { return createTime; }
     public void setCreateTime(Date createTime) { this.createTime = createTime; }
-
-    public void setTarget(String target) {
-
+    public String getPermissionCode() {
+        return permissionCode;
     }
-} 
+    public void setPermissionCode(String permissionCode) {
+        this.permissionCode = permissionCode;
+    }
+}

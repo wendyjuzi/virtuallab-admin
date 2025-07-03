@@ -51,8 +51,12 @@ public class ExperimentProjectController {
     public ExperimentProject getById(@PathVariable Long id) {
         return projectService.getById(id);
     }
-
     @GetMapping("/list")
+    public List<ExperimentProject> listAll() {
+        return projectService.listAll();
+    }
+
+    @GetMapping("/viewlist")
     public CommonResult<PageResult<ExperimentProjectListDTO>> list(
             @RequestParam(required = false) String category,
             @RequestParam(defaultValue = "1") int page,
@@ -138,4 +142,16 @@ public class ExperimentProjectController {
 
 
 
+
+
+
+
+class ApproveRequest {
+    private boolean approve;
+    private String comment;
+    public boolean isApprove() { return approve; }
+    public void setApprove(boolean approve) { this.approve = approve; }
+    public String getComment() { return comment; }
+    public void setComment(String comment) { this.comment = comment; }
+}
 }

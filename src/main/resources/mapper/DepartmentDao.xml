@@ -19,7 +19,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, name, code, description, parent_id, level, status, contact_person, contact_phone, 
+        id, name, code, description, parent_id, level, status, contact_person, contact_phone,
         contact_email, sort, create_time, update_time
     </sql>
 

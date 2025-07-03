@@ -7,6 +7,7 @@ import com.edu.virtuallab.auth.model.*;
 import com.edu.virtuallab.auth.service.*;
 import com.edu.virtuallab.common.api.PageResult;
 import com.edu.virtuallab.common.api.StatisticsDTO;
+import com.edu.virtuallab.common.api.AdminStatisticsDTO;
 import com.edu.virtuallab.common.exception.BusinessException;
 import com.edu.virtuallab.log.dao.OperationLogDao;
 import com.edu.virtuallab.log.model.OperationLog;
@@ -576,8 +577,8 @@ public class SystemAdminServiceImpl implements SystemAdminService {
     }
     
     @Override
-    public StatisticsDTO getStatistics() {
-        StatisticsDTO dto = new StatisticsDTO();
+    public AdminStatisticsDTO getStatistics() {
+        AdminStatisticsDTO dto = new AdminStatisticsDTO();
         // 用户总数
         int totalUsers = userDao.countByConditions(null, null, null, null, null);
         // 活跃用户（最近7天登录）

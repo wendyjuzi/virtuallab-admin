@@ -22,4 +22,7 @@ public interface ExperimentProjectService {
     List<Long> getTeamsByStudentId(Long studentId);
     Long getStudentIdByUserId(Long userId);
 
+    void save(ExperimentProject project);
+    void approve(Long id, boolean approve, String comment);
+    ExperimentProject findById(Long id);
 }

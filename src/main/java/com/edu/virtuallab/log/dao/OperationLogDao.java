@@ -31,4 +31,6 @@ public interface OperationLogDao {
     List<OperationLog> selectLatestLogs(@Param("limit") int limit);
 
     OperationLog findById(@Param("id") Long id);
+
+    List<OperationLog> selectByConditions(@Param("keyword") String keyword, @Param("type") String type);
 } 

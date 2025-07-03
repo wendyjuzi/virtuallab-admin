@@ -88,22 +88,6 @@ public class AuthServiceImpl implements AuthService {
     }
     
     /**
-     * 短信验证码登录方法
-     * @param phone 手机号
-     * @param code 验证码
-     * @return 登录结果
-     */
-    @Override
-    public CommonResult<Boolean> loginWithSms(String phone, String code) {
-        // 注意：生产环境需要对接短信验证码服务
-        // 这里仅做演示，固定验证码为123456
-        if ("123456".equals(code)) {
-            return CommonResult.success(Boolean.TRUE, "资源更新成功");
-        }
-        return CommonResult.failed("验证码错误");
-    }
-
-    /**
      * 指纹登录方法
      * @param username 用户名
      * @param fingerprintData 指纹数据
@@ -117,18 +101,6 @@ public class AuthServiceImpl implements AuthService {
             return CommonResult.success(Boolean.TRUE, "资源更新成功");
         }
         return CommonResult.failed("指纹识别失败");
-    }
-
-    /**
-     * 发送短信验证码
-     * @param phone 手机号
-     * @return 发送结果
-     */
-    @Override
-    public CommonResult<Boolean> sendSmsCode(String phone) {
-        // 注意：生产环境需要对接短信服务提供商
-        // 这里仅做演示，默认发送成功
-        return CommonResult.success(Boolean.TRUE, "资源更新成功");
     }
 
     /**

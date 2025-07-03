@@ -171,7 +171,7 @@ public interface UserService {
      * @return user
      */
     User findByStudentId(String studentId);
-}
+
 
     /**
      * 根据邮箱获取用户信息

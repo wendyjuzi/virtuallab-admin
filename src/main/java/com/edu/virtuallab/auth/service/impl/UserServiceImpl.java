@@ -82,18 +82,14 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean register(UserRegisterDTO dto) {
-        // 管理员注册需校验短信或邮箱验证码
+        // 管理员注册只校验邮箱验证码
         if ("admin".equalsIgnoreCase(dto.getUserType())) {
-            boolean smsValid = false;
             boolean emailValid = false;
-            if (dto.getSmsCode() != null && dto.getPhone() != null) {
-                smsValid = authFactorService.validateSmsCode(null, dto.getPhone(), dto.getSmsCode());
-            }
             if (dto.getEmailCode() != null && dto.getEmail() != null) {
                 emailValid = authFactorService.validateEmailCode(null, dto.getEmail(), dto.getEmailCode());
             }
-            if (!smsValid && !emailValid) {
-                throw new RuntimeException("管理员注册需短信或邮箱验证码校验通过");
+            if (!emailValid) {
+                throw new RuntimeException("管理员注册需邮箱验证码校验通过");
             }
         }
         // 只校验用户名唯一
@@ -103,7 +99,6 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setUsername(dto.getUsername());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setPhone(dto.getPhone());
         user.setEmail(dto.getEmail());
         user.setRealName(dto.getRealName());
         user.setStudentId(dto.getStudentId());
@@ -234,23 +229,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean updatePhone(Long userId, String newPhone, String verificationCode) {
-        // 验证短信验证码
-        if (!authFactorService.validateSmsCode(userId, newPhone, verificationCode)) {
-            throw new BusinessException("短信验证码错误");
-        }
-
-        // 检查手机号是否被其他用户使用
-        User existingUser = userDao.findByPhone(newPhone);
-        if (existingUser != null && !existingUser.getId().equals(userId)) {
-            throw new BusinessException("手机号已被其他用户使用");
-        }
-
-        User user = new User();
-        user.setId(userId);
-        user.setPhone(newPhone);
-        user.setUpdateTime(new Date());
-
-        return userDao.update(user) > 0;
+        throw new UnsupportedOperationException("已移除手机号相关功能");
     }
 
     // ==================== 用户状态管理 ====================
@@ -384,7 +363,7 @@ public class UserServiceImpl implements UserService {
     public User getByEmail(String email) {
         return userDao.findByEmail(email);
     }
-}
+
 
     @Override
     public User findByStudentId(String studentId){return userDao.findByStudentId(studentId);}

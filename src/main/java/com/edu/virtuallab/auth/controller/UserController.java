@@ -423,7 +423,7 @@ public class UserController {
     public CommonResult<User> getUserByStudentId(@PathVariable String studentId) {
         User user = userService.findByStudentId(studentId);
         if (user != null) {
-            return CommonResult.success(user); // 直接返回 User 实体
+            return CommonResult.success(user,""); // 直接返回 User 实体
         }
         return CommonResult.failed("用户不存在");
     }
@@ -456,5 +456,4 @@ public class UserController {
         PageResult<User> result = userService.getUserList(keyword, keyword, null, userType, status, page, size);
         return CommonResult.success(result, "查询成功");
     }
-}
 }

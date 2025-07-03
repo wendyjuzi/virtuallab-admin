@@ -84,39 +84,40 @@ public class ExperimentReportController {
         }
     }
 
-//    // 下载附件
-//    @GetMapping("/report/{sessionId}/attachments/{filename}")
-//    public ResponseEntity<byte[]> downloadAttachment(@PathVariable String sessionId){
-//        ExperimentReport experimentReport = experimentReportService.getReportBySession(sessionId);
-//
-//        if(experimentReport == null || !experimentReport.hasAttachment()){
-//            throw new RuntimeException("附件不存在");
-//        }
-//
-//        try{
-//            Path filePath = Path.get(uploadDir).resolve(experimentReport.getAttachmentPath().replace("/upload/",""));
-//            Resource resource = new UrlResource(filePath.toUri());
-//
-//            if(!resource.exists() || !resource.isReadable()){
-//                throw new RuntimeException("无法读取附件");
-//            }
-//            return ResponseEntity.ok()
-//                    .header(HttpHeaders.CONTENT_DISPOSITION,
-//                            "attachment; filename=\"" + experimentReport.getDownloadFilename() + "\"")
-//                    .contentType(MediaType.parseMediaType(report.getMimeType()))
-//                    .body(resource);
-//        } catch (Exception e) {
-//            throw new RuntimeException("下载失败: " + e.getMessage(), e);
-//        }
-//    }
+    // 下载附件
+    @GetMapping("/report/{sessionId}/attachments/{filename}")
+    public ResponseEntity<byte[]> downloadAttachment(
+            @PathVariable String sessionId,
+            @PathVariable String filename) {
+        try {
+            ExperimentReport report = experimentReportService.getReportBySession(sessionId);
+            byte[] fileContent = experimentReportService.downloadAttachment(sessionId, filename);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + report.getDownloadFilename() + "\"")
+                    .contentType(MediaType.parseMediaType(report.getMimeType()))
+                    .body(fileContent);
+        } catch (BusinessException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 
     // 删除附件
     @DeleteMapping("/report/{sessionId}/attachments/{filename}")
     public ResponseEntity<Void> deleteAttachment(
             @PathVariable String sessionId,
             @PathVariable String filename) {
-        experimentReportService.deleteAttachment(sessionId, filename);
-        return ResponseEntity.ok().build();
+        try {
+            experimentReportService.deleteAttachment(sessionId, filename);
+            return ResponseEntity.ok().build();
+        } catch (BusinessException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PostMapping("/report/{sessionId}/submit")

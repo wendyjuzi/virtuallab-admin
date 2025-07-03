@@ -101,6 +101,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         EmailVerificationCode entity = codeList.get(0); // 取最新或第一个
         return entity.getCode().equals(code) && !entity.isExpired();
     }
+
     /**
      * 生成6位数字验证码
      */

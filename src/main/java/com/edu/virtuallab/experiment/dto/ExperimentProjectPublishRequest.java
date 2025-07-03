@@ -26,8 +26,14 @@ public class ExperimentProjectPublishRequest {
     public List<Long> getClassIds() { return classIds; }
     public void setClassIds(List<Long> classIds) { this.classIds = classIds; }
 
+    private String projectType;
+    // 新增 getProjectType 方法
     public String getProjectType() {
-        return "";
+        return projectType;
+    }
+    // 新增 setProjectType 方法，方便设置属性值
+    public void setProjectType(String projectType) {
+        this.projectType = projectType;
     }
 }
 

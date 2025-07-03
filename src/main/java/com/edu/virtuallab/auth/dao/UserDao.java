@@ -105,4 +105,11 @@ public interface UserDao {
      * 统计今日登录数量
      */
     int countTodayLogins(@Param("todayStart") java.util.Date todayStart);
+
+    // 关键字聚合搜索专用
+    List<User> findByKeyword(@Param("keyword") String keyword,
+                            @Param("userType") String userType,
+                            @Param("status") Integer status,
+                            @Param("offset") int offset,
+                            @Param("size") int size);
 }

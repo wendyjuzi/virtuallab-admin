@@ -6,6 +6,7 @@ import com.edu.virtuallab.auth.model.*;
 import com.edu.virtuallab.common.api.PageResult;
 import com.edu.virtuallab.log.model.OperationLog;
 import com.edu.virtuallab.common.api.StatisticsDTO;
+import com.edu.virtuallab.common.api.AdminStatisticsDTO;
 
 import java.util.List;
 
@@ -242,5 +243,5 @@ public interface SystemAdminService {
      */
     int getTodayLoginCount();
     
-    StatisticsDTO getStatistics();
+    AdminStatisticsDTO getStatistics();
 } 

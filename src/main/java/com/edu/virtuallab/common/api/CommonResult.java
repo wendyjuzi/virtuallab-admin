@@ -12,9 +12,11 @@ public class CommonResult<T> {
         this.data = data;
     }
 
-    public static <T> CommonResult<T> success(T data, String 资源更新成功) {
-        return new CommonResult<>(ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), data);
+    public static <T> CommonResult<T> success(T data, String message) {
+        return new CommonResult<>(ResultCode.SUCCESS.getCode(), message, data);
     }
+
+
     public static <T> CommonResult<T> failed(String message) {
         return new CommonResult<>(ResultCode.FAILED.getCode(), message, null);
     }

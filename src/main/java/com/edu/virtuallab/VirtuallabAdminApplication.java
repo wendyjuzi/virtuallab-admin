@@ -7,7 +7,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-@MapperScan("com.edu.virtuallab.**.dao")
+@MapperScan({"com.edu.virtuallab.**.dao", "com.edu.virtuallab.**.mapper"})
+
 public class VirtuallabAdminApplication {
     public static void main(String[] args) {
         SpringApplication.run(VirtuallabAdminApplication.class, args);

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.edu.virtuallab.log.dao.OperationLogDao">
+
+    <!-- 1. 统计今日操作日志数 -->
+    <select id="countTodayOperations" resultType="int">
+        SELECT COUNT(*)
+        FROM operation_log
+        WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = DATE_FORMAT(CURDATE(), '%Y-%m-%d')
+    </select>
+
+    <!-- 2. 条件查询日志列表（支持分页） -->
+    <select id="selectByConditions" resultType="com.edu.virtuallab.log.model.OperationLog">
+        SELECT * FROM operation_log
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (username LIKE CONCAT('%', #{keyword}, '%')
+            OR operation LIKE CONCAT('%', #{keyword}, '%')
+            OR description LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="type != null and type != ''">
+            AND type = #{type}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 3. 查询最近 N 条日志 -->
+    <select id="selectLatestLogs" resultType="com.edu.virtuallab.log.model.OperationLog">
+        SELECT * FROM operation_log
+        ORDER BY create_time DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- 4. 根据用户 ID 查询日志 -->
+    <select id="findByUserId" resultType="com.edu.virtuallab.log.model.OperationLog">
+        SELECT * FROM operation_log
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 5. 查询全部 -->
+    <select id="findAll" resultType="com.edu.virtuallab.log.model.OperationLog">
+        SELECT * FROM operation_log
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 6. 根据 ID 查询日志 -->
+    <select id="findById" resultType="com.edu.virtuallab.log.model.OperationLog">
+        SELECT * FROM operation_log
+        WHERE id = #{id}
+        LIMIT 1
+    </select>
+
+    <!-- 7. 插入日志记录 -->
+    <insert id="insert" parameterType="com.edu.virtuallab.log.model.OperationLog" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO operation_log (
+            username, user_id, operation, description, status, user_agent, create_time
+        ) VALUES (
+                     #{username}, #{userId}, #{operation}, #{description}, #{type}, #{status}, #{ip}, #{userAgent}, NOW()
+                 )
+    </insert>
+
+</mapper>

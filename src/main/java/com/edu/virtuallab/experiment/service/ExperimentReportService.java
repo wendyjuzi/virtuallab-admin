@@ -10,10 +10,11 @@ import java.util.List;
 public interface ExperimentReportService {
     ExperimentReport getReportBySession(String sessionId);
     void saveReportContent(String sessionId, String manualContent);
-    void saveReportAttachment(String sessionId, MultipartFile file) throws BusinessException, IOException;
+    void uploadAttachment(String sessionId, MultipartFile file) throws BusinessException, IOException;
     byte[] downloadAttachment(String sessionId, String filename) throws BusinessException;
     List<String> listAttachments(String sessionId);
     void deleteAttachment(String sessionId, String filename) throws BusinessException;
     void submitReport(String sessionId);
-
+    List<ExperimentReport> getReportList(Long studentId);
+    List<ExperimentReport> getSubmittedAndGradedReports();
 }

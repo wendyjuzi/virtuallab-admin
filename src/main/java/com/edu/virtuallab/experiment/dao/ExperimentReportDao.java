@@ -1,11 +1,10 @@
 package com.edu.virtuallab.experiment.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.edu.virtuallab.experiment.model.ExperimentReport;
 import org.apache.ibatis.annotations.*;
 
-import java.util.Map;
+import java.util.List;
 
 @Mapper
 public interface ExperimentReportDao extends BaseMapper<ExperimentReport> {
@@ -34,4 +33,10 @@ public interface ExperimentReportDao extends BaseMapper<ExperimentReport> {
     @Update("UPDATE experiment_report SET status = 'SUBMITTED', updated_at = NOW() WHERE session_id = #{sessionId} AND status = 'DRAFT'")
     int submitBySessionId(@Param("sessionId") String sessionId);
 
+    @Select("SELECT * FROM experiment_report WHERE student_id = #{studentId} ORDER BY updated_at DESC")
+    @ResultMap("reportMap")
+    List<ExperimentReport> findByStudentId(@Param("studentId")Long studentId);
+
+    @Select("SELECT * FROM experiment_report WHERE status IN ('SUBMITTED', 'GRADED')")
+    List<ExperimentReport> findSubmittedAndGradedReports();
 }

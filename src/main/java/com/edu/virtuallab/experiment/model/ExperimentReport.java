@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.util.Date;
 import java.util.List;
 
@@ -39,15 +41,46 @@ public class ExperimentReport {
     private Date updatedAt;
 
     // 附件
-    private String attachment;
+    @TableField("attachment_path")
+    private String attachmentPath; // 文件存储路径
 
-    private String status;//实验报告的状态
+    @TableField("original_filename")
+    private String originalFilename; // 原始文件名
+
+    @TableField("file_size")
+    private Long fileSize; // 文件大小(字节)
+
+    @TableField("mime_type")
+    private String mimeType; // 文件类型
+
+    public enum Status{
+        DRAFT, SUBMITTED, GRADED, SAVED
+    }
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     // 无参构造函数（初始化默认值）
     public ExperimentReport() {
-        this.status = "DRAFT";
+        this.status = Status.DRAFT;
         this.createdAt = new Date();
         this.updatedAt = new Date();
+    }
+
+    // 辅助方法：获取可下载的文件名（带原始扩展名）
+    public String getDownloadFilename() {
+        if (originalFilename != null && !originalFilename.isEmpty()) {
+            return originalFilename;
+        }
+        if (attachmentPath != null && !attachmentPath.isEmpty()) {
+            return attachmentPath.substring(attachmentPath.lastIndexOf('/') + 1);
+        }
+        return "attachment";
+    }
+
+    // 辅助方法：检查是否有附件
+    public boolean hasAttachment() {
+        return attachmentPath != null && !attachmentPath.isEmpty();
     }
 
     public String getStudentId() {

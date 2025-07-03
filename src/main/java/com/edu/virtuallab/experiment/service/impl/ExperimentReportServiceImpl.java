@@ -1,6 +1,5 @@
 package com.edu.virtuallab.experiment.service.impl;
 
-import com.edu.virtuallab.common.exception.BusinessException;
 import com.edu.virtuallab.experiment.dao.ExperimentReportDao;
 import com.edu.virtuallab.experiment.model.ExperimentReport;
 import com.edu.virtuallab.experiment.service.ExperimentReportService;
@@ -12,7 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -22,7 +26,7 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
     @Autowired
     private ExperimentReportDao experimentReportDao;
 
-    @Value("${file.upload-dir:uploads")
+    @Value("${file.upload-dir}")
     private String uploadDir;
 
     @Transactional(readOnly = true)
@@ -54,9 +58,43 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
 
     @Override
     @Transactional
-    public void saveReportAttachment(String sessionId, MultipartFile file) throws IOException {
+    public void uploadAttachment(String sessionId, MultipartFile file) throws IOException {
         ExperimentReport experimentReport = experimentReportDao.findBySessionId(sessionId);
-        experimentReportDao.updateById(experimentReport);
+
+        try {
+            // 实现文件存储逻辑
+            String filename = storeFile(file);
+
+            //更新报告附件信息
+            experimentReport.setAttachmentPath("/uploads/" + filename);
+            experimentReport.setOriginalFilename(file.getOriginalFilename());
+            experimentReport.setFileSize(file.getSize());
+            experimentReport.setMimeType(file.getContentType());
+            experimentReport.setUpdatedAt(new Date());
+
+            experimentReportDao.updateById(experimentReport);
+        }catch(IOException e){
+            throw new RuntimeException("文件上传失败:" + e.getMessage(), e);
+        }
+    }
+
+    private String storeFile(MultipartFile file) throws IOException{
+        // 确保上传目录存在
+        Path uploadPath = Paths.get(uploadDir);
+        if(!Files.exists(uploadPath)){
+            Files.createDirectories(uploadPath);
+        }
+
+        // 生成唯一文件名，防止冲突
+        String originalFilename = file.getOriginalFilename();
+        String fileExtension = originalFilename != null ? originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
+        String storedFilename = UUID.randomUUID() + fileExtension;
+
+        // 存储文件
+        Path destination = uploadPath.resolve(storedFilename);
+        Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+
+        return storedFilename;
     }
 
     @Override
@@ -104,7 +142,7 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
     private ExperimentReport createDefaultReport(String sessionId) {
         ExperimentReport report = new ExperimentReport();
         report.setSessionId(sessionId);
-        report.setStatus("DRAFT");
+        report.setStatus(ExperimentReport.Status.DRAFT);
         report.setPrinciple("");
         report.setPurpose("");
         report.setCategory("");
@@ -112,9 +150,25 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
         report.setSteps("");
         report.setDescription("");
         report.setManualContent("");
-        report.setAttachment(null);
         report.setCreatedAt(new Date());
         report.setUpdatedAt(new Date());
         return report;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ExperimentReport> getReportList(Long studentId){
+        try {
+            log.info("获取学生报告列表，studentId: {}", studentId);
+            return experimentReportDao.findByStudentId(studentId);
+        } catch (Exception e) {
+            log.error("获取报告列表失败", e);
+            throw new RuntimeException("获取报告列表失败: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<ExperimentReport> getSubmittedAndGradedReports(){
+        return experimentReportDao.findSubmittedAndGradedReports();
     }
 }

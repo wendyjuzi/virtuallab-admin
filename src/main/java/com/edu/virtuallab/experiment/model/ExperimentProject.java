@@ -17,9 +17,10 @@ public class ExperimentProject {
     private String level;
     private String imageUrl;
     private String videoUrl;
+    @TableField("collaboration_type")
     private String projectType; // 值可能是 "personal" 或 "team"
 
-    private Long uploaderId; // 上传者ID
+    // private Long uploaderId; // 上传者ID
 
     //    private Date createdAt;
 //    private Date updatedAt;
@@ -79,11 +80,11 @@ public class ExperimentProject {
         this.projectType = projectType;
     }
 
-    public Long getUploaderId() {
-        return uploaderId;
-    }
-    public void setUploaderId(Long uploaderId) {
-        this.uploaderId = uploaderId;
-    }
+//    public Long getUploaderId() {
+//        return uploaderId;
+//    }
+//    public void setUploaderId(Long uploaderId) {
+//        this.uploaderId = uploaderId;
+//    }
 
 }

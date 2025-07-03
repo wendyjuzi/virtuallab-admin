@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/experiment/project/audit")
+@RequestMapping("/experiment/project/audit")
 @Api(tags = "实验项目审核管理")
 public class ExperimentProjectAuditController {
 
@@ -23,18 +23,17 @@ public class ExperimentProjectAuditController {
     public ExperimentProjectAuditController(ExperimentProjectAuditService auditService) {
         this.auditService = auditService;
     }
-
     //将 @RequestAttribute Long userId 改为 @RequestParam Long userId，这样用户 ID 就可以通过请求参数传递
-    @ApiOperation("提交实验项目审核")
-    @PostMapping("/submit/{projectId}")
-    @PreAuthorize("hasAuthority('experiment:project:create')")
-    public CommonResult<String> submitForAudit(
-            @PathVariable Long projectId,
-            @RequestParam  Long userId) {
-
-        auditService.submitForAudit(projectId, userId);
-        return CommonResult.success("实验项目已提交审核");
-    }
+//    @ApiOperation("提交实验项目审核")
+//    @PostMapping("/submit/{projectId}")
+//    @PreAuthorize("hasAuthority('experiment:project:create')")
+//    public CommonResult<String> submitForAudit(
+//            @PathVariable Long projectId,
+//            @RequestParam  Long userId) {
+//
+//        auditService.submitForAudit(projectId, userId);
+//        return CommonResult.success("实验项目已提交审核", "资源更新成功");
+//    }
 
     @ApiOperation("审核实验项目")
     @PostMapping("/audit/{projectId}")
@@ -46,7 +45,7 @@ public class ExperimentProjectAuditController {
             @RequestParam  Long auditorId) {
 
         auditService.auditProject(projectId, status, comment, auditorId);
-        return CommonResult.success("实验项目审核操作已完成");
+        return CommonResult.success("实验项目审核操作已完成", "资源更新成功");
     }
 
     @ApiOperation("发布实验项目到班级")
@@ -58,7 +57,7 @@ public class ExperimentProjectAuditController {
             @RequestParam  Long publisherId) {
 
         auditService.publishProject(projectId, classIds, publisherId);
-        return CommonResult.success("实验项目已成功发布到指定班级");
+        return CommonResult.success("实验项目已成功发布到指定班级", "资源更新成功");
     }
 
     @ApiOperation("获取待审核实验项目列表")
@@ -66,7 +65,7 @@ public class ExperimentProjectAuditController {
     @PreAuthorize("hasAuthority('experiment:project:approve')")
     public CommonResult<List<ExperimentProject>> getPendingProjects() {
         List<ExperimentProject> projects = auditService.getPendingProjects();
-        return CommonResult.success(projects);
+        return CommonResult.success(projects, "资源更新成功");
     }
 
     @ApiOperation("获取实验项目审核历史")
@@ -75,7 +74,7 @@ public class ExperimentProjectAuditController {
             @PathVariable Long projectId) {
 
         List<ExperimentProjectAuditLog> history = auditService.getAuditHistory(projectId);
-        return CommonResult.success(history);
+        return CommonResult.success(history, "资源更新成功");
     }
 
     @ApiOperation("获取已发布班级")
@@ -84,6 +83,30 @@ public class ExperimentProjectAuditController {
             @PathVariable Long projectId) {
 
         List<Long> classIds = auditService.getPublishedClasses(projectId);
-        return CommonResult.success(classIds);
+        return CommonResult.success(classIds, "资源更新成功");
+    }
+
+    @ApiOperation("获取所有实验项目")
+    @GetMapping("/all")
+    @PreAuthorize("hasAuthority('experiment:project:view')")
+    public CommonResult<List<ExperimentProject>> getAllProjects() {
+        List<ExperimentProject> projects = auditService.getAllProjects();
+        return CommonResult.success(projects, "资源更新成功");
+    }
+
+    @ApiOperation("获取已通过审核的实验项目列表")
+    @GetMapping("/approved")
+    @PreAuthorize("hasAuthority('experiment:project:view')")
+    public CommonResult<List<ExperimentProject>> getApprovedProjects() {
+        List<ExperimentProject> projects = auditService.getApprovedProjects();
+        return CommonResult.success(projects, "资源更新成功");
+    }
+
+    @ApiOperation("获取已驳回的实验项目列表")
+    @GetMapping("/rejected")
+    @PreAuthorize("hasAuthority('experiment:project:view')")
+    public CommonResult<List<ExperimentProject>> getRejectedProjects() {
+        List<ExperimentProject> projects = auditService.getRejectedProjects();
+        return CommonResult.success(projects, "资源更新成功");
     }
 }

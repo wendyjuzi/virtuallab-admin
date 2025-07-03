@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Date;
 
 @Service
 public class ExperimentProjectServiceImpl implements ExperimentProjectService {
@@ -82,6 +83,7 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
         project.setImageUrl(request.getImageUrl());
         project.setVideoUrl(request.getVideoUrl());
         project.setProjectType(request.getProjectType());
+        project.setAuditStatus("pending");
 
         // ✅ 设置创建者用户名
         project.setCreatedBy(createdBy);
@@ -148,5 +150,50 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
         return projectDao.getProjectsByCreatedBy(createdBy);
     }
 
+    @Override
+    public List<ExperimentProject> listPage(String category, String sort, int page, int size) {
+        int offset = (page - 1) * size;
+        return projectDao.listPage(category, sort, offset, size);
+    }
 
-} 
+    @Override
+    public long countPage(String category) {
+        return projectDao.countPage(category);
+    }
+    @Override
+    public List<Long> getTeamsByStudentId(Long studentId) {
+        return projectDao.getTeamsByStudentId(studentId);
+    }
+
+    @Override
+    public void save(ExperimentProject project) {
+        if (project.getId() == null) {
+            project.setCreateTime(new Date());
+            project.setUpdateTime(new Date());
+            projectDao.insert(project);
+        } else {
+            project.setUpdateTime(new Date());
+            projectDao.update(project);
+        }
+    }
+
+    @Override
+    public void approve(Long id, boolean approve, String comment) {
+        ExperimentProject project = projectDao.findById(id);
+        if (project == null) throw new RuntimeException("实验不存在");
+        project.setStatus(approve ? "APPROVED" : "REJECTED");
+        project.setApproveComment(comment);
+        project.setUpdateTime(new Date());
+        projectDao.update(project);
+    }
+
+    @Override
+    public ExperimentProject findById(Long id) {
+        return projectDao.findById(id);
+    }
+}
+    @Override
+    public Long getStudentIdByUserId(Long userId) {
+        return projectDao.getStudentIdByUserId(userId);
+    }
+}

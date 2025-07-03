@@ -137,7 +137,7 @@ public class EmailVerificationController {
             }
             
             boolean verified = emailVerificationService.isEmailVerified(email);
-            return CommonResult.success(verified);
+            return CommonResult.success(verified, "资源更新成功");
         } catch (Exception e) {
             return CommonResult.failed("检查失败: " + e.getMessage());
         }

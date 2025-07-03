@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/log")
+@RequestMapping("/log")
 public class OperationLogController {
     @Autowired
     private OperationLogService logService;

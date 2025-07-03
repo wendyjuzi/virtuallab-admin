@@ -21,6 +21,7 @@ public class User {
     private Date lockTime; // 锁定时间
     private Date createTime;
     private Date updateTime;
+    private java.util.List<Role> roleList;
 
     // 用户状态常量
     public static final int STATUS_DISABLED = 0;
@@ -64,4 +65,6 @@ public class User {
     public void setCreateTime(Date createTime) { this.createTime = createTime; }
     public Date getUpdateTime() { return updateTime; }
     public void setUpdateTime(Date updateTime) { this.updateTime = updateTime; }
+    public java.util.List<Role> getRoleList() { return roleList; }
+    public void setRoleList(java.util.List<Role> roleList) { this.roleList = roleList; }
 } 

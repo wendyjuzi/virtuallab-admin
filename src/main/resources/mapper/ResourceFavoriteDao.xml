@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.edu.virtuallab.resource.dao.ResourceFavoriteDao">
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" resultType="com.edu.virtuallab.resource.model.ResourceFavorite">
+        SELECT * FROM resource_favorite WHERE id = #{id}
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" parameterType="com.edu.virtuallab.resource.model.ResourceFavorite" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO resource_favorite (user_id, resource_id, create_time)
+        VALUES (#{userId}, #{resourceId}, #{createTime})
+    </insert>
+
+    <!-- 删除 -->
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM resource_favorite WHERE id = #{id}
+    </delete>
+
+    <!-- 更新 -->
+    <update id="updateById" parameterType="com.edu.virtuallab.resource.model.ResourceFavorite">
+        UPDATE resource_favorite
+        SET user_id = #{userId}, resource_id = #{resourceId}, create_time = #{createTime}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据用户ID和资源ID查询（防止重复收藏） -->
+    <select id="selectByUserAndResource" resultType="com.edu.virtuallab.resource.model.ResourceFavorite">
+        SELECT * FROM resource_favorite WHERE user_id = #{userId} AND resource_id = #{resourceId}
+    </select>
+
+    <select id="selectByUserId" resultType="com.edu.virtuallab.resource.model.ResourceFavorite">
+        SELECT id, user_id, resource_id, create_time
+        FROM resource_favorite
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="countByUserId" resultType="int">
+        SELECT COUNT(*) FROM resource_favorite WHERE user_id = #{userId}
+    </select>
+
+    <select id="countByUserIdAndResourceId" resultType="int">
+        SELECT COUNT(*) FROM resource_favorite WHERE user_id = #{userId} AND resource_id = #{resourceId}
+    </select>
+
+    <insert id="insertByUserAndResource">
+        INSERT IGNORE INTO resource_favorite (user_id, resource_id) VALUES (#{userId}, #{resourceId})
+    </insert>
+    <delete id="delete">
+        DELETE FROM resource_favorite WHERE user_id = #{userId} AND resource_id = #{resourceId}
+    </delete>
+
+</mapper>

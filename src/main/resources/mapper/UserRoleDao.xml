@@ -17,9 +17,8 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, user_id, role_id, department_id, status, start_time, end_time, reason, created_by, create_time, update_time
+        id, user_id, role_id, department_id, status, start_time, end_time, created_by, create_time, update_time
     </sql>
-
     <!-- 根据用户ID查询用户角色 -->
     <select id="findByUserId" resultMap="BaseResultMap" parameterType="java.lang.Long">
         SELECT <include refid="Base_Column_List"/>
@@ -47,9 +46,9 @@
     <!-- 插入用户角色 -->
     <insert id="insert" parameterType="com.edu.virtuallab.auth.model.UserRole" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO user_role (
-            user_id, role_id, department_id, status, start_time, end_time, reason, created_by, create_time, update_time
+            user_id, role_id, create_time
         ) VALUES (
-            #{userId}, #{roleId}, #{departmentId}, #{status}, #{startTime}, #{endTime}, #{reason}, #{createdBy}, #{createTime}, #{updateTime}
+            #{userId}, #{roleId}, #{createTime}
         )
     </insert>
 
@@ -68,15 +67,8 @@
         DELETE FROM user_role WHERE user_id = #{userId} AND role_id = #{roleId}
     </delete>
 
-    <!-- 根据用户ID和院系ID删除用户角色 -->
-    <delete id="deleteByUserIdAndDepartmentId">
-        DELETE FROM user_role WHERE user_id = #{userId} AND department_id = #{departmentId}
-    </delete>
 
-    <!-- 根据用户ID、角色ID和院系ID删除用户角色 -->
-    <delete id="deleteByUserIdAndRoleIdAndDepartmentId">
-        DELETE FROM user_role WHERE user_id = #{userId} AND role_id = #{roleId} AND department_id = #{departmentId}
-    </delete>
+
 
     <!-- 根据ID删除用户角色 -->
     <delete id="deleteById" parameterType="java.lang.Long">

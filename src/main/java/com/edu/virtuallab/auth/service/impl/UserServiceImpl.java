@@ -1,14 +1,14 @@
 package com.edu.virtuallab.auth.service.impl;
 
+import com.edu.virtuallab.auth.dao.RoleDao;
 import com.edu.virtuallab.auth.dao.UserDao;
 import com.edu.virtuallab.auth.dao.UserRoleDao;
-import com.edu.virtuallab.auth.dao.RoleDao;
-import com.edu.virtuallab.auth.model.User;
-import com.edu.virtuallab.auth.model.UserRole;
 import com.edu.virtuallab.auth.model.Role;
-import com.edu.virtuallab.auth.service.UserService;
+import com.edu.virtuallab.auth.model.User;
 import com.edu.virtuallab.auth.model.UserRegisterDTO;
+import com.edu.virtuallab.auth.model.UserRole;
 import com.edu.virtuallab.auth.service.AuthFactorService;
+import com.edu.virtuallab.auth.service.UserService;
 import com.edu.virtuallab.common.api.PageResult;
 import com.edu.virtuallab.common.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageResult<User> getUserList(String username, String realName, String department, 
+    public PageResult<User> getUserList(String username, String realName, String department,
                                        String userType, Integer status, int page, int size) {
         int offset = (page - 1) * size;
         List<User> users = userDao.findByConditions(username, realName, department, userType, status, offset, size);
@@ -182,16 +182,16 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new BusinessException("用户不存在");
         }
-        
+
         // 验证旧密码
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             throw new BusinessException("原密码错误");
         }
-        
+
         // 更新密码
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setUpdateTime(new Date());
-        
+
         return userDao.update(user) > 0;
     }
 
@@ -202,10 +202,10 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new BusinessException("用户不存在");
         }
-        
+
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setUpdateTime(new Date());
-        
+
         return userDao.update(user) > 0;
     }
 
@@ -216,18 +216,18 @@ public class UserServiceImpl implements UserService {
         if (!authFactorService.validateEmailCode(userId, newEmail, verificationCode)) {
             throw new BusinessException("邮箱验证码错误");
         }
-        
+
         // 检查邮箱是否被其他用户使用
         User existingUser = userDao.findByEmail(newEmail);
         if (existingUser != null && !existingUser.getId().equals(userId)) {
             throw new BusinessException("邮箱已被其他用户使用");
         }
-        
+
         User user = new User();
         user.setId(userId);
         user.setEmail(newEmail);
         user.setUpdateTime(new Date());
-        
+
         return userDao.update(user) > 0;
     }
 
@@ -238,18 +238,18 @@ public class UserServiceImpl implements UserService {
         if (!authFactorService.validateSmsCode(userId, newPhone, verificationCode)) {
             throw new BusinessException("短信验证码错误");
         }
-        
+
         // 检查手机号是否被其他用户使用
         User existingUser = userDao.findByPhone(newPhone);
         if (existingUser != null && !existingUser.getId().equals(userId)) {
             throw new BusinessException("手机号已被其他用户使用");
         }
-        
+
         User user = new User();
         user.setId(userId);
         user.setPhone(newPhone);
         user.setUpdateTime(new Date());
-        
+
         return userDao.update(user) > 0;
     }
 
@@ -316,7 +316,7 @@ public class UserServiceImpl implements UserService {
     public boolean assignRoles(Long userId, List<Long> roleIds) {
         // 先删除现有角色
         userRoleDao.deleteByUserId(userId);
-        
+
         // 分配新角色
         for (Long roleId : roleIds) {
             UserRole userRole = new UserRole();
@@ -349,13 +349,13 @@ public class UserServiceImpl implements UserService {
     // ==================== 查询统计 ====================
 
     @Override
-    public List<User> findUsersByCondition(String username, String realName, String department, 
+    public List<User> findUsersByCondition(String username, String realName, String department,
                                           String userType, Integer status) {
         return userDao.findByConditions(username, realName, department, userType, status, 0, Integer.MAX_VALUE);
     }
 
     @Override
-    public int countUsers(String username, String realName, String department, 
+    public int countUsers(String username, String realName, String department,
                          String userType, Integer status) {
         return userDao.countByConditions(username, realName, department, userType, status);
     }
@@ -384,4 +384,9 @@ public class UserServiceImpl implements UserService {
     public User getByEmail(String email) {
         return userDao.findByEmail(email);
     }
-} 
+}
+
+    @Override
+    public User findByStudentId(String studentId){return userDao.findByStudentId(studentId);}
+
+}

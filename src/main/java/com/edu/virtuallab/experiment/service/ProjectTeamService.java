@@ -36,4 +36,5 @@ public interface ProjectTeamService {
 
     int autoGroupStudents(Long projectId, int groupSize);
 
+    // 可根据需要添加方法
 }

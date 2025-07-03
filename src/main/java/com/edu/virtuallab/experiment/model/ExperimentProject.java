@@ -59,7 +59,11 @@ public class ExperimentProject {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
+    public String getLevel() { return level; }
+    public void setLevel(String level) { this.level = level; }
 
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public String getVideoUrl() { return videoUrl; }
     public void setVideoUrl(String videoUrl) { this.videoUrl = videoUrl; }

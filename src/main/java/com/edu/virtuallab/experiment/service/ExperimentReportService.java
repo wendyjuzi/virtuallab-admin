@@ -9,11 +9,21 @@ import java.util.List;
 
 public interface ExperimentReportService {
     ExperimentReport getReportBySession(String sessionId);
-    void saveReportContent(String sessionId, String manualContent);
+    ExperimentReport saveReportContent(String sessionId, String manualContent, ExperimentReport.Status status);
     void uploadAttachment(String sessionId, MultipartFile file) throws BusinessException, IOException;
     byte[] downloadAttachment(String sessionId, String filename) throws BusinessException;
     void deleteAttachment(String sessionId, String filename) throws BusinessException;
-    void submitReport(String sessionId);
+    ExperimentReport submitReport(String sessionId, ExperimentReport.Status status);
     List<ExperimentReport> getReportList(Long studentId);
     List<ExperimentReport> getSubmittedAndGradedReports();
+//
+//    List<ExperimentReport> listAll();
+//
+//    ExperimentReport getById(Long id);
+//
+//    int create(ExperimentReport report);
+//
+//    int delete(Long id);
+
+//    int update(ExperimentReport report);
 }

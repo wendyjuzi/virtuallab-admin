@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.validation.annotation.Validated;
 import javax.validation.constraints.NotNull;
 import com.edu.virtuallab.resource.model.LikeFavoriteStatus;
+import com.edu.virtuallab.log.annotation.OperationLogRecord;
 
 @RestController
 @RequestMapping("/like-favorite")
@@ -34,36 +35,28 @@ public class LikeFavoriteController {
         }
     }
 
-    /**
-     * 点赞
-     */
+    @OperationLogRecord(operation = "LIKE_RESOURCE", module = "RESOURCE", action = "点赞资源", description = "用户点赞资源", permissionCode = "RESOURCE_MANAGE")
     @PostMapping("/like/{resourceId}")
     public CommonResult<?> like(@PathVariable Long resourceId, @RequestParam @NotNull Long userId) {
         likeFavoriteService.like(resourceId, userId);
         return CommonResult.success(null, "点赞成功");
     }
 
-    /**
-     * 取消点赞
-     */
+    @OperationLogRecord(operation = "UNLIKE_RESOURCE", module = "RESOURCE", action = "取消点赞资源", description = "用户取消点赞资源", permissionCode = "RESOURCE_MANAGE")
     @PostMapping("/unlike/{resourceId}")
     public CommonResult<?> unlike(@PathVariable Long resourceId, @RequestParam @NotNull Long userId) {
         likeFavoriteService.unlike(resourceId, userId);
         return CommonResult.success(null, "取消点赞成功");
     }
 
-    /**
-     * 收藏
-     */
+    @OperationLogRecord(operation = "FAVORITE_RESOURCE", module = "RESOURCE", action = "收藏资源", description = "用户收藏资源", permissionCode = "RESOURCE_MANAGE")
     @PostMapping("/favorite/{resourceId}")
     public CommonResult<?> favorite(@PathVariable Long resourceId, @RequestParam @NotNull Long userId) {
         likeFavoriteService.favorite(resourceId, userId);
         return CommonResult.success(null, "收藏成功");
     }
 
-    /**
-     * 取消收藏
-     */
+    @OperationLogRecord(operation = "UNFAVORITE_RESOURCE", module = "RESOURCE", action = "取消收藏资源", description = "用户取消收藏资源", permissionCode = "RESOURCE_MANAGE")
     @PostMapping("/unfavorite/{resourceId}")
     public CommonResult<?> unfavorite(@PathVariable Long resourceId, @RequestParam @NotNull Long userId) {
         likeFavoriteService.unfavorite(resourceId, userId);

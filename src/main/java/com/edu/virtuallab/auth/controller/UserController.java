@@ -15,6 +15,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import com.edu.virtuallab.log.annotation.OperationLogRecord;
 
 @RestController
 @RequestMapping("/user")
@@ -88,6 +89,7 @@ public class UserController {
         }
     }
 
+    @OperationLogRecord(operation = "CREATE_USER", module = "USER", action = "创建用户", description = "管理员创建用户", permissionCode = "USER_MANAGE")
     @PostMapping("/create")
     @ApiOperation("创建用户")
     public CommonResult<Boolean> createUser(@RequestBody User user) {
@@ -103,6 +105,7 @@ public class UserController {
         }
     }
 
+    @OperationLogRecord(operation = "REGISTER", module = "USER", action = "用户注册", description = "用户注册账号", permissionCode = "USER_MANAGE")
     @PostMapping("/register")
     @ApiOperation("用户注册")
     public CommonResult<Boolean> register(@RequestBody UserRegisterDTO dto) {
@@ -118,6 +121,7 @@ public class UserController {
         }
     }
 
+    @OperationLogRecord(operation = "UPDATE_USER", module = "USER", action = "更新用户", description = "管理员或用户更新用户信息", permissionCode = "USER_MANAGE")
     @PutMapping("/update")
     @ApiOperation("更新用户信息")
     public CommonResult<Boolean> update(@RequestBody User user) {
@@ -133,6 +137,7 @@ public class UserController {
         }
     }
 
+    @OperationLogRecord(operation = "DELETE_USER", module = "USER", action = "删除用户", description = "管理员删除用户", permissionCode = "USER_MANAGE")
     @DeleteMapping("/{id}")
     @ApiOperation("删除用户")
     public CommonResult<Boolean> delete(@PathVariable Long id) {

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 权限工具类
@@ -63,7 +64,7 @@ public class PermissionUtil {
         
         // 合并永久权限和临时权限，去重
         tempPermissionIds.addAll(permanentPermissionIds);
-        return tempPermissionIds.stream().distinct().toList();
+        return tempPermissionIds.stream().distinct().collect(Collectors.toList());
     }
     
     /**
@@ -77,7 +78,7 @@ public class PermissionUtil {
         
         // 合并永久角色和临时角色，去重
         tempRoleIds.addAll(permanentRoleIds);
-        return tempRoleIds.stream().distinct().toList();
+        return tempRoleIds.stream().distinct().collect(Collectors.toList());
     }
     
     /**

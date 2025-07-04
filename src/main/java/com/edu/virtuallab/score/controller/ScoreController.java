@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
+import com.edu.virtuallab.log.annotation.OperationLogRecord;
 
 @RestController
 @RequestMapping("/score")
@@ -19,16 +20,19 @@ public class ScoreController {
     @Autowired
     private ScoreService scoreService;
 
-    @PostMapping
+    @OperationLogRecord(operation = "CREATE_SCORE", module = "SCORE", action = "录入成绩", description = "教师录入实验成绩", permissionCode = "SCORE_MANAGE")
+    @PostMapping("/create")
     public int create(@RequestBody Score score) {
         return scoreService.create(score);
     }
 
-    @PutMapping
+    @OperationLogRecord(operation = "UPDATE_SCORE", module = "SCORE", action = "修改成绩", description = "教师修改实验成绩", permissionCode = "SCORE_MANAGE")
+    @PutMapping("/update")
     public int update(@RequestBody Score score) {
         return scoreService.update(score);
     }
 
+    @OperationLogRecord(operation = "DELETE_SCORE", module = "SCORE", action = "删除成绩", description = "教师删除实验成绩", permissionCode = "SCORE_MANAGE")
     @DeleteMapping("/{id}")
     public int delete(@PathVariable Long id) {
         return scoreService.delete(id);

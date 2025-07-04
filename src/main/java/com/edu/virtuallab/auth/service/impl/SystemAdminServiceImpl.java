@@ -507,6 +507,33 @@ public class SystemAdminServiceImpl implements SystemAdminService {
         int offset = (page - 1) * size;
         List<User> users = userDao.findByConditions(username, realName, department, userType, status, offset, size);
         int total = userDao.countByConditions(username, realName, department, userType, status);
+        // 批量查角色并组装
+        if (!users.isEmpty()) {
+            List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
+            List<UserRole> userRoles = userRoleDao.findByUserIds(userIds);
+            List<com.edu.virtuallab.auth.model.Role> allRoles = userRoleDao.findRolesByUserIds(userIds);
+
+            // 1. 先做 roleId -> Role 映射，避免重复
+            Map<Long, com.edu.virtuallab.auth.model.Role> roleIdMap = allRoles.stream()
+                .collect(java.util.stream.Collectors.toMap(com.edu.virtuallab.auth.model.Role::getId, r -> r, (a, b) -> a));
+
+            // 2. userId -> Set<Role>，用Set自动去重
+            Map<Long, java.util.Set<com.edu.virtuallab.auth.model.Role>> userRoleMap = new java.util.HashMap<>();
+            for (UserRole ur : userRoles) {
+                Long userId = ur.getUserId();
+                Long roleId = ur.getRoleId();
+                com.edu.virtuallab.auth.model.Role role = roleIdMap.get(roleId);
+                if (role != null) {
+                    userRoleMap.computeIfAbsent(userId, k -> new java.util.HashSet<>()).add(role);
+                }
+            }
+
+            // 3. 分配给User
+            for (User user : users) {
+                java.util.Set<com.edu.virtuallab.auth.model.Role> roles = userRoleMap.getOrDefault(user.getId(), java.util.Collections.emptySet());
+                user.setRoleList(new java.util.ArrayList<>(roles));
+            }
+        }
         return new PageResult<>(total, users);
     }
     

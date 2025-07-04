@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.edu.virtuallab.auth.util.JwtUtil;
 import com.edu.virtuallab.auth.model.Role;
@@ -78,7 +79,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 6. 查询用户角色
         List<Role> roles = roleService.getRolesByUserId(user.getId());
-        List<String> roleCodes = roles.stream().map(Role::getCode).toList();
+        List<String> roleCodes = roles.stream().map(Role::getCode).collect(Collectors.toList());
 
         // 7. 构建返回结果
         Map<String, Object> result = new HashMap<>();
@@ -139,7 +140,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 6. 查询用户角色
         List<Role> roles = roleService.getRolesByUserId(user.getId());
-        List<String> roleCodes = roles.stream().map(Role::getCode).toList();
+        List<String> roleCodes = roles.stream().map(Role::getCode).collect(Collectors.toList());
 
         // 7. 构建返回结果
         Map<String, Object> result = new HashMap<>();

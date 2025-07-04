@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.edu.virtuallab.log.annotation.OperationLogRecord;
 
 /**
  * 系统管理员权限管理控制器
@@ -322,6 +323,7 @@ public class SystemAdminController {
 
     // ==================== 院系管理 ====================
 
+    @OperationLogRecord(operation = "CREATE_DEPARTMENT", module = "DEPARTMENT", action = "创建院系", description = "管理员创建院系", permissionCode = "DEPARTMENT_MANAGE")
     @PostMapping("/departments")
     @ApiOperation("创建院系")
     public CommonResult<Department> createDepartment(@RequestBody Department department) {
@@ -333,6 +335,7 @@ public class SystemAdminController {
         }
     }
 
+    @OperationLogRecord(operation = "UPDATE_DEPARTMENT", module = "DEPARTMENT", action = "更新院系", description = "管理员更新院系", permissionCode = "DEPARTMENT_MANAGE")
     @PutMapping("/departments")
     @ApiOperation("更新院系信息")
     public CommonResult<Boolean> updateDepartment(@RequestBody Department department) {
@@ -344,6 +347,7 @@ public class SystemAdminController {
         }
     }
 
+    @OperationLogRecord(operation = "DELETE_DEPARTMENT", module = "DEPARTMENT", action = "删除院系", description = "管理员删除院系", permissionCode = "DEPARTMENT_MANAGE")
     @DeleteMapping("/departments/{departmentId}")
     @ApiOperation("删除院系")
     public CommonResult<Boolean> deleteDepartment(@PathVariable Long departmentId) {

@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.List;
 import com.edu.virtuallab.auth.service.AuthFactorService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.edu.virtuallab.log.annotation.OperationLogRecord;
 
 @RestController
 @RequestMapping("/auth")
@@ -40,6 +41,7 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @OperationLogRecord(operation = "LOGIN", module = "USER", action = "用户密码登录", description = "用户通过密码登录", permissionCode = "USER_MANAGE")
     @PostMapping("/login/password")
     public CommonResult<Map<String, Object>> loginWithPassword(@RequestBody LoginDTO loginDTO) {
         CommonResult<Map<String, Object>> loginResult = authService.loginWithPassword(loginDTO.getUsername(), loginDTO.getPassword());
@@ -50,6 +52,7 @@ public class AuthController {
         return CommonResult.success(result,"");
     }
 
+    @OperationLogRecord(operation = "LOGIN", module = "USER", action = "用户登录", description = "用户通过账号或邮箱登录", permissionCode = "USER_MANAGE")
     @PostMapping("/login")
     @ApiOperation("登录（用户名或邮箱）")
     public CommonResult<User> login(@RequestParam String account, @RequestParam String password) {
@@ -67,6 +70,7 @@ public class AuthController {
         return CommonResult.success(user,"");
     }
 
+    @OperationLogRecord(operation = "LOGIN", module = "USER", action = "邮箱验证码登录", description = "用户通过邮箱验证码登录", permissionCode = "USER_MANAGE")
     @PostMapping("/login/email")
     @ApiOperation("邮箱验证码登录")
     public CommonResult<Map<String, Object>> loginByEmail(@RequestBody Map<String, String> request) {

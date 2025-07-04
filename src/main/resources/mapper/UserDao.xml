@@ -242,14 +242,14 @@
     <select id="findByConditions" resultMap="BaseResultMap">
         SELECT * FROM user
         WHERE 1=1
-        <if test="keyword != null and keyword != ''">
-            AND (
-                username LIKE CONCAT('%', #{keyword}, '%')
-                OR real_name LIKE CONCAT('%', #{keyword}, '%')
-                OR email LIKE CONCAT('%', #{keyword}, '%')
-                OR phone LIKE CONCAT('%', #{keyword}, '%')
-                OR student_id LIKE CONCAT('%', #{keyword}, '%')
-            )
+        <if test="username != null and username != ''">
+            AND username LIKE CONCAT('%', #{username}, '%')
+        </if>
+        <if test="realName != null and realName != ''">
+            AND real_name LIKE CONCAT('%', #{realName}, '%')
+        </if>
+        <if test="department != null and department != ''">
+            AND department = #{department}
         </if>
         <if test="userType != null and userType != ''">
             AND user_type = #{userType}
@@ -304,4 +304,45 @@
         DELETE FROM user WHERE id = #{id}
     </delete>
 
-</mapper> 
+    <!-- 关键字聚合搜索专用 -->
+    <select id="findByKeyword" resultMap="BaseResultMap">
+        SELECT * FROM user
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (
+                username LIKE CONCAT('%', #{keyword}, '%')
+                OR real_name LIKE CONCAT('%', #{keyword}, '%')
+                OR email LIKE CONCAT('%', #{keyword}, '%')
+                OR phone LIKE CONCAT('%', #{keyword}, '%')
+                OR student_id LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        <if test="userType != null and userType != ''">
+            AND user_type = #{userType}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY id DESC
+        <if test="offset != null and size != null">
+            LIMIT #{offset}, #{size}
+        </if>
+    </select>
+
+    <select id="countStudentsByDepartment" resultType="int">
+        SELECT COUNT(DISTINCT u.id)
+        FROM user u
+        JOIN user_role ur ON u.id = ur.user_id
+        WHERE u.department = #{department}
+        AND ur.role_id = 4  <!-- 4代表学生角色 -->
+        AND u.status = 1     <!-- 1代表正常状态 -->
+    </select>
+    <select id="countTeachersByDepartment" resultType="int">
+        SELECT COUNT(DISTINCT u.id)
+        FROM user u
+        JOIN user_role ur ON u.id = ur.user_id
+        WHERE u.department = #{department}
+        AND ur.role_id = 3  <!-- 3代表老师角色 -->
+        AND u.status = 1     <!-- 1代表正常状态 -->
+    </select>
+</mapper>

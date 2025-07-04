@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import com.edu.virtuallab.log.annotation.OperationLogRecord;
 
 @RestController
 @RequestMapping("/experiment/project")
@@ -32,16 +33,19 @@ public class ExperimentProjectController {
     @Autowired
     private ExperimentProjectService projectService;
 
-    @PostMapping
+    @OperationLogRecord(operation = "CREATE_EXPERIMENT_PROJECT", module = "EXPERIMENT", action = "创建实验项目", description = "用户创建实验项目", permissionCode = "EXPERIMENT_MANAGE")
+    @PostMapping("/create")
     public int create(@RequestBody ExperimentProject project) {
         return projectService.create(project);
     }
 
-    @PutMapping
+    @OperationLogRecord(operation = "UPDATE_EXPERIMENT_PROJECT", module = "EXPERIMENT", action = "更新实验项目", description = "用户更新实验项目", permissionCode = "EXPERIMENT_MANAGE")
+    @PutMapping("/update")
     public int update(@RequestBody ExperimentProject project) {
         return projectService.update(project);
     }
 
+    @OperationLogRecord(operation = "DELETE_EXPERIMENT_PROJECT", module = "EXPERIMENT", action = "删除实验项目", description = "用户删除实验项目", permissionCode = "EXPERIMENT_MANAGE")
     @DeleteMapping("/{id}")
     public int delete(@PathVariable Long id) {
         return projectService.delete(id);

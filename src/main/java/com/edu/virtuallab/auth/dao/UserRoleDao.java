@@ -17,4 +17,8 @@ public interface UserRoleDao {
     int deleteByUserIdAndDepartmentId(@Param("userId") Long userId, @Param("departmentId") Long departmentId);
     int deleteByUserIdAndRoleIdAndDepartmentId(@Param("userId") Long userId, @Param("roleId") Long roleId, @Param("departmentId") Long departmentId);
     List<UserRole> findByUserIdAndDepartmentId(@Param("userId") Long userId, @Param("departmentId") Long departmentId);
+    // 批量查用户的所有角色
+    List<com.edu.virtuallab.auth.model.Role> findRolesByUserIds(@Param("userIds") List<Long> userIds);
+    // 批量查用户的UserRole
+    List<UserRole> findByUserIds(@Param("userIds") List<Long> userIds);
 } 

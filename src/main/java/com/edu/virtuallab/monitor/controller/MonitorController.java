@@ -17,6 +17,11 @@ import com.edu.virtuallab.log.dao.OperationLogDao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.edu.virtuallab.monitor.dto.SystemPerformanceDTO;
+import java.util.Arrays;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/monitor")
@@ -99,20 +104,26 @@ public class MonitorController {
      * 用户行为分析接口
      */
     @GetMapping("/user-behavior")
-    public CommonResult<UserBehaviorDTO> getUserBehavior() {
-        UserBehaviorDTO dto = new UserBehaviorDTO();
-        // 活跃用户数（示例：操作日志中不同用户数）
-        int activeUserCount = 0;
-        if (operationLogDao != null && operationLogDao.findAll() != null) {
-            activeUserCount = (int) operationLogDao.findAll().stream().map(log -> log.getUserId()).distinct().count();
-        }
-        dto.setActiveUserCount(activeUserCount);
-        // 操作类型统计（示例：按operation分组计数）
-        // TODO: 可扩展为SQL分组统计
-        dto.setOperationTypeStats(null);
-        // 每日活跃用户数（示例：不实现，留空）
-        dto.setDailyActiveUsers(null);
+    public CommonResult<UserBehaviorDTO> getUserBehavior(@RequestParam(required = false) String range) {
+        // 默认统计今日
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        Date endTime = cal.getTime();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        Date startTime = cal.getTime();
+        UserBehaviorDTO dto = monitorService.getUserBehaviorAnalysis(startTime, endTime);
         return CommonResult.success(dto, "获取用户行为分析成功");
+    }
+
+    /**
+     * 系统性能监控接口
+     */
+    @GetMapping("/performance")
+    public CommonResult<SystemPerformanceDTO> getSystemPerformance() {
+        SystemPerformanceDTO dto = monitorService.getSystemPerformance();
+        return CommonResult.success(dto, "获取系统性能数据成功");
     }
 
     /**
@@ -122,6 +133,24 @@ public class MonitorController {
     public CommonResult<SystemStatusDTO> getSystemStatusV2() {
         SystemStatusDTO statusDTO = monitorService.getSystemStatus();
         return CommonResult.success(statusDTO, "获取系统性能数据成功");
+    }
+
+    /**
+     * 获取今日所有登录行为总次数
+     */
+    @GetMapping("/login-operation/today-count")
+    public CommonResult<Integer> getTodayLoginOperationCount() {
+        int count = monitorService.getTodayLoginOperationCount();
+        return CommonResult.success(count, "获取今日登录行为总次数成功");
+    }
+
+    /**
+     * 获取今日登录用户数（去重）
+     */
+    @GetMapping("/login-operation/today-user-count")
+    public CommonResult<Integer> getTodayLoginUserCount() {
+        int count = monitorService.getTodayLoginUserCount();
+        return CommonResult.success(count, "获取今日登录用户数成功");
     }
 
     // 后续权限使用统计、用户行为分析等接口可追加

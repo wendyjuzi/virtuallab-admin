@@ -3,6 +3,7 @@ package com.edu.virtuallab.resource.controller;
 import com.edu.virtuallab.resource.model.ResourceShare;
 import com.edu.virtuallab.resource.service.ResourceShareService;
 import com.edu.virtuallab.common.api.CommonResult;
+import com.edu.virtuallab.log.annotation.OperationLogRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ public class ResourceShareController {
     private ResourceShareService resourceShareService;
 
     // 生成分享链接
+    @OperationLogRecord(operation = "CREATE_RESOURCE_SHARE", module = "RESOURCE", action = "创建资源分享", description = "用户创建资源分享", permissionCode = "RESOURCE_MANAGE")
     @PostMapping("/generate")
     public CommonResult<String> generateShareLink(@RequestParam Long resourceId,
                                                   @RequestParam(required = false) Long expireMinutes,
@@ -32,6 +34,7 @@ public class ResourceShareController {
     }
 
     // 取消分享
+    @OperationLogRecord(operation = "DELETE_RESOURCE_SHARE", module = "RESOURCE", action = "删除资源分享", description = "用户删除资源分享", permissionCode = "RESOURCE_MANAGE")
     @DeleteMapping("/cancel")
     public CommonResult<String> cancelShare(@RequestParam Long id, Principal principal) {
         String sharedBy = principal.getName();

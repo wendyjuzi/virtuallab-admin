@@ -334,4 +334,15 @@ public class DepartmentAdminServiceImpl implements DepartmentAdminService {
         log.setCreateTime(new Date());
         operationLogDao.insert(log);
     }
+
+    @Override
+    public int countDepartmentStudents(Long adminUserId) {
+        Department adminDept = getAdminDepartment(adminUserId);
+        return userDao.countStudentsByDepartment(adminDept.getName());
+    }
+    @Override
+    public int countDepartmentTeachers(Long adminUserId) {
+        Department adminDept = getAdminDepartment(adminUserId);
+        return userDao.countTeachersByDepartment(adminDept.getName());
+    }
 }

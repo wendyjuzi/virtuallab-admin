@@ -4,6 +4,7 @@ import com.edu.virtuallab.audit.model.ExperimentProjectAuditLog;
 import com.edu.virtuallab.audit.service.ExperimentProjectAuditService;
 import com.edu.virtuallab.common.api.CommonResult;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
+import com.edu.virtuallab.log.annotation.OperationLogRecord;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,5 +109,13 @@ public class ExperimentProjectAuditController {
     public CommonResult<List<ExperimentProject>> getRejectedProjects() {
         List<ExperimentProject> projects = auditService.getRejectedProjects();
         return CommonResult.success(projects, "资源更新成功");
+    }
+
+    @ApiOperation("提交实验项目审核")
+    @PostMapping("/submit/{projectId}")
+    @PreAuthorize("hasAuthority('experiment:project:edit')")
+    public CommonResult<String> submitForAudit(@PathVariable Long projectId) {
+        auditService.submitForAudit(projectId);
+        return CommonResult.success("实验项目已提交审核", "操作成功");
     }
 }

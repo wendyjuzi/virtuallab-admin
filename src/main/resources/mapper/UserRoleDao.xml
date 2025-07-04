@@ -75,4 +75,24 @@
         DELETE FROM user_role WHERE id = #{id}
     </delete>
 
+    <!-- 批量查用户的所有角色 -->
+    <select id="findRolesByUserIds" resultType="com.edu.virtuallab.auth.model.Role">
+        SELECT r.*
+        FROM user_role ur
+        JOIN role r ON ur.role_id = r.id
+        WHERE ur.user_id IN
+        <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </select>
+
+    <!-- 批量查用户的UserRole -->
+    <select id="findByUserIds" resultMap="BaseResultMap">
+        SELECT * FROM user_role
+        WHERE user_id IN
+        <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </select>
+
 </mapper> 

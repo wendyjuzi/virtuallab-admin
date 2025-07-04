@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import org.springframework.validation.annotation.Validated;
 import javax.validation.constraints.NotNull;
+import com.edu.virtuallab.log.annotation.OperationLogRecord;
 
 @RestController
 @RequestMapping("/resource")
@@ -19,16 +20,19 @@ public class ResourceController {
     @Autowired
     private ResourceService resourceService;
 
+    @OperationLogRecord(operation = "CREATE_RESOURCE", module = "RESOURCE", action = "创建资源", description = "用户创建资源", permissionCode = "RESOURCE_MANAGE")
     @PostMapping
     public int create(@RequestBody Resource resource) {
         return resourceService.create(resource);
     }
 
+    @OperationLogRecord(operation = "UPDATE_RESOURCE", module = "RESOURCE", action = "更新资源", description = "用户更新资源", permissionCode = "RESOURCE_MANAGE")
     @PutMapping
     public int update(@RequestBody Resource resource) {
         return resourceService.update(resource);
     }
 
+    @OperationLogRecord(operation = "DELETE_RESOURCE", module = "RESOURCE", action = "删除资源", description = "用户删除资源", permissionCode = "RESOURCE_MANAGE")
     @DeleteMapping("/{id}")
     public int delete(@PathVariable Long id) {
         return resourceService.delete(id);

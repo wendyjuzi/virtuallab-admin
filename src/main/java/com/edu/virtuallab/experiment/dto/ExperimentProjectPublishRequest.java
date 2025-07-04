@@ -10,7 +10,15 @@ public class ExperimentProjectPublishRequest {
     private String imageUrl;
     private String videoUrl;
     private List<Long> classIds;
-
+    private String projectType;
+    // 新增 getProjectType 方法
+    public String getProjectType() {
+        return projectType;
+    }
+    // 新增 setProjectType 方法，方便设置属性值
+    public void setProjectType(String projectType) {
+        this.projectType = projectType;
+    }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getDescription() { return description; }
@@ -26,8 +34,6 @@ public class ExperimentProjectPublishRequest {
     public List<Long> getClassIds() { return classIds; }
     public void setClassIds(List<Long> classIds) { this.classIds = classIds; }
 
-    public String getProjectType() {
-        return "";
-    }
+
 }
 

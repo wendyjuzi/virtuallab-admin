@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.util.Date;
-import java.util.List;
 
 @Data
 @TableName(value = "experiment_report", autoResultMap = true)

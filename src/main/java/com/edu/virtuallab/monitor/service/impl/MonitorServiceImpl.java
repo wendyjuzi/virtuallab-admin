@@ -75,7 +75,32 @@ public class MonitorServiceImpl implements MonitorService {
             java.util.Properties info = connection.info();
             String connectedClients = info.getProperty("connected_clients");
             String usedMemory = info.getProperty("used_memory");
-            // 可扩展DTO字段
+            String usedMemoryHuman = info.getProperty("used_memory_human");
+            String totalCommandsProcessed = info.getProperty("total_commands_processed");
+            String uptimeInSeconds = info.getProperty("uptime_in_seconds");
+            String keyspaceHits = info.getProperty("keyspace_hits");
+            String keyspaceMisses = info.getProperty("keyspace_misses");
+            // 统计所有 db 的 key 数
+            int totalKeys = 0;
+            for (String name : info.stringPropertyNames()) {
+                if (name.startsWith("db")) {
+                    String value = info.getProperty(name); // 例：keys=10,expires=0,avg_ttl=0
+                    String[] parts = value.split(",");
+                    for (String part : parts) {
+                        if (part.startsWith("keys=")) {
+                            totalKeys += Integer.parseInt(part.substring(5));
+                        }
+                    }
+                }
+            }
+            dto.setRedisConnectedClients(connectedClients);
+            dto.setRedisUsedMemory(usedMemory);
+            dto.setRedisUsedMemoryHuman(usedMemoryHuman);
+            dto.setRedisTotalCommandsProcessed(totalCommandsProcessed);
+            dto.setRedisUptimeInSeconds(uptimeInSeconds);
+            dto.setRedisKeyspaceHits(keyspaceHits);
+            dto.setRedisKeyspaceMisses(keyspaceMisses);
+            dto.setRedisTotalKeys(String.valueOf(totalKeys));
             connection.close();
         } catch (Exception e) {
             // 忽略redis异常

@@ -191,7 +191,7 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
     public ExperimentProject findById(Long id) {
         return projectDao.findById(id);
     }
-}
+
     @Override
     public Long getStudentIdByUserId(Long userId) {
         return projectDao.getStudentIdByUserId(userId);

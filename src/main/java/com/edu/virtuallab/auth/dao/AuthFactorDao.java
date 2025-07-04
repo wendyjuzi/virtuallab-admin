@@ -27,9 +27,6 @@ public interface AuthFactorDao {
     // 根据用户ID删除所有认证因素
     int deleteByUserId(@Param("userId") Long userId);
     
-    // 验证短信验证码
-    AuthFactor validateSmsCode(@Param("userId") Long userId, @Param("phone") String phone, @Param("code") String code);
-    
     // 验证邮箱验证码
     AuthFactor validateEmailCode(@Param("userId") Long userId, @Param("email") String email, @Param("code") String code);
     

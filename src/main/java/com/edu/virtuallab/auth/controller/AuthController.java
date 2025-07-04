@@ -47,7 +47,7 @@ public class AuthController {
             return CommonResult.failed(loginResult.getMessage());
         }
         Map<String, Object> result = loginResult.getData();
-        return CommonResult.success(result, "资源更新成功");
+        return CommonResult.success(result,"");
     }
 
     @PostMapping("/login")
@@ -64,7 +64,7 @@ public class AuthController {
             return CommonResult.failed("密码错误");
         }
 
-        return CommonResult.success(user, "资源更新成功");
+        return CommonResult.success(user,"");
     }
 
     @PostMapping("/login/email")
@@ -83,31 +83,7 @@ public class AuthController {
         return authService.sendEmailCode(email, type);
     }
 
-    @PostMapping("/login/sms")
-    public CommonResult<Boolean> loginWithSms(@RequestBody Map<String, String> request) {
-        String phone = request.get("phone");
-        String code = request.get("code");
-        return authService.loginWithSms(phone, code);
-    }
 
-    @PostMapping("/login/fingerprint")
-    public CommonResult<Boolean> loginWithFingerprint(@RequestBody Map<String, String> request) {
-        String username = request.get("username");
-        String fingerprintData = request.get("fingerprintData");
-        return authService.loginWithFingerprint(username, fingerprintData);
-    }
-
-    // 暂时注释掉短信注册功能
-    /*
-    @PostMapping("/sendSmsCode")
-    public CommonResult<Boolean> sendSmsCode(@RequestParam String phone, @RequestParam(required = false) String userType) {
-        if (userType == null || !"admin".equalsIgnoreCase(userType)) {
-            return CommonResult.failed("只有管理员注册时才允许发送短信验证码");
-        }
-        boolean result = authFactorService.sendSmsCodeForRegister(phone);
-        return CommonResult.success(result);
-    }
-    */
 
     @GetMapping("/currentUser")
     public CommonResult<Map<String, Object>> getCurrentUser() {
@@ -120,6 +96,6 @@ public class AuthController {
         Map<String, Object> result = new HashMap<>();
         result.put("user", user);
         result.put("roles", roleCodes);
-        return CommonResult.success(result, "资源更新成功");
+        return CommonResult.success(result,"");
     }
 } 

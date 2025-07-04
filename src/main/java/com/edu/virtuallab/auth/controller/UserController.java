@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -416,6 +418,16 @@ public class UserController {
             return CommonResult.failed("检查学号/工号失败: " + e.getMessage());
         }
     }
+    @GetMapping("/student/{studentId}")
+    @ApiOperation("根据学号获取用户信息")
+    public CommonResult<User> getUserByStudentId(@PathVariable String studentId) {
+        User user = userService.findByStudentId(studentId);
+        if (user != null) {
+            return CommonResult.success(user,""); // 直接返回 User 实体
+        }
+        return CommonResult.failed("用户不存在");
+    }
+
 
     @PostMapping("/logout")
     @ApiOperation("退出登录")
@@ -427,4 +439,21 @@ public class UserController {
             return CommonResult.failed("退出登录失败: " + e.getMessage());
         }
     }
-} 
+
+
+/**
+     * 多条件分页查询用户
+     */
+    @GetMapping("/search")
+    public CommonResult<PageResult<User>> searchUsers(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String userType,
+            @RequestParam(required = false) Integer status,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        // 关键词匹配用户名、姓名、邮箱
+        PageResult<User> result = userService.getUserList(keyword, keyword, null, userType, status, page, size);
+        return CommonResult.success(result, "查询成功");
+    }
+}

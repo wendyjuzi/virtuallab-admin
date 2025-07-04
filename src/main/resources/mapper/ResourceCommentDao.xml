@@ -6,9 +6,8 @@
         VALUES (#{resourceId}, #{userId}, #{content}, #{createTime})
     </insert>
 
-    <select id="getCommentsByResourceId" parameterType="long" resultType="com.edu.virtuallab.resource.model.ResourceComment">
-        SELECT * FROM resource_comment
-        WHERE resource_id = #{resourceId} ORDER BY create_time DESC LIMIT 100
+    <select id="getCommentsByResourceId" resultType="com.edu.virtuallab.resource.model.ResourceComment">
+        SELECT * FROM resource_comment WHERE resource_id = #{resourceId} ORDER BY create_time ASC
     </select>
 
     <select id="selectById" parameterType="long" resultType="com.edu.virtuallab.resource.model.ResourceComment">

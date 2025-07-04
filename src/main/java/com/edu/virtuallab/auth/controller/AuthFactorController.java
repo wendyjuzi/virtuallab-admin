@@ -47,47 +47,6 @@ public class AuthFactorController {
         return CommonResult.success(result, "资源更新成功");
     }
     
-    // ==================== 短信验证码接口 ====================
-    
-    // 暂时注释掉短信注册功能
-    /*
-    // 发送短信验证码（注册时使用，不需要userId）
-    @PostMapping("/sms/send/register")
-    public CommonResult<Boolean> sendSmsCodeForRegister(@RequestParam String phone, @RequestParam(required = false) String userType) {
-        if (userType == null || !"admin".equalsIgnoreCase(userType)) {
-            return CommonResult.failed("只有管理员注册时才允许发送短信验证码");
-        }
-        boolean result = authFactorService.sendSmsCodeForRegister(phone);
-        return CommonResult.success(result);
-    }
-    
-    // 验证短信验证码（注册时使用，不需要userId）
-    @PostMapping("/sms/validate/register")
-    public CommonResult<Boolean> validateSmsCodeForRegister(@RequestParam String phone, @RequestParam String code) {
-        boolean result = authFactorService.validateSmsCodeForRegister(phone, code);
-        return CommonResult.success(result);
-    }
-    */
-    
-    // 发送短信验证码（已登录用户使用）
-    @PostMapping("/sms/send")
-    public CommonResult<Boolean> sendSmsCode(@RequestParam(required = false) Long userId, @RequestParam String phone, @RequestParam(required = false) String userType) {
-        if (userType == null || !"admin".equalsIgnoreCase(userType)) {
-            return CommonResult.failed("只有管理员注册时才允许发送短信验证码");
-        }
-        boolean result = authFactorService.sendSmsCode(userId, phone);
-        return CommonResult.success(result, "资源更新成功");
-    }
-    
-    // 验证短信验证码（已登录用户使用）
-    @PostMapping("/sms/validate")
-    public CommonResult<Boolean> validateSmsCode(@RequestParam(required = false) Long userId, 
-                                                @RequestParam String phone, 
-                                                @RequestParam String code) {
-        boolean result = authFactorService.validateSmsCode(userId, phone, code);
-        return CommonResult.success(result, "资源更新成功");
-    }
-    
     // 设置默认认证方式
     @PostMapping("/default")
     public CommonResult<Boolean> setDefaultAuthFactor(@RequestParam Long userId, 

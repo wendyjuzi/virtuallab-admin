@@ -163,4 +163,12 @@ public interface DepartmentAdminService {
      * 获取本院系权限使用统计
      */
     Object getDepartmentPermissionUsageStatistics(Long adminUserId);
-} 
+    /**
+     * 获取本院系学生数量
+     */
+    int countDepartmentStudents(Long adminUserId);
+    /**
+     * 获取本院系老师数量
+     */
+    int countDepartmentTeachers(Long adminUserId);
+}

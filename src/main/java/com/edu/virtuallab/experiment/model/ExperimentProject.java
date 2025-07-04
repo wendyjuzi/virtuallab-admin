@@ -20,11 +20,6 @@ public class ExperimentProject {
     @TableField("collaboration_type")
     private String projectType; // 值可能是 "personal" 或 "team"
 
-    // private Long uploaderId; // 上传者ID
-
-    //    private Date createdAt;
-//    private Date updatedAt;
-//    private Long teacherId;
     private String createdBy; // 教师用户名
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
@@ -39,12 +34,19 @@ public class ExperimentProject {
     private String publishStatus; // 发布状态: unpublished/published
     private LocalDateTime publishTime; // 发布时间
 
+    @TableField(exist = false)
     private String config; // three.js参数(JSON字符串)
+    @TableField(exist = false)
     private Long creatorId;
+    @TableField(exist = false)
     private String creatorRole; // "ADMIN" or "TEACHER"
+    @TableField(exist = false)
     private String status; // "DRAFT", "PENDING_APPROVAL", "APPROVED", "REJECTED", "PUBLISHED"
+    @TableField(exist = false)
     private String approveComment;
+    @TableField(exist = false)
     private Date createTime;
+    @TableField(exist = false)
     private Date updateTime;
 
     // getter & setter
@@ -69,14 +71,6 @@ public class ExperimentProject {
     public String getVideoUrl() { return videoUrl; }
     public void setVideoUrl(String videoUrl) { this.videoUrl = videoUrl; }
 
-//    public Date getCreatedAt() { return createdAt; }
-//    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
-//
-//    public Date getUpdatedAt() { return updatedAt; }
-//    public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
-
-//    public Long getTeacherId() { return teacherId; }
-//    public void setTeacherId(Long teacherId) { this.teacherId = teacherId; }
 
     public String getCreatedBy() {
         return createdBy;
@@ -92,12 +86,6 @@ public class ExperimentProject {
         this.projectType = projectType;
     }
 
-//    public Long getUploaderId() {
-//        return uploaderId;
-//    }
-//    public void setUploaderId(Long uploaderId) {
-//        this.uploaderId = uploaderId;
-//    }
 
     public String getConfig() { return config; }
     public void setConfig(String config) { this.config = config; }

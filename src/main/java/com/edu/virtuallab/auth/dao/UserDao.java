@@ -112,4 +112,13 @@ public interface UserDao {
                             @Param("status") Integer status,
                             @Param("offset") int offset,
                             @Param("size") int size);
+
+    /**
+     * 根据院系和角色统计学生数量
+     */
+    int countStudentsByDepartment(@Param("department") String department);
+    /**
+     * 根据院系和角色统计老师数量
+     */
+    int countTeachersByDepartment(@Param("department") String department);
 }

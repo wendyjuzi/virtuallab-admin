@@ -352,4 +352,26 @@ public class DepartmentAdminController {
             return CommonResult.failed("获取权限使用统计失败: " + e.getMessage());
         }
     }
+
+    @GetMapping("/statistics/students/count")
+    @ApiOperation("获取本院系学生数量")
+    public CommonResult<Integer> getDepartmentStudentCount(@RequestParam Long adminUserId) {
+        try {
+            int count = departmentAdminService.countDepartmentStudents(adminUserId);
+            return CommonResult.success(count, "资源更新成功");
+        } catch (Exception e) {
+            return CommonResult.failed("获取学生数量失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/statistics/teachers/count")
+    @ApiOperation("获取本院系老师数量")
+    public CommonResult<Integer> getDepartmentTeacherCount(@RequestParam Long adminUserId) {
+        try {
+            int count = departmentAdminService.countDepartmentTeachers(adminUserId);
+            return CommonResult.success(count, "资源更新成功");
+        } catch (Exception e) {
+            return CommonResult.failed("获取老师数量失败: " + e.getMessage());
+        }
+    }
 } 

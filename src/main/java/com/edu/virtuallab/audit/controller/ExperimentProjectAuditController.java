@@ -35,12 +35,6 @@ public class ExperimentProjectAuditController {
 //        auditService.submitForAudit(projectId, userId);
 //        return CommonResult.success("实验项目已提交审核", "资源更新成功");
 //    }
-//
-//    @OperationLogRecord(operation = "CREATE_AUDIT", module = "AUDIT", action = "创建实验审核", description = "用户创建实验审核", permissionCode = "AUDIT_MANAGE")
-//    @PostMapping("/create")
-//    public int create(@RequestBody ExperimentProjectAuditLog auditLog) {
-//        // ... existing code ...
-//    }
 
     @ApiOperation("审核实验项目")
     @PostMapping("/audit/{projectId}")
@@ -54,18 +48,6 @@ public class ExperimentProjectAuditController {
         auditService.auditProject(projectId, status, comment, auditorId);
         return CommonResult.success("实验项目审核操作已完成", "资源更新成功");
     }
-
-//    @OperationLogRecord(operation = "UPDATE_AUDIT", module = "AUDIT", action = "更新实验审核", description = "用户更新实验审核", permissionCode = "AUDIT_MANAGE")
-//    @PutMapping("/update")
-//    public int update(@RequestBody ExperimentProjectAuditLog auditLog) {
-//        // ... existing code ...
-//    }
-//
-//    @OperationLogRecord(operation = "DELETE_AUDIT", module = "AUDIT", action = "删除实验审核", description = "用户删除实验审核", permissionCode = "AUDIT_MANAGE")
-//    @DeleteMapping("/{id}")
-//    public int delete(@PathVariable Long id) {
-//        // ... existing code ...
-//    }
 
     @ApiOperation("发布实验项目到班级")
     @PostMapping("/publish/{projectId}")
@@ -127,5 +109,13 @@ public class ExperimentProjectAuditController {
     public CommonResult<List<ExperimentProject>> getRejectedProjects() {
         List<ExperimentProject> projects = auditService.getRejectedProjects();
         return CommonResult.success(projects, "资源更新成功");
+    }
+
+    @ApiOperation("提交实验项目审核")
+    @PostMapping("/submit/{projectId}")
+    @PreAuthorize("hasAuthority('experiment:project:edit')")
+    public CommonResult<String> submitForAudit(@PathVariable Long projectId) {
+        auditService.submitForAudit(projectId);
+        return CommonResult.success("实验项目已提交审核", "操作成功");
     }
 }

@@ -24,6 +24,10 @@ public interface ExperimentProjectDao {
     List<Long> getTeamsByStudentId(@Param("studentId") Long studentId);
 
     Long getStudentIdByUserId(Long userId);
+    int updateStatusToInProgress(@Param("projectId") Integer projectId,
+                                 @Param("studentId") String studentId);
+    int updateStatusToCompleted(@Param("projectId") Integer projectId,
+                                @Param("studentId") String studentId);
 
 
     List<ExperimentProject> listPage(@Param("category") String category, @Param("sort") String sort, @Param("offset") int offset, @Param("size") int size);

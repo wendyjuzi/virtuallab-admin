@@ -139,7 +139,36 @@ public class ExperimentProjectController {
         return projectService.getTeamsByStudentId(studentId);
     }
 
+    @PostMapping("/start")
+    public ResponseEntity<String> startExperiment(@RequestBody Map<String, Object> payload) {
+        Integer projectId = (Integer) payload.get("projectId");
+        String studentId = (String) payload.get("studentId");
 
+        if (projectId == null || studentId == null) {
+            return ResponseEntity.badRequest().body("参数不完整");
+        }
+
+        int updated = projectService.markAsInProgress(projectId, studentId);
+        if (updated > 0) {
+            return ResponseEntity.ok("已开始实验");
+        } else {
+            return ResponseEntity.status(500).body("更新失败，可能不存在记录");
+        }
+    }
+    @PostMapping("/complete")
+    public ResponseEntity<String> completeExperiment(@RequestBody Map<String, Object> payload) {
+        Integer projectId = (Integer) payload.get("projectId");
+        String studentId = (String) payload.get("studentId");
+
+        if (projectId == null || studentId == null) {
+            return ResponseEntity.badRequest().body("缺少必要参数");
+        }
+
+        int updated = projectService.markAsCompleted(projectId, studentId);
+        return updated > 0 ?
+                ResponseEntity.ok("已更新为 completed") :
+                ResponseEntity.status(500).body("更新失败");
+    }
 
 
 

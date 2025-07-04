@@ -196,4 +196,12 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
     public Long getStudentIdByUserId(Long userId) {
         return projectDao.getStudentIdByUserId(userId);
     }
+    @Override
+    public int markAsInProgress(Integer projectId, String studentId) {
+        return projectDao.updateStatusToInProgress(projectId, studentId);
+    }
+    @Override
+    public int markAsCompleted(Integer projectId, String studentId) {
+        return projectDao.updateStatusToCompleted(projectId, studentId);
+    }
 }

@@ -509,7 +509,7 @@ public class SystemAdminServiceImpl implements SystemAdminService {
         int total = userDao.countByConditions(username, realName, department, userType, status);
         // 批量查角色并组装
         if (!users.isEmpty()) {
-            List<Long> userIds = users.stream().map(User::getId).collect(java.util.stream.Collectors.toList());
+            List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
             List<UserRole> userRoles = userRoleDao.findByUserIds(userIds);
             List<com.edu.virtuallab.auth.model.Role> allRoles = userRoleDao.findRolesByUserIds(userIds);
 

@@ -32,11 +32,15 @@ public class ProjectAuditServiceImpl implements ProjectAuditService {
     private NotificationService notificationService;
 
     // 状态转换规则
-    private static final Map<AuditStatus, Set<AuditStatus>> ALLOWED_TRANSITIONS = Map.of(
-            AuditStatus.DRAFT, Set.of(AuditStatus.PENDING),
-            AuditStatus.PENDING, Set.of(AuditStatus.APPROVED, AuditStatus.REJECTED),
-            AuditStatus.REJECTED, Set.of(AuditStatus.PENDING)
-    );
+    private static final Map<AuditStatus, Set<AuditStatus>> ALLOWED_TRANSITIONS = new java.util.HashMap<>();
+    static {
+        ALLOWED_TRANSITIONS.put(AuditStatus.DRAFT, java.util.Collections.singleton(AuditStatus.PENDING));
+        java.util.Set<AuditStatus> pendingSet = new java.util.HashSet<>();
+        pendingSet.add(AuditStatus.APPROVED);
+        pendingSet.add(AuditStatus.REJECTED);
+        ALLOWED_TRANSITIONS.put(AuditStatus.PENDING, pendingSet);
+        ALLOWED_TRANSITIONS.put(AuditStatus.REJECTED, java.util.Collections.singleton(AuditStatus.PENDING));
+    }
 
     @Override
     @Transactional
@@ -45,7 +49,7 @@ public class ProjectAuditServiceImpl implements ProjectAuditService {
         Project project = projectDao.selectById(auditLog.getProjectId());
 
         // 验证状态转换是否允许
-        if (!ALLOWED_TRANSITIONS.getOrDefault(project.getAuditStatus(), Set.of()).contains(status)) {
+        if (!ALLOWED_TRANSITIONS.getOrDefault(project.getAuditStatus(), java.util.Collections.emptySet()).contains(status)) {
             throw new IllegalStateException("无效的状态转换");
         }
 

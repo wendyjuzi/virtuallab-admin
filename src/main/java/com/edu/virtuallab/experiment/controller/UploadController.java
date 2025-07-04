@@ -1,5 +1,6 @@
 package com.edu.virtuallab.experiment.controller;
 
+import com.edu.virtuallab.log.annotation.OperationLogRecord;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,19 +17,25 @@ public class UploadController {
 
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/main/resources/static/images/uploads/";
 
-    @PostMapping("/image")
-    public Map<String, Object> upload(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException {
+    @OperationLogRecord(operation = "UPLOAD_EXPERIMENT_FILE", module = "EXPERIMENT", action = "上传实验文件", description = "用户上传实验文件", permissionCode = "EXPERIMENT_MANAGE")
+    @PostMapping("/upload")
+    public String upload(@RequestParam("file") MultipartFile file) {
         String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
         File savePath = new File(UPLOAD_DIR);
         if (!savePath.exists()) savePath.mkdirs();
-        file.transferTo(new File(savePath, filename));
+        try {
+            file.transferTo(new File(savePath, filename));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "上传失败";
+        }
 
-        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        String baseUrl = "http://localhost:8080"; // Assuming a default base URL for demonstration
         String url = baseUrl + "/images/uploads/" + filename;
 
         Map<String, Object> map = new HashMap<>();
         map.put("url", url);
-        return map;
+        return "上传成功";
     }
 }
 

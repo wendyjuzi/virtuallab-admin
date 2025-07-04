@@ -4,6 +4,7 @@ import com.edu.virtuallab.audit.model.ExperimentProjectAuditLog;
 import com.edu.virtuallab.audit.service.ExperimentProjectAuditService;
 import com.edu.virtuallab.common.api.CommonResult;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
+import com.edu.virtuallab.log.annotation.OperationLogRecord;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,12 @@ public class ExperimentProjectAuditController {
 //        return CommonResult.success("实验项目已提交审核", "资源更新成功");
 //    }
 
+    @OperationLogRecord(operation = "CREATE_AUDIT", module = "AUDIT", action = "创建实验审核", description = "用户创建实验审核", permissionCode = "AUDIT_MANAGE")
+    @PostMapping("/create")
+    public int create(@RequestBody ExperimentProjectAuditLog auditLog) {
+        // ... existing code ...
+    }
+
     @ApiOperation("审核实验项目")
     @PostMapping("/audit/{projectId}")
     @PreAuthorize("hasAuthority('experiment:project:approve')")
@@ -46,6 +53,18 @@ public class ExperimentProjectAuditController {
 
         auditService.auditProject(projectId, status, comment, auditorId);
         return CommonResult.success("实验项目审核操作已完成", "资源更新成功");
+    }
+
+    @OperationLogRecord(operation = "UPDATE_AUDIT", module = "AUDIT", action = "更新实验审核", description = "用户更新实验审核", permissionCode = "AUDIT_MANAGE")
+    @PutMapping("/update")
+    public int update(@RequestBody ExperimentProjectAuditLog auditLog) {
+        // ... existing code ...
+    }
+
+    @OperationLogRecord(operation = "DELETE_AUDIT", module = "AUDIT", action = "删除实验审核", description = "用户删除实验审核", permissionCode = "AUDIT_MANAGE")
+    @DeleteMapping("/{id}")
+    public int delete(@PathVariable Long id) {
+        // ... existing code ...
     }
 
     @ApiOperation("发布实验项目到班级")

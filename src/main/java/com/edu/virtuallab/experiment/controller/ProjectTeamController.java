@@ -4,6 +4,7 @@ import com.edu.virtuallab.experiment.dto.AutoGroupRequest;
 import com.edu.virtuallab.experiment.model.ProjectTeam;
 import com.edu.virtuallab.experiment.model.ProjectTeamMember;
 import com.edu.virtuallab.experiment.service.ProjectTeamService;
+import com.edu.virtuallab.log.annotation.OperationLogRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,7 @@ public class ProjectTeamController {
     }
 
     // 创建小组
+    @OperationLogRecord(operation = "CREATE_PROJECT_TEAM", module = "EXPERIMENT", action = "创建实验团队", description = "用户创建实验团队", permissionCode = "EXPERIMENT_MANAGE")
     @PostMapping
     public ProjectTeam createTeam(@RequestParam Long projectId, @RequestParam String teamName) {
         return projectTeamService.createTeam(projectId, teamName);
@@ -54,24 +56,26 @@ public class ProjectTeamController {
     }
 
     // 修改小组名称
+    @OperationLogRecord(operation = "UPDATE_PROJECT_TEAM", module = "EXPERIMENT", action = "更新实验团队", description = "用户更新实验团队", permissionCode = "EXPERIMENT_MANAGE")
     @PutMapping("/{teamId}")
     public boolean updateTeamName(@PathVariable Long teamId, @RequestParam String newName) {
         return projectTeamService.updateTeamName(teamId, newName);
     }
 
     // 删除小组
+    @OperationLogRecord(operation = "DELETE_PROJECT_TEAM", module = "EXPERIMENT", action = "删除实验团队", description = "用户删除实验团队", permissionCode = "EXPERIMENT_MANAGE")
     @DeleteMapping("/{teamId}")
     public boolean deleteTeam(@PathVariable Long teamId) {
         return projectTeamService.deleteTeam(teamId);
     }
 
-    // 添加成员
+    @OperationLogRecord(operation = "ADD_PROJECT_TEAM_MEMBER", module = "EXPERIMENT", action = "添加团队成员", description = "用户添加团队成员", permissionCode = "EXPERIMENT_MANAGE")
     @PostMapping("/{teamId}/member/{studentId}")
     public boolean addMember(@PathVariable Long teamId, @PathVariable Long studentId) {
         return projectTeamService.addMember(teamId, studentId);
     }
 
-    // 移除成员
+    @OperationLogRecord(operation = "REMOVE_PROJECT_TEAM_MEMBER", module = "EXPERIMENT", action = "移除团队成员", description = "用户移除团队成员", permissionCode = "EXPERIMENT_MANAGE")
     @DeleteMapping("/{teamId}/member/{studentId}")
     public boolean removeMember(@PathVariable Long teamId, @PathVariable Long studentId) {
         return projectTeamService.removeMember(teamId, studentId);

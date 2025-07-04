@@ -2,6 +2,7 @@ package com.edu.virtuallab.experiment.controller;
 
 import com.edu.virtuallab.experiment.dto.ProgressDTO;
 import com.edu.virtuallab.experiment.service.ProgressService;
+import com.edu.virtuallab.log.annotation.OperationLogRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,17 +36,25 @@ public class ProgressController {
 //        }
 //        return ResponseEntity.ok(dto);
 //    }
-
-    /**
-     * 保存或更新进度
-     */
-//    @PostMapping("/save")
-//    public ResponseEntity<String> saveOrUpdateProgress(@RequestBody ProgressDTO progressDTO) {
-//        boolean success = progressService.saveOrUpdateProgress(progressDTO);
-//        if (success) {
-//            return ResponseEntity.ok("保存成功");
-//        } else {
-//            return ResponseEntity.status(500).body("保存失败");
-//        }
+//
+//    /**
+//     * 保存或更新进度
+//     */
+//    @OperationLogRecord(operation = "CREATE_PROGRESS", module = "EXPERIMENT", action = "创建实验进度", description = "用户创建实验进度", permissionCode = "EXPERIMENT_MANAGE")
+//    @PostMapping("/create")
+//    public int create(@RequestBody Progress progress) {
+//        // ... existing code ...
+//    }
+//
+//    @OperationLogRecord(operation = "UPDATE_PROGRESS", module = "EXPERIMENT", action = "更新实验进度", description = "用户更新实验进度", permissionCode = "EXPERIMENT_MANAGE")
+//    @PutMapping("/update")
+//    public int update(@RequestBody Progress progress) {
+//        // ... existing code ...
+//    }
+//
+//    @OperationLogRecord(operation = "DELETE_PROGRESS", module = "EXPERIMENT", action = "删除实验进度", description = "用户删除实验进度", permissionCode = "EXPERIMENT_MANAGE")
+//    @DeleteMapping("/{id}")
+//    public int delete(@PathVariable Long id) {
+//        // ... existing code ...
 //    }
 }

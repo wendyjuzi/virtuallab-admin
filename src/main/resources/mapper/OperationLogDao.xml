@@ -142,4 +142,19 @@
         LIMIT #{limit}
     </select>
 
+    <select id="selectByConditions" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM operation_log
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (username LIKE CONCAT('%', #{keyword}, '%') OR description LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="type != null and type != ''">
+                AND operation = #{type}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+        LIMIT 0, 50
+    </select>
+
 </mapper> 

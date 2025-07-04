@@ -46,18 +46,9 @@ public class MonitorController {
     }
 
     /**
-     * 实时操作监控：获取最新日志
-     */
-    @GetMapping("/operations/realtime")
-    public CommonResult<List<OperationLog>> getRealtimeOperations(@RequestParam(defaultValue = "10") int limit) {
-        List<OperationLog> logs = operationLogService.getLatestLogs(limit);
-        return CommonResult.success(logs, "获取最新日志成功");
-    }
-
-    /**
      * 日志分页查询
      */
-    @GetMapping("/operations/logs")
+    @GetMapping("/operation-logs")
     public CommonResult<Map<String, Object>> getOperationLogs(
             @RequestParam int page,
             @RequestParam int size,
@@ -151,6 +142,31 @@ public class MonitorController {
     public CommonResult<Integer> getTodayLoginUserCount() {
         int count = monitorService.getTodayLoginUserCount();
         return CommonResult.success(count, "获取今日登录用户数成功");
+    }
+
+    /**
+     * 详细操作日志分页接口
+     */
+    @GetMapping("/operation-logs")
+    public CommonResult<Map<String, Object>> getOperationLogs(
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String type) {
+        PageResult<OperationLog> pageResult = operationLogService.queryLogs(page, size, keyword, type);
+        Map<String, Object> result = new HashMap<>();
+        result.put("records", pageResult.getRecords());
+        result.put("total", pageResult.getTotal());
+        return CommonResult.success(result, "获取操作日志成功");
+    }
+
+    /**
+     * 实时操作监控接口，返回最近N条详细日志
+     */
+    @GetMapping("/realtime-operations")
+    public CommonResult<List<OperationLog>> getRealtimeOperations(@RequestParam(defaultValue = "10") int limit) {
+        List<OperationLog> logs = operationLogService.getLatestLogs(limit);
+        return CommonResult.success(logs, "获取实时操作日志成功");
     }
 
     // 后续权限使用统计、用户行为分析等接口可追加

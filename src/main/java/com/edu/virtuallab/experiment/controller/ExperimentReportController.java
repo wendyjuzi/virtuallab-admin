@@ -4,6 +4,8 @@ import com.edu.virtuallab.common.exception.BusinessException;
 import com.edu.virtuallab.experiment.model.ExperimentReport;
 import com.edu.virtuallab.experiment.service.ExperimentReportService;
 import com.edu.virtuallab.resource.model.Resource;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,7 +52,7 @@ public class ExperimentReportController {
 
     @GetMapping("/teacher/reports")
     public ResponseEntity<List<ExperimentReport>> getSubmittedAndGradedReports(
-            @RequestParam(required = false) List<String> status){
+            @RequestParam(required = false) List<String> status) {
         List<ExperimentReport> reports = experimentReportService.getSubmittedAndGradedReports();
         return ResponseEntity.ok(reports != null ? reports : Collections.emptyList());
     }
@@ -61,12 +64,30 @@ public class ExperimentReportController {
     }
 
     @PostMapping("/report/{sessionId}/save")
-    public ResponseEntity<Void> saveContent(
+    public ResponseEntity<ExperimentReport> saveContent(
             @PathVariable String sessionId,
-            @RequestParam String manualContent) {
-        experimentreportService.saveReportContent(sessionId, manualContent);
-        return ResponseEntity.ok().build();
+            @RequestParam String manualContent,
+            @RequestParam ExperimentReport.Status status) {
+        ExperimentReport report = experimentReportService.saveReportContent(
+                sessionId,
+                manualContent,
+                status
+        );
+        return ResponseEntity.ok(report);
     }
+
+
+    @PostMapping("/report/{sessionId}/submit")
+    public ResponseEntity<ExperimentReport> submitReport(
+            @PathVariable String sessionId,
+            @RequestParam ExperimentReport.Status status) {
+        ExperimentReport report = experimentReportService.submitReport(
+                sessionId,
+                status
+        );
+        return ResponseEntity.ok(report);
+    }
+
 
     // 上传附件
     @PostMapping("/report/{sessionId}/attachments")
@@ -120,9 +141,4 @@ public class ExperimentReportController {
         }
     }
 
-    @PostMapping("/report/{sessionId}/submit")
-    public ResponseEntity<Void> submitReport(@PathVariable String sessionId) {
-        experimentreportService.submitReport(sessionId);
-        return ResponseEntity.ok().build();
-    }
 }

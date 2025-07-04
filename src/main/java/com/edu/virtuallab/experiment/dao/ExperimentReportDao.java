@@ -13,6 +13,7 @@ public interface ExperimentReportDao extends BaseMapper<ExperimentReport> {
     @Results(id = "reportMap", value = {
             @Result(column = "session_id", property = "sessionId"),
             @Result(column = "student_id", property = "studentId"),
+            @Result(column = "project_id", property = "projectId"),
             @Result(column = "manual_content", property = "manualContent"),
             @Result(column = "created_at", property = "createdAt"),
             @Result(column = "updated_at", property = "updatedAt"),

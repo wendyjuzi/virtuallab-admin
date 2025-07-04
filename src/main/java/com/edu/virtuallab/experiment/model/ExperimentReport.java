@@ -20,6 +20,8 @@ public class ExperimentReport {
     private String sessionId;
     @TableField("student_id")
     private String studentId;
+    @TableField("project_id")
+    private String projectId;
     private String principle;
     private String purpose;
     private String category;
@@ -88,6 +90,9 @@ public class ExperimentReport {
 
     public void setStudentId(String studentId) {
         this.studentId = studentId;
+    }
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
 }

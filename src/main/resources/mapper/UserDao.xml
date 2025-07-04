@@ -320,4 +320,11 @@
         AND ur.role_id = 3  <!-- 3代表老师角色 -->
         AND u.status = 1     <!-- 1代表正常状态 -->
     </select>
+
+    <!-- 在UserDao.xml中添加 -->
+    <select id="findUsernamesByDepartment" resultType="java.lang.String">
+        SELECT username
+        FROM user
+        WHERE department = #{department}
+    </select>
 </mapper> 

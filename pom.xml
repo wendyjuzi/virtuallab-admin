@@ -177,6 +177,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.29</version> <!-- 或用 2.0.x 版本 -->
+        </dependency>
     </dependencies>
     <build>
         <plugins>

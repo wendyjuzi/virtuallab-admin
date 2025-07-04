@@ -114,4 +114,6 @@ public interface UserDao {
      * 根据院系和角色统计老师数量
      */
     int countTeachersByDepartment(@Param("department") String department);
+    // 查询院系项目
+    List<String> findUsernamesByDepartment(@Param("department") String department);
 }

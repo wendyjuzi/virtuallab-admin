@@ -41,4 +41,16 @@ public interface ExperimentProjectMapper extends BaseMapper<ExperimentProject> {
             "    updated_at = NOW() " +
             "WHERE id = #{projectId} AND audit_status = 'draft'")
     int updateAuditStatusToPending(@Param("projectId") Long projectId);
+
+    // 通过用户名查找项目数量
+    @Select({
+            "<script>",
+            "SELECT COUNT(*) FROM experiment_project",
+            "WHERE created_by IN",
+            "<foreach item='username' collection='usernames' open='(' separator=',' close=')'>",
+            "#{username}",
+            "</foreach>",
+            "</script>"
+    })
+    int countProjectsByUsernames(@Param("usernames") List<String> usernames);
 }

@@ -17,7 +17,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -38,23 +37,73 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
 
     @Override
     @Transactional
-    public void saveReportContent(String sessionId, String manualContent) {
+    public ExperimentReport saveReportContent(String sessionId, String manualContent, ExperimentReport.Status status) {
         try {
-            log.info("保存报告内容，sessionId: {}, 内容长度: {}", sessionId, manualContent.length());
+            log.info("保存报告内容，sessionId: {}, 状态: {}", sessionId, status);
 
-            int updated = experimentReportDao.updateManualContent(sessionId, manualContent);
+            int updated = experimentReportDao.updateManualContent(
+                    sessionId,
+                    manualContent,
+                    status
+            );
 
+            ExperimentReport report;
             if (updated == 0) {
                 log.warn("没有记录被更新，可能sessionId不存在，将创建新报告");
-                ExperimentReport report = createDefaultReport(sessionId);
+                report = createDefaultReport(sessionId);
                 report.setManualContent(manualContent);
+                report.setStatus(status);
                 experimentReportDao.insert(report);
+            }else{
+                // 获取更新后的报告
+                report = experimentReportDao.findBySessionId(sessionId);
+                report.setStatus(status); // 确保状态正确
             }
+
+            return report;
 
         } catch (Exception e) {
             log.error("保存报告内容失败", e);
             throw new RuntimeException("保存报告内容失败: " + e.getMessage());
         }
+    }
+
+    @Override
+    @Transactional
+    public ExperimentReport submitReport(String sessionId, ExperimentReport.Status status) {
+        // 1. 先查询当前报告状态
+        ExperimentReport report = experimentReportDao.findBySessionId(sessionId);
+        if (report == null) {
+            throw new IllegalArgumentException("报告不存在，sessionId: " + sessionId);
+        }
+
+        // 3. 验证目标状态必须是SUBMITTED
+        if (status != ExperimentReport.Status.SUBMITTED) {
+            throw new IllegalArgumentException("提交操作只能将状态改为SUBMITTED");
+        }
+
+        // 4. 更新状态为 SUBMITTED
+        int updated = experimentReportDao.submitBySessionId(
+                sessionId,
+                ExperimentReport.Status.SUBMITTED);
+
+        ExperimentReport report1;
+        if (updated == 0) {
+            log.warn("没有记录被更新，可能sessionId不存在，将创建新报告");
+            report1 = createDefaultReport(sessionId);
+            report1.setStatus(status);
+            experimentReportDao.insert(report1);
+        }else{
+            // 获取更新后的报告
+            report1 = experimentReportDao.findBySessionId(sessionId);
+            report1.setStatus(status); // 确保状态正确
+        }
+
+        // 5. 返回更新后的报告
+        ExperimentReport updatedReport = experimentReportDao.findBySessionId(sessionId);
+        log.info("报告提交成功，sessionId: {}, 新状态: {}", sessionId, status);
+
+        return updatedReport;
     }
 
     @Override
@@ -147,28 +196,6 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
             Path path = Paths.get(uploadDir).resolve(filePath.replace("/uploads/", ""));
             Files.deleteIfExists(path);
         }
-    }
-
-    @Override
-    @Transactional
-    public void submitReport(String sessionId) {
-        // 1. 先查询当前报告状态
-        ExperimentReport report = experimentReportDao.findBySessionId(sessionId);
-        if (report == null) {
-            throw new IllegalArgumentException("报告不存在，sessionId: " + sessionId);
-        }
-
-        // 2. 只有草稿状态的报告允许提交
-        if (!"DRAFT".equals(report.getStatus())) {
-            throw new IllegalStateException("报告已提交或锁定，无法重复提交");
-        }
-
-        // 3. 更新状态为 SUBMITTED
-        int updated = experimentReportDao.submitBySessionId(sessionId);
-        if (updated == 0) {
-            throw new RuntimeException("提交失败，请重试");
-        }
-        log.info("报告提交成功，sessionId: {}", sessionId);
     }
 
     // 创建默认报告结构

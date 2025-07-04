@@ -4,6 +4,8 @@ import com.edu.virtuallab.common.exception.BusinessException;
 import com.edu.virtuallab.experiment.model.ExperimentReport;
 import com.edu.virtuallab.experiment.service.ExperimentReportService;
 import com.edu.virtuallab.resource.model.Resource;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +19,7 @@ import com.edu.virtuallab.log.annotation.OperationLogRecord;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,7 +53,7 @@ public class ExperimentReportController {
 
     @GetMapping("/teacher/reports")
     public ResponseEntity<List<ExperimentReport>> getSubmittedAndGradedReports(
-            @RequestParam(required = false) List<String> status){
+            @RequestParam(required = false) List<String> status) {
         List<ExperimentReport> reports = experimentReportService.getSubmittedAndGradedReports();
         return ResponseEntity.ok(reports != null ? reports : Collections.emptyList());
     }
@@ -63,12 +66,30 @@ public class ExperimentReportController {
 
     @OperationLogRecord(operation = "CREATE_EXPERIMENT_REPORT", module = "EXPERIMENT", action = "创建实验报告", description = "用户创建实验报告", permissionCode = "EXPERIMENT_MANAGE")
     @PostMapping("/report/{sessionId}/save")
-    public ResponseEntity<Void> saveContent(
+    public ResponseEntity<ExperimentReport> saveContent(
             @PathVariable String sessionId,
-            @RequestParam String manualContent) {
-        experimentreportService.saveReportContent(sessionId, manualContent);
-        return ResponseEntity.ok().build();
+            @RequestParam String manualContent,
+            @RequestParam ExperimentReport.Status status) {
+        ExperimentReport report = experimentReportService.saveReportContent(
+                sessionId,
+                manualContent,
+                status
+        );
+        return ResponseEntity.ok(report);
     }
+
+
+    @PostMapping("/report/{sessionId}/submit")
+    public ResponseEntity<ExperimentReport> submitReport(
+            @PathVariable String sessionId,
+            @RequestParam ExperimentReport.Status status) {
+        ExperimentReport report = experimentReportService.submitReport(
+                sessionId,
+                status
+        );
+        return ResponseEntity.ok(report);
+    }
+
 
     // 上传附件
     @OperationLogRecord(operation = "UPLOAD_EXPERIMENT_REPORT_ATTACHMENT", module = "EXPERIMENT", action = "上传实验报告附件", description = "用户上传实验报告附件", permissionCode = "EXPERIMENT_MANAGE")

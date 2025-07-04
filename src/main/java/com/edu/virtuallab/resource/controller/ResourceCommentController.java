@@ -20,8 +20,9 @@ public class ResourceCommentController {
 
     @OperationLogRecord(operation = "CREATE_RESOURCE_COMMENT", module = "RESOURCE", action = "创建资源评论", description = "用户创建资源评论", permissionCode = "RESOURCE_MANAGE")
     @PostMapping("/create")
-    public int create(@RequestBody ResourceComment comment) {
-        return ResponseEntity.ok(resourceCommentService.addComment(comment));
+    public ResponseEntity<Integer> create(@RequestBody ResourceComment comment) {
+        int result = resourceCommentService.addComment(comment);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/resource/{resourceId}")
@@ -36,19 +37,22 @@ public class ResourceCommentController {
 
     @OperationLogRecord(operation = "UPDATE_RESOURCE_COMMENT", module = "RESOURCE", action = "更新资源评论", description = "用户更新资源评论", permissionCode = "RESOURCE_MANAGE")
     @PutMapping("/update")
-    public int update(@RequestBody ResourceComment comment) {
-        return ResponseEntity.ok(resourceCommentService.updateComment(comment));
+    public ResponseEntity<Integer> update(@RequestBody ResourceComment comment) {
+        int result = resourceCommentService.updateComment(comment);
+        return ResponseEntity.ok(result);
     }
 
     @OperationLogRecord(operation = "DELETE_RESOURCE_COMMENT", module = "RESOURCE", action = "删除资源评论", description = "用户删除资源评论", permissionCode = "RESOURCE_MANAGE")
     @DeleteMapping("/{id}")
-    public int delete(@PathVariable Long id) {
-        return ResponseEntity.ok(resourceCommentService.deleteComment(id));
+    public ResponseEntity<Integer> delete(@PathVariable Long id) {
+        int result = resourceCommentService.deleteComment(id);
+        return ResponseEntity.ok(result);
     }
 
     @OperationLogRecord(operation = "REPLY_RESOURCE_COMMENT", module = "RESOURCE", action = "回复资源评论", description = "用户回复资源评论", permissionCode = "RESOURCE_MANAGE")
     @PostMapping("/reply")
-    public int reply(@RequestBody ResourceComment reply) {
-        return ResponseEntity.ok(resourceCommentService.addComment(reply));
+    public ResponseEntity<Integer> reply(@RequestBody ResourceComment reply) {
+        int result = resourceCommentService.addComment(reply);
+        return ResponseEntity.ok(result);
     }
 }

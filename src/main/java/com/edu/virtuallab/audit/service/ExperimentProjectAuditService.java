@@ -72,12 +72,15 @@ public class ExperimentProjectAuditService {
     }
 
     /**
-     * 发布实验项目到班级
+     * 发布实验项目到班级（使用已关联的班级）
      */
     @Transactional
-    public void publishProject(Long projectId, List<Long> classIds, Long publisherId) {
+    public void publishProject(Long projectId) { // 移除 classIds 和 publisherId 参数
+        // 1. 获取已关联的班级ID
+        List<Long> classIds = projectClassMapper.findClassIdsByProjectId(projectId);
+
         if (classIds == null || classIds.isEmpty()) {
-            throw new BusinessException("请选择要发布的班级");
+            throw new BusinessException("项目未关联任何班级，无法发布");
         }
 
         ExperimentProject project = projectMapper.selectById(projectId);
@@ -88,16 +91,11 @@ public class ExperimentProjectAuditService {
             throw new BusinessException("项目未审核通过");
         }
 
-        // 删除原有的班级关联
-        projectClassMapper.deleteByProjectId(projectId);
-
-        // 添加新的班级关联
-        projectClassMapper.batchInsert(projectId, classIds);
-
-        // 更新项目发布状态
+        // 2. 不再需要删除和重新添加关联，因为关联已存在
+        // 3. 更新项目发布状态
         projectMapper.publishProject(projectId);
 
-        // 发送通知给相关班级的师生
+        // 4. 发送通知给相关班级的师生
         notificationService.sendProjectPublishNotification(projectId, classIds);
     }
 
@@ -176,6 +174,9 @@ public class ExperimentProjectAuditService {
 
         // 更新项目状态为pending
         projectMapper.updateAuditStatusToPending(projectId);
+
+        // +++ 新增: 发送通知给管理员 +++
+        notificationService.sendProjectAuditNotification(projectId, project.getCreatedBy());
     }
 }
 

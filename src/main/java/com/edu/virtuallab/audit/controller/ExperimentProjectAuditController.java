@@ -24,17 +24,6 @@ public class ExperimentProjectAuditController {
     public ExperimentProjectAuditController(ExperimentProjectAuditService auditService) {
         this.auditService = auditService;
     }
-    //将 @RequestAttribute Long userId 改为 @RequestParam Long userId，这样用户 ID 就可以通过请求参数传递
-//    @ApiOperation("提交实验项目审核")
-//    @PostMapping("/submit/{projectId}")
-//    @PreAuthorize("hasAuthority('experiment:project:create')")
-//    public CommonResult<String> submitForAudit(
-//            @PathVariable Long projectId,
-//            @RequestParam  Long userId) {
-//
-//        auditService.submitForAudit(projectId, userId);
-//        return CommonResult.success("实验项目已提交审核", "资源更新成功");
-//    }
 
     @ApiOperation("审核实验项目")
     @PostMapping("/audit/{projectId}")
@@ -52,12 +41,8 @@ public class ExperimentProjectAuditController {
     @ApiOperation("发布实验项目到班级")
     @PostMapping("/publish/{projectId}")
     @PreAuthorize("hasAuthority('experiment:project:publish')")
-    public CommonResult<String> publishProject(
-            @PathVariable Long projectId,
-            @RequestBody List<Long> classIds,
-            @RequestParam  Long publisherId) {
-
-        auditService.publishProject(projectId, classIds, publisherId);
+    public CommonResult<String> publishProject(@PathVariable Long projectId) {
+        auditService.publishProject(projectId);
         return CommonResult.success("实验项目已成功发布到指定班级", "资源更新成功");
     }
 

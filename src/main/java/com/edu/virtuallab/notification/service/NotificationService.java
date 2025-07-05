@@ -16,7 +16,7 @@ public interface NotificationService {
     void markAsRead(Long notificationId);
 
     // 发送项目审核通知（修改方法签名以匹配实现）
-    void sendProjectAuditNotification(Long projectId, Long uploaderId);
+    void sendProjectAuditNotification(Long projectId, String teacherUsername);
 
     // 添加缺失的方法声明
     void sendProjectAuditResultNotification(

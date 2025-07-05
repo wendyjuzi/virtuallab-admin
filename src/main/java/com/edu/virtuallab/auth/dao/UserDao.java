@@ -123,4 +123,8 @@ public interface UserDao {
     int countTeachersByDepartment(@Param("department") String department);
     // 查询院系项目
     List<String> findUsernamesByDepartment(@Param("department") String department);
+
+    // +++ 新增：根据院系和角色ID查询用户 +++
+    List<User> findByDepartmentAndRoleId(@Param("department") String department, @Param("roleId") Long roleId);
+
 }

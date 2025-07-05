@@ -18,6 +18,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
+import static com.mysql.cj.conf.PropertyKey.logger;
+
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
@@ -35,22 +37,44 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendProjectAuditNotification(Long projectId, Long uploaderId) {
-        User uploader = userDao.findById(uploaderId);
-        if (uploader == null) return;
+    public void sendProjectAuditNotification(Long projectId, String teacherUsername) {
+        // 根据用户名查找用户信息
+        User teacher = userDao.findByUsername(teacherUsername);
+        if (teacher == null) {
+            // 如果找不到用户，使用默认名称
+            teacher = new User();
+            teacher.setRealName(teacherUsername); // 使用用户名作为默认显示名称
+        }
+
+        // 2. 获取院系信息
+        String department = teacher.getDepartment();
+        if (department == null || department.isEmpty()) {
+            department = "未分配院系";
+        }
+
+        // +++ 获取项目名称 +++
+        ExperimentProject project = experimentProjectDao.selectById(projectId);
+        if (project == null) return;
 
         Notification notification = new Notification();
         notification.setType(NotificationType.fromValue("project_submitted"));
         notification.setTitle("新实验项目待审核");
         notification.setContent(String.format(
-                "教师 %s 提交了新实验项目等待审核",
-                uploader.getRealName()
+                "[%s]教师 %s 提交了实验项目【%s】等待审核", // +++ 添加项目名称 +++
+                department,
+                teacher.getRealName(), // 使用老师的真实姓名
+                project.getName()  // 显示项目名称
         ));
         notification.setLink("/admin/experiment/project/audit/" + projectId);
+        // 显式设置创建时间为当前时间
+        notification.setCreatedAt(new Date());  // 添加这一行
+        notification.setRelatedId(projectId); // 关联项目ID
 
-        // 发送给所有管理员 - 需要实现 findAdmins() 方法
-        List<User> admins = userDao.findAdmins();
-        for (User admin : admins) {
+        // 5. 查询院系管理员 (role_id = 2)
+        List<User> departmentAdmins = userDao.findByDepartmentAndRoleId(department, 2L);
+
+        // 6. 发送通知
+        for (User admin : departmentAdmins) {
             Notification copy = notification.copy();
             copy.setUserId(admin.getId());
             notificationMapper.insert(copy);
@@ -63,9 +87,22 @@ public class NotificationServiceImpl implements NotificationService {
             boolean approved,
             String comment) {
 
+        // 1. 获取项目信息
         ExperimentProject project = experimentProjectDao.selectById(projectId);
         if (project == null) return;
 
+        // 2. 获取老师用户名
+        String teacherUsername = project.getCreatedBy();
+        if (teacherUsername == null || teacherUsername.isEmpty()) {
+            return;
+        }
+        // 3. 根据用户名查找老师信息
+        User teacher = userDao.findByUsername(teacherUsername);
+        if (teacher == null) {
+            return;
+        }
+
+        // 4. 创建通知
         Notification notification = new Notification();
         notification.setType(approved ?
                 NotificationType.PROJECT_APPROVED :
@@ -75,7 +112,9 @@ public class NotificationServiceImpl implements NotificationService {
                 "您的实验项目已通过审核" :
                 "您的实验项目被驳回" + (comment != null ? "，原因：" + comment : ""));
         notification.setLink("/experiment/project/detail/" + projectId);
-//        notification.setUserId(project.getUploaderId());
+        notification.setUserId(teacher.getId()); // 设置接收通知的用户ID
+        notification.setCreatedAt(new Date()); // 设置创建时间
+        notification.setRelatedId(projectId); // 关联项目ID
 
         notificationMapper.insert(notification);
     }
@@ -94,6 +133,7 @@ public class NotificationServiceImpl implements NotificationService {
         ));
         notification.setLink("/experiment/project/detail/" + projectId);
         notification.setCreatedAt(new Date());
+        notification.setRelatedId(projectId); // 关联项目ID
 
         // 获取所有相关班级的师生 - 需要实现 findUserIdsByClassIds() 方法
         List<Long> userIds = userDao.findUserIdsByClassIds(classIds);

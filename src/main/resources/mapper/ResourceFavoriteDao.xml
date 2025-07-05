@@ -7,13 +7,14 @@
 
     <!-- 根据ID查询 -->
     <select id="selectById" resultType="com.edu.virtuallab.resource.model.ResourceFavorite">
-        SELECT * FROM resource_favorite WHERE id = #{id}
+        SELECT id, user_id as userId, resource_id as resourceId, created_at as createTime
+        FROM resource_favorite WHERE id = #{id}
     </select>
 
     <!-- 插入 -->
     <insert id="insert" parameterType="com.edu.virtuallab.resource.model.ResourceFavorite" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO resource_favorite (user_id, resource_id, create_time)
-        VALUES (#{userId}, #{resourceId}, #{createTime})
+        INSERT INTO resource_favorite (user_id, resource_id, created_at)
+        VALUES (#{userId}, #{resourceId}, NOW())
     </insert>
 
     <!-- 删除 -->
@@ -24,20 +25,21 @@
     <!-- 更新 -->
     <update id="updateById" parameterType="com.edu.virtuallab.resource.model.ResourceFavorite">
         UPDATE resource_favorite
-        SET user_id = #{userId}, resource_id = #{resourceId}, create_time = #{createTime}
+        SET user_id = #{userId}, resource_id = #{resourceId}, created_at = #{createTime}
         WHERE id = #{id}
     </update>
 
     <!-- 根据用户ID和资源ID查询（防止重复收藏） -->
     <select id="selectByUserAndResource" resultType="com.edu.virtuallab.resource.model.ResourceFavorite">
-        SELECT * FROM resource_favorite WHERE user_id = #{userId} AND resource_id = #{resourceId}
+        SELECT id, user_id as userId, resource_id as resourceId, created_at as createTime
+        FROM resource_favorite WHERE user_id = #{userId} AND resource_id = #{resourceId}
     </select>
 
     <select id="selectByUserId" resultType="com.edu.virtuallab.resource.model.ResourceFavorite">
-        SELECT id, user_id, resource_id, create_time
+        SELECT id, user_id as userId, resource_id as resourceId, created_at as createTime
         FROM resource_favorite
         WHERE user_id = #{userId}
-        ORDER BY create_time DESC
+        ORDER BY created_at DESC
         LIMIT #{offset}, #{size}
     </select>
 
@@ -50,10 +52,17 @@
     </select>
 
     <insert id="insertByUserAndResource">
-        INSERT IGNORE INTO resource_favorite (user_id, resource_id) VALUES (#{userId}, #{resourceId})
+        INSERT IGNORE INTO resource_favorite (user_id, resource_id, created_at) 
+        VALUES (#{userId}, #{resourceId}, NOW())
     </insert>
+    
     <delete id="delete">
         DELETE FROM resource_favorite WHERE user_id = #{userId} AND resource_id = #{resourceId}
     </delete>
+
+    <!-- 获取资源的收藏数量 -->
+    <select id="countByResourceId" resultType="int">
+        SELECT COUNT(*) FROM resource_favorite WHERE resource_id = #{resourceId}
+    </select>
 
 </mapper>

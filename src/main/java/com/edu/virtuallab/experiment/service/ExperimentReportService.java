@@ -5,6 +5,7 @@ import com.edu.virtuallab.experiment.model.ExperimentReport;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface ExperimentReportService {
@@ -16,6 +17,8 @@ public interface ExperimentReportService {
     ExperimentReport submitReport(String sessionId, ExperimentReport.Status status);
     List<ExperimentReport> getReportList(Long studentId);
     List<ExperimentReport> getSubmittedAndGradedReports();
+    boolean updateManualScore(Long sessionId, BigDecimal score, String comment);
+
 //
 //    List<ExperimentReport> listAll();
 //

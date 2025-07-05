@@ -177,4 +177,9 @@ public interface UserService {
      * 根据邮箱获取用户信息
      */
     User getByEmail(String email);
+
+    /**
+     * 批量查询用户
+     */
+    List<User> getUsersByIds(List<Long> userIds);
 }

@@ -120,6 +120,28 @@ public class ExperimentProjectController {
         return projectService.search(category, level, keyword);
     }
 
+    /**
+     * 标准实验项目分页/条件查询接口
+     * GET /experiment/project/query?page=1&size=10&category=xxx&level=xxx&keyword=xxx
+     */
+    @GetMapping("/query")
+    public CommonResult<Map<String, Object>> queryProjects(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String level,
+            @RequestParam(required = false) String keyword
+    ) {
+        List<ExperimentProject> records = projectService.search(category, level, keyword);
+        int fromIndex = (page - 1) * size;
+        int toIndex = Math.min(fromIndex + size, records.size());
+        List<ExperimentProject> pageList = fromIndex < records.size() ? records.subList(fromIndex, toIndex) : java.util.Collections.emptyList();
+        Map<String, Object> result = new HashMap<>();
+        result.put("records", pageList);
+        result.put("total", records.size());
+        return CommonResult.success(result, "查询成功");
+    }
+
 
     // Controller 层
     @PostMapping("/publish")

@@ -1,59 +1,127 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.edu.virtuallab.resource.dao.ResourceFavoriteDao">
 
-    <!-- 根据ID查询 -->
-    <select id="selectById" resultType="com.edu.virtuallab.resource.model.ResourceFavorite">
-        SELECT * FROM resource_favorite WHERE id = #{id}
-    </select>
+    <resultMap id="BaseResultMap" type="com.edu.virtuallab.resource.model.ResourceFavorite">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="resource_id" property="resourceId" jdbcType="BIGINT"/>
+        <result column="created_at" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
 
-    <!-- 插入 -->
-    <insert id="insert" parameterType="com.edu.virtuallab.resource.model.ResourceFavorite" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO resource_favorite (user_id, resource_id, create_time)
+    <sql id="Base_Column_List">
+        id, user_id, resource_id, created_at
+    </sql>
+
+    <insert id="insert" parameterType="com.edu.virtuallab.resource.model.ResourceFavorite">
+        INSERT INTO resource_favorite (user_id, resource_id, created_at)
         VALUES (#{userId}, #{resourceId}, #{createTime})
     </insert>
 
-    <!-- 删除 -->
-    <delete id="deleteById" parameterType="long">
+    <delete id="deleteById" parameterType="java.lang.Long">
         DELETE FROM resource_favorite WHERE id = #{id}
     </delete>
 
-    <!-- 更新 -->
-    <update id="updateById" parameterType="com.edu.virtuallab.resource.model.ResourceFavorite">
-        UPDATE resource_favorite
-        SET user_id = #{userId}, resource_id = #{resourceId}, create_time = #{createTime}
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM resource_favorite
         WHERE id = #{id}
-    </update>
-
-    <!-- 根据用户ID和资源ID查询（防止重复收藏） -->
-    <select id="selectByUserAndResource" resultType="com.edu.virtuallab.resource.model.ResourceFavorite">
-        SELECT * FROM resource_favorite WHERE user_id = #{userId} AND resource_id = #{resourceId}
     </select>
 
-    <select id="selectByUserId" resultType="com.edu.virtuallab.resource.model.ResourceFavorite">
-        SELECT id, user_id, resource_id, create_time
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
         FROM resource_favorite
         WHERE user_id = #{userId}
-        ORDER BY create_time DESC
+        ORDER BY created_at DESC
         LIMIT #{offset}, #{size}
     </select>
 
-    <select id="countByUserId" resultType="int">
-        SELECT COUNT(*) FROM resource_favorite WHERE user_id = #{userId}
+    <select id="countByUserId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM resource_favorite
+        WHERE user_id = #{userId}
     </select>
 
-    <select id="countByUserIdAndResourceId" resultType="int">
-        SELECT COUNT(*) FROM resource_favorite WHERE user_id = #{userId} AND resource_id = #{resourceId}
+    <update id="updateById" parameterType="com.edu.virtuallab.resource.model.ResourceFavorite">
+        UPDATE resource_favorite
+        SET user_id = #{userId},
+            resource_id = #{resourceId},
+            created_at = #{createTime}
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectByUserAndResource" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM resource_favorite
+        WHERE user_id = #{userId} AND resource_id = #{resourceId}
+    </select>
+
+    <select id="countByUserIdAndResourceId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM resource_favorite
+        WHERE user_id = #{userId} AND resource_id = #{resourceId}
     </select>
 
     <insert id="insertByUserAndResource">
-        INSERT IGNORE INTO resource_favorite (user_id, resource_id) VALUES (#{userId}, #{resourceId})
+        INSERT INTO resource_favorite (user_id, resource_id, created_at)
+        VALUES (#{userId}, #{resourceId}, NOW())
     </insert>
+
     <delete id="delete">
-        DELETE FROM resource_favorite WHERE user_id = #{userId} AND resource_id = #{resourceId}
+        DELETE FROM resource_favorite
+        WHERE user_id = #{userId} AND resource_id = #{resourceId}
     </delete>
+
+    <select id="countByResourceId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM resource_favorite
+        WHERE resource_id = #{resourceId}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM resource_favorite
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 新增统计方法 -->
+    <select id="countTotalFavorites" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM resource_favorite
+    </select>
+
+    <select id="selectTopUsersByFavorites" resultType="com.edu.virtuallab.resource.dto.UserLikeFavoriteStats">
+        SELECT 
+            u.id as userId,
+            u.username,
+            u.real_name as nickname,
+            0 as likeCount,
+            COUNT(f.id) as favoriteCount,
+            COUNT(f.id) as totalInteractions,
+            MAX(f.created_at) as lastActivity,
+            u.create_time as joinTime
+        FROM user u
+        LEFT JOIN resource_favorite f ON u.id = f.user_id
+        GROUP BY u.id, u.username, u.real_name, u.create_time
+        ORDER BY favoriteCount DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="selectTopResourcesByFavorites" resultType="com.edu.virtuallab.resource.dto.ResourceLikeFavoriteStats">
+        SELECT 
+            r.id as resourceId,
+            r.name as resourceName,
+            'experiment' as resourceType,
+            0 as likeCount,
+            COUNT(f.id) as favoriteCount,
+            COUNT(f.id) as totalInteractions,
+            r.category,
+            r.created_at as createTime,
+            MAX(f.created_at) as lastInteraction
+        FROM experiment_project r
+        LEFT JOIN resource_favorite f ON r.id = f.resource_id
+        GROUP BY r.id, r.name, r.category, r.created_at
+        ORDER BY favoriteCount DESC
+        LIMIT #{limit}
+    </select>
 
 </mapper>

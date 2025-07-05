@@ -352,6 +352,17 @@
         WHERE department = #{department}
     </select>
 
+    <!-- 批量查询用户 -->
+    <select id="findByIds" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE id IN
+        <foreach item="userId" collection="userIds" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+        ORDER BY create_time DESC
+    </select>
+
     <!-- 根据院系和角色ID查询用户 -->
     <select id="findByDepartmentAndRoleId" resultType="com.edu.virtuallab.auth.model.User">
         SELECT u.*

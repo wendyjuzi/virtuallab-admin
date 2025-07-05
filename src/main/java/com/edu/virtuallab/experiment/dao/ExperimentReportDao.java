@@ -5,6 +5,7 @@ import com.edu.virtuallab.experiment.model.ExperimentReport;
 import org.apache.ibatis.annotations.*;
 import org.springframework.security.core.parameters.P;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Mapper
@@ -13,6 +14,7 @@ public interface ExperimentReportDao extends BaseMapper<ExperimentReport> {
     @Results(id = "reportMap", value = {
             @Result(column = "session_id", property = "sessionId"),
             @Result(column = "student_id", property = "studentId"),
+            @Result(column = "project_id", property = "projectId"),
             @Result(column = "manual_content", property = "manualContent"),
             @Result(column = "created_at", property = "createdAt"),
             @Result(column = "updated_at", property = "updatedAt"),
@@ -46,5 +48,11 @@ public interface ExperimentReportDao extends BaseMapper<ExperimentReport> {
 
     @Select("SELECT * FROM experiment_report WHERE status IN ('SUBMITTED', 'GRADED')")
     List<ExperimentReport> findSubmittedAndGradedReports();
+
+    int updateManualScore(@Param("sessionId") Long sessionId,
+                          @Param("score") BigDecimal score,
+                          @Param("comment") String comment);
+    ExperimentReport getManualScoreBySessionId(@Param("sessionId") String sessionId);
+    boolean deleteManualScore(@Param("sessionId") String sessionId);
 
 }

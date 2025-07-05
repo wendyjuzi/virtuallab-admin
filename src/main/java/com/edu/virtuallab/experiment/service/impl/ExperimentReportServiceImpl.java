@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -230,5 +231,18 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
     @Override
     public List<ExperimentReport> getSubmittedAndGradedReports(){
         return experimentReportDao.findSubmittedAndGradedReports();
+    }
+
+    public boolean updateManualScore(Long sessionId, BigDecimal score, String comment) {
+        int updated = experimentReportDao.updateManualScore(sessionId, score, comment);
+        return updated > 0;
+    }
+    @Override
+    public ExperimentReport getManualScore(String sessionId) {
+        return experimentReportDao.getManualScoreBySessionId(sessionId);
+    }
+    @Override
+    public boolean deleteManualScore(String sessionId) {
+        return experimentReportDao.deleteManualScore(sessionId);
     }
 }

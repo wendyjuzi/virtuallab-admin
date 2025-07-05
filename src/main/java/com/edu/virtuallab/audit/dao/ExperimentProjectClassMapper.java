@@ -21,4 +21,6 @@ public interface ExperimentProjectClassMapper extends BaseMapper<ExperimentProje
 
     @Select("SELECT class_id FROM experiment_project_class WHERE project_id = #{projectId}")
     List<Long> selectClassIdsByProjectId(Long projectId);
+    @Select("SELECT class_id FROM experiment_project_class WHERE project_id = #{projectId}")
+    List<Long> findClassIdsByProjectId(Long projectId); // 确保此方法存在
 }

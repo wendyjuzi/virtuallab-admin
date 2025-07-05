@@ -9,6 +9,7 @@ import com.edu.virtuallab.experiment.dto.ExperimentProjectListDTO;
 import com.edu.virtuallab.common.api.PageResult;
 import com.edu.virtuallab.common.api.CommonResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,11 +22,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import com.edu.virtuallab.log.annotation.OperationLogRecord;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/experiment/project")
@@ -136,7 +143,11 @@ public class ExperimentProjectController {
         if (username == null) {
             throw new RuntimeException("用户未登录");
         }
-
+        // 调试打印：看请求体里的字段
+        System.out.println("实验原理 principle: " + req.getPrinciple());
+        System.out.println("实验目的 purpose: " + req.getPurpose());
+        System.out.println("实验方法 method: " + req.getMethod());
+        System.out.println("实验步骤 steps: " + req.getSteps());
         Long projectId = projectService.publishProject(req, username);
 
         Map<String, Object> res = new HashMap<>();
@@ -145,6 +156,43 @@ public class ExperimentProjectController {
         res.put("projectId", projectId);
         return res;
     }
+    @Value("${file.upload-dir}")
+    private String uploadDir;
+
+
+    @PostMapping("/upload/image")
+    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("文件为空");
+        }
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+        Path uploadPath = Paths.get(uploadDir);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+            System.out.println("创建上传目录：" + uploadPath.toAbsolutePath());
+        }
+
+        Path savePath = uploadPath.resolve(fileName);
+        System.out.println("准备保存文件： " + fileName);
+        System.out.println("保存路径为： " + savePath.toAbsolutePath());
+
+        try {
+            Files.copy(file.getInputStream(), savePath);
+            System.out.println("文件保存成功！");
+        } catch (IOException e) {
+            System.err.println("文件保存失败: " + e.getMessage());
+            throw e;
+        }
+
+        // 这里返回前端的URL，映射到静态资源路径
+        String url = "/images/uploads/" + fileName;
+        System.out.println("返回文件URL: " + url);
+
+        return ResponseEntity.ok(Map.of("url", url));
+    }
+
+
 
 
 
@@ -165,7 +213,40 @@ public class ExperimentProjectController {
         return projectService.getTeamsByStudentId(studentId);
     }
 
+    @PostMapping("/start")
+    public ResponseEntity<String> startExperiment(@RequestBody Map<String, Object> payload) {
+        Integer projectId = (Integer) payload.get("projectId");
+        String studentId = (String) payload.get("studentId");
 
+        if (projectId == null || studentId == null) {
+            return ResponseEntity.badRequest().body("参数不完整");
+        }
+
+        int updated = projectService.markAsInProgress(projectId, studentId);
+        if (updated > 0) {
+            return ResponseEntity.ok("已开始实验");
+        } else {
+            return ResponseEntity.status(500).body("更新失败，可能不存在记录");
+        }
+    }
+    @PostMapping("/complete")
+    public ResponseEntity<String> completeExperiment(@RequestBody Map<String, Object> payload) {
+        Object projectIdObj = payload.get("projectId");
+        Integer projectId = projectIdObj != null ? Integer.parseInt(projectIdObj.toString()) : null;
+
+        Object studentIdObj = payload.get("studentId");
+        String studentId = studentIdObj != null ? studentIdObj.toString() : null;
+
+
+        if (projectId == null || studentId == null) {
+            return ResponseEntity.badRequest().body("缺少必要参数");
+        }
+
+        int updated = projectService.markAsCompleted(projectId, studentId);
+        return updated > 0 ?
+                ResponseEntity.ok("已更新为 completed") :
+                ResponseEntity.status(500).body("更新失败");
+    }
 
 
 

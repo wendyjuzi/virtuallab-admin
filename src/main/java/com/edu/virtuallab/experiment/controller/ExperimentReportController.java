@@ -1,6 +1,7 @@
 package com.edu.virtuallab.experiment.controller;
 
 import com.edu.virtuallab.common.exception.BusinessException;
+import com.edu.virtuallab.experiment.dto.ManualScoreRequest;
 import com.edu.virtuallab.experiment.model.ExperimentReport;
 import com.edu.virtuallab.experiment.service.ExperimentReportService;
 import com.edu.virtuallab.resource.model.Resource;
@@ -22,6 +23,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/experiment")
@@ -78,7 +80,7 @@ public class ExperimentReportController {
         return ResponseEntity.ok(report);
     }
 
-
+    @OperationLogRecord(operation = "SUBMIT_EXPERIMENT_REPORT", module = "EXPERIMENT", action = "提交实验报告", description = "用户提交实验报告", permissionCode = "EXPERIMENT_MANAGE")
     @PostMapping("/report/{sessionId}/submit")
     public ResponseEntity<ExperimentReport> submitReport(
             @PathVariable String sessionId,
@@ -144,4 +146,6 @@ public class ExperimentReportController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+
 }

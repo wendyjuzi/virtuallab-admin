@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -20,6 +21,8 @@ public class ExperimentReport {
     private String sessionId;
     @TableField("student_id")
     private String studentId;
+    @TableField("project_id")
+    private String projectId;
     private String principle;
     private String purpose;
     private String category;
@@ -27,6 +30,26 @@ public class ExperimentReport {
     private String steps;
     private String description;
     private String title;
+
+
+    public BigDecimal getScore() {
+        return score;
+    }
+
+    public void setScore(BigDecimal score) {
+        this.score = score;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    private BigDecimal score;
+    private String comment;
 
     @TableField("manual_content")
     private String manualContent;//用户填入的实验结果
@@ -88,6 +111,9 @@ public class ExperimentReport {
 
     public void setStudentId(String studentId) {
         this.studentId = studentId;
+    }
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
 }

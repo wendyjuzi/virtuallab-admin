@@ -128,4 +128,8 @@ public interface UserDao {
      * 批量查询用户
      */
     List<User> findByIds(@Param("userIds") List<Long> userIds);
+
+    // +++ 新增：根据院系和角色ID查询用户 +++
+    List<User> findByDepartmentAndRoleId(@Param("department") String department, @Param("roleId") Long roleId);
+
 }

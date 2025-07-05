@@ -1,5 +1,7 @@
 package com.edu.virtuallab.experiment.dao;
 
+import com.edu.virtuallab.experiment.model.Clazz;
+import com.edu.virtuallab.experiment.model.Student;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -14,5 +16,9 @@ public interface StudentClassDao {
     void deleteByStudentId(@Param("studentId") Long studentId);
 
     List<Long> findClassIdsByStudentId(@Param("studentId") Long studentId);
+    List<Clazz> getAllClasses();
+    List<Student> getStudentsByClassId(@Param("classId") Long classId);
+    int countStudentClassRecords();
+
 }
 

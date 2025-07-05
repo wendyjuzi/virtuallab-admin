@@ -23,6 +23,7 @@ public interface ExperimentProjectService {
     Long getStudentIdByUserId(Long userId);
     int markAsInProgress(Integer projectId, String studentId);
     int markAsCompleted(Integer projectId, String studentId);
+    int countPendingGradingReports(String teacherName);
 
     void save(ExperimentProject project);
     void approve(Long id, boolean approve, String comment);

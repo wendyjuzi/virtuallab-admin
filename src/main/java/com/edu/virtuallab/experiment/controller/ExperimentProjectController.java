@@ -1,9 +1,13 @@
 package com.edu.virtuallab.experiment.controller;
 
 import com.edu.virtuallab.auth.util.JwtUtil;
+import com.edu.virtuallab.experiment.dao.ExperimentProjectDao;
+import com.edu.virtuallab.experiment.dao.StudentClassDao;
 import com.edu.virtuallab.experiment.dto.ExperimentProjectPublishRequest;
+import com.edu.virtuallab.experiment.model.Clazz;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
 import com.edu.virtuallab.experiment.model.ProjectTeam;
+import com.edu.virtuallab.experiment.model.Student;
 import com.edu.virtuallab.experiment.service.ExperimentProjectService;
 import com.edu.virtuallab.experiment.dto.ExperimentProjectListDTO;
 import com.edu.virtuallab.common.api.PageResult;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,7 +44,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class ExperimentProjectController {
     @Autowired
     private ExperimentProjectService projectService;
-
+    private ExperimentProjectDao projectDao;
+    @Resource
+    private StudentClassDao classDao;
     @OperationLogRecord(operation = "CREATE_EXPERIMENT_PROJECT", module = "EXPERIMENT", action = "创建实验项目", description = "用户创建实验项目", permissionCode = "EXPERIMENT_MANAGE")
     @PostMapping("/create")
     public int create(@RequestBody ExperimentProject project) {
@@ -169,10 +176,50 @@ public class ExperimentProjectController {
 
         return ResponseEntity.ok(Map.of("url", url));
     }
+    @GetMapping("/class/list")
+    public List<Clazz> getAllClasses() {
+        return classDao.getAllClasses();
+    }
 
+    @GetMapping("/class/{classId}/students")
+    public List<Student> getStudentsByClass(@PathVariable Long classId) {
+        return classDao.getStudentsByClassId(classId);
+    }
+    @GetMapping("/studentCount")
+    public int getStudentCount() {
+        int count = classDao.countStudentClassRecords();
+        System.out.println("获取学生数量 count = " + count);
+        return count;
+    }
+    @GetMapping("/pendingGradingCount")
+    public ResponseEntity<Map<String, Object>> getPendingGradingCount(
+            @RequestParam String teacherName) {
+        try {
+            // 使用System.out代替log
+            System.out.println("获取待批改报告数量，教师: " + teacherName);
 
+            int count = projectService.countPendingGradingReports(teacherName);
+            System.out.println("待批改报告数量: " + count);
 
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "code", 200,
+                    "message", "成功",
+                    "data", count
+            ));
+        } catch (Exception e) {
+            // 打印错误堆栈
+            System.err.println("获取待批改数量失败:");
+            e.printStackTrace();
 
+            return ResponseEntity.status(500).body(Map.of(
+                    "success", false,
+                    "code", 500,
+                    "message", e.getMessage(),
+                    "data", null
+            ));
+        }
+    }
 
     @GetMapping("/my-projects")
     public List<ExperimentProject> getMyProjects(HttpServletRequest request) {

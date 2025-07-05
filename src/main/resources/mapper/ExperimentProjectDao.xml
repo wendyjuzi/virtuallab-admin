@@ -136,4 +136,11 @@
         WHERE project_id = #{projectId}
           AND student_id = #{studentId}
     </update>
+    <select id="countPendingGradingReports" resultType="int">
+        SELECT COUNT(*)
+        FROM experiment_report
+        WHERE teacher_name = #{teacherName}
+          AND status = 'SUBMITTED'
+    </select>
+
 </mapper>

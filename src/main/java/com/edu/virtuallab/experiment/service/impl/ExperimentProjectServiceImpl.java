@@ -207,4 +207,8 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
     public int markAsCompleted(Integer projectId, String studentId) {
         return projectDao.updateStatusToCompleted(projectId, studentId);
     }
+    @Override
+    public int countPendingGradingReports(String teacherName) {
+        return projectDao.countPendingGradingReports(teacherName);
+    }
 }

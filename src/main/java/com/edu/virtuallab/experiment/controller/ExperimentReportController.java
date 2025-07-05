@@ -144,11 +144,4 @@ public class ExperimentReportController {
             return ResponseEntity.internalServerError().build();
         }
     }
-
-    @OperationLogRecord(operation = "SUBMIT_EXPERIMENT_REPORT", module = "EXPERIMENT", action = "提交实验报告", description = "用户提交实验报告", permissionCode = "EXPERIMENT_MANAGE")
-    @PostMapping("/report/{sessionId}/submit")
-    public ResponseEntity<Void> submitReport(@PathVariable String sessionId) {
-        experimentreportService.submitReport(sessionId);
-        return ResponseEntity.ok().build();
-    }
 }

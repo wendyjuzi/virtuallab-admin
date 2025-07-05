@@ -30,14 +30,14 @@
 
     <insert id="insert" parameterType="com.edu.virtuallab.log.model.OperationLog" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO operation_log (
-            user_id, username, operation, module, description, request_method, request_url, 
-            request_params, response_result, ip_address, user_agent, execution_time, status, 
+            user_id, username, operation, module, description, request_method, request_url,
+            request_params, response_result, ip_address, user_agent, execution_time, status,
             error_message, create_time, permission_code
         ) VALUES (
-            #{userId}, #{username}, #{operation}, #{module}, #{description}, #{requestMethod}, 
-            #{requestUrl}, #{requestParams}, #{responseResult}, #{ipAddress}, #{userAgent}, 
-            #{executionTime}, #{status}, #{errorMessage}, #{createTime}, #{permissionCode}
-        )
+                     #{userId}, #{username}, #{operation}, #{module}, #{description}, #{requestMethod},
+                     #{requestUrl}, #{requestParams}, #{responseResult}, #{ipAddress}, #{userAgent},
+                     #{executionTime}, #{status}, #{errorMessage}, #{createTime}, #{permissionCode}
+                 )
     </insert>
 
     <select id="findById" parameterType="java.lang.Long" resultMap="BaseResultMap">

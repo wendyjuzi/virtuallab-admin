@@ -19,6 +19,13 @@ public class ResourceCommentController {
     private ResourceCommentService resourceCommentService;
 
     @OperationLogRecord(operation = "CREATE_RESOURCE_COMMENT", module = "RESOURCE", action = "创建资源评论", description = "用户创建资源评论", permissionCode = "RESOURCE_MANAGE")
+    @PostMapping
+    public ResponseEntity<Integer> createComment(@RequestBody ResourceComment comment) {
+        int result = resourceCommentService.addComment(comment);
+        return ResponseEntity.ok(result);
+    }
+
+    @OperationLogRecord(operation = "CREATE_RESOURCE_COMMENT", module = "RESOURCE", action = "创建资源评论", description = "用户创建资源评论", permissionCode = "RESOURCE_MANAGE")
     @PostMapping("/create")
     public ResponseEntity<Integer> create(@RequestBody ResourceComment comment) {
         int result = resourceCommentService.addComment(comment);

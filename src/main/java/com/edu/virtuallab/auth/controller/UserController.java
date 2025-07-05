@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import com.edu.virtuallab.log.annotation.OperationLogRecord;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/user")
@@ -460,5 +461,34 @@ public class UserController {
         // 关键词匹配用户名、姓名、邮箱
         PageResult<User> result = userService.getUserList(keyword, keyword, null, userType, status, page, size);
         return CommonResult.success(result, "查询成功");
+    }
+
+    /**
+     * 批量查询用户接口
+     * GET /user/batch-query?ids=1,2,3
+     */
+    @GetMapping("/batch-query")
+    @ApiOperation("批量查询用户")
+    public CommonResult<List<User>> getUsersByIds(@RequestParam String ids) {
+        try {
+            if (ids == null || ids.trim().isEmpty()) {
+                return CommonResult.failed("用户ID列表不能为空");
+            }
+            
+            String[] idArray = ids.split(",");
+            List<Long> userIds = new ArrayList<>();
+            for (String idStr : idArray) {
+                try {
+                    userIds.add(Long.parseLong(idStr.trim()));
+                } catch (NumberFormatException e) {
+                    return CommonResult.failed("用户ID格式错误: " + idStr);
+                }
+            }
+            
+            List<User> users = userService.getUsersByIds(userIds);
+            return CommonResult.success(users, "批量查询用户成功");
+        } catch (Exception e) {
+            return CommonResult.failed("批量查询用户失败: " + e.getMessage());
+        }
     }
 }

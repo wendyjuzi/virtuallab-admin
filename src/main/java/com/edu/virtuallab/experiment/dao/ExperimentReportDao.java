@@ -52,5 +52,7 @@ public interface ExperimentReportDao extends BaseMapper<ExperimentReport> {
     int updateManualScore(@Param("sessionId") Long sessionId,
                           @Param("score") BigDecimal score,
                           @Param("comment") String comment);
+    ExperimentReport getManualScoreBySessionId(@Param("sessionId") String sessionId);
+    boolean deleteManualScore(@Param("sessionId") String sessionId);
 
 }

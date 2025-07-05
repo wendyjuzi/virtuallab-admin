@@ -237,4 +237,12 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
         int updated = experimentReportDao.updateManualScore(sessionId, score, comment);
         return updated > 0;
     }
+    @Override
+    public ExperimentReport getManualScore(String sessionId) {
+        return experimentReportDao.getManualScoreBySessionId(sessionId);
+    }
+    @Override
+    public boolean deleteManualScore(String sessionId) {
+        return experimentReportDao.deleteManualScore(sessionId);
+    }
 }

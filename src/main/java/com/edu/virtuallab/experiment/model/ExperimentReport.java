@@ -31,6 +31,7 @@ public class ExperimentReport {
     private String description;
     private String title;
 
+
     public BigDecimal getScore() {
         return score;
     }

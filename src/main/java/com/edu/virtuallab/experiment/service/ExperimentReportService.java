@@ -18,6 +18,8 @@ public interface ExperimentReportService {
     List<ExperimentReport> getReportList(Long studentId);
     List<ExperimentReport> getSubmittedAndGradedReports();
     boolean updateManualScore(Long sessionId, BigDecimal score, String comment);
+    ExperimentReport getManualScore(String sessionId);
+    boolean deleteManualScore(String sessionId);
 
 //
 //    List<ExperimentReport> listAll();

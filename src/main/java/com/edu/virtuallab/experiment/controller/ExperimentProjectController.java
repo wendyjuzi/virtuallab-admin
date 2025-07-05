@@ -161,8 +161,12 @@ public class ExperimentProjectController {
     }
     @PostMapping("/complete")
     public ResponseEntity<String> completeExperiment(@RequestBody Map<String, Object> payload) {
-        Integer projectId = (Integer) payload.get("projectId");
-        String studentId = (String) payload.get("studentId");
+        Object projectIdObj = payload.get("projectId");
+        Integer projectId = projectIdObj != null ? Integer.parseInt(projectIdObj.toString()) : null;
+
+        Object studentIdObj = payload.get("studentId");
+        String studentId = studentIdObj != null ? studentIdObj.toString() : null;
+
 
         if (projectId == null || studentId == null) {
             return ResponseEntity.badRequest().body("缺少必要参数");

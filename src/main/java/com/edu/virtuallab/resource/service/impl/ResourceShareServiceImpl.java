@@ -34,19 +34,19 @@ public class ResourceShareServiceImpl implements ResourceShareService {
     @Override
     public String generateShareLink(Long resourceId, String sharedBy, Long expireMinutes) {
         try {
-            String shareLink = UUID.randomUUID().toString().replace("-", "");
-            ResourceShare share = new ResourceShare();
-            share.setResourceId(resourceId);
-            share.setSharedBy(sharedBy);
-            share.setShareLink(shareLink);
-            share.setCreateTime(new Date());
-            if (expireMinutes != null && expireMinutes > 0) {
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.MINUTE, expireMinutes.intValue());
-                share.setExpireTime(cal.getTime());
-            }
-            resourceShareDao.insert(share);
-            return shareLink;
+        String shareLink = UUID.randomUUID().toString().replace("-", "");
+        ResourceShare share = new ResourceShare();
+        share.setResourceId(resourceId);
+        share.setSharedBy(sharedBy);
+        share.setShareLink(shareLink);
+        share.setCreateTime(new Date());
+        if (expireMinutes != null && expireMinutes > 0) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.MINUTE, expireMinutes.intValue());
+            share.setExpireTime(cal.getTime());
+        }
+        resourceShareDao.insert(share);
+        return shareLink;
         } catch (Exception e) {
             throw new BusinessException("生成分享链接失败: " + e.getMessage());
         }
@@ -66,7 +66,7 @@ public class ResourceShareServiceImpl implements ResourceShareService {
     @Override
     public List<ResourceShare> getSharesByResourceId(Long resourceId) {
         try {
-            return resourceShareDao.selectByResourceId(resourceId);
+        return resourceShareDao.selectByResourceId(resourceId);
         } catch (Exception e) {
             throw new BusinessException("获取资源分享列表失败: " + e.getMessage());
         }
@@ -75,8 +75,8 @@ public class ResourceShareServiceImpl implements ResourceShareService {
     @Override
     public boolean cancelShare(Long id, String sharedBy) {
         try {
-            ResourceShare share = resourceShareDao.selectById(id);
-            if (share == null || !Objects.equals(share.getSharedBy(), sharedBy)) {
+        ResourceShare share = resourceShareDao.selectById(id);
+        if (share == null || !Objects.equals(share.getSharedBy(), sharedBy)) {
                 throw new BusinessException("无权限取消该分享");
             }
             return resourceShareDao.delete(id) > 0;

@@ -21,10 +21,10 @@ public class LikeFavoriteServiceImpl implements LikeFavoriteService {
     @Override
     public LikeFavoriteStatus getStatus(Long resourceId, Long userId) {
         try {
-            LikeFavoriteStatus status = new LikeFavoriteStatus();
-            status.setLiked(resourceLikeDao.countByUserIdAndResourceId(userId, resourceId) > 0);
-            status.setFavorited(resourceFavoriteDao.countByUserIdAndResourceId(userId, resourceId) > 0);
-            return status;
+        LikeFavoriteStatus status = new LikeFavoriteStatus();
+        status.setLiked(resourceLikeDao.countByUserIdAndResourceId(userId, resourceId) > 0);
+        status.setFavorited(resourceFavoriteDao.countByUserIdAndResourceId(userId, resourceId) > 0);
+        return status;
         } catch (Exception e) {
             throw new BusinessException("查询点赞/收藏状态失败: " + e.getMessage());
         }
@@ -125,7 +125,7 @@ public class LikeFavoriteServiceImpl implements LikeFavoriteService {
     @Override
     public boolean isResourceLiked(Long userId, Long resourceId) {
         try {
-            return resourceLikeDao.countByUserIdAndResourceId(userId, resourceId) > 0;
+        return resourceLikeDao.countByUserIdAndResourceId(userId, resourceId) > 0;
         } catch (Exception e) {
             throw new BusinessException("查询点赞状态失败: " + e.getMessage());
         }

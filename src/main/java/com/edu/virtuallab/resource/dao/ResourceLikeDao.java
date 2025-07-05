@@ -1,6 +1,8 @@
 package com.edu.virtuallab.resource.dao;
 
 import com.edu.virtuallab.resource.model.ResourceLike;
+import com.edu.virtuallab.resource.dto.UserLikeFavoriteStats;
+import com.edu.virtuallab.resource.dto.ResourceLikeFavoriteStats;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
@@ -18,4 +20,10 @@ public interface ResourceLikeDao {
     int insertByUserAndResource(Long userId, Long resourceId);
     int delete(Long userId, Long resourceId);
     int countByResourceId(@Param("resourceId") Long resourceId);
+    List<ResourceLike> selectAll();
+    
+    // 新增统计方法
+    Integer countTotalLikes();
+    List<UserLikeFavoriteStats> selectTopUsersByLikes(@Param("limit") int limit);
+    List<ResourceLikeFavoriteStats> selectTopResourcesByLikes(@Param("limit") int limit);
 }

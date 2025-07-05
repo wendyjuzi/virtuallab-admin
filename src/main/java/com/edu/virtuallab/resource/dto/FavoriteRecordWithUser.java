@@ -1,0 +1,49 @@
+package com.edu.virtuallab.resource.dto;
+
+import java.util.Date;
+
+/**
+ * 带用户信息的收藏记录DTO
+ */
+public class FavoriteRecordWithUser {
+    private Long id;
+    private Long userId;
+    private String username;
+    private String nickname;
+    private Long resourceId;
+    private String resourceName;
+    private String resourceType;
+    private Date createTime;
+
+    public FavoriteRecordWithUser() {}
+
+    public FavoriteRecordWithUser(Long id, Long userId, String username, String nickname, 
+                                 Long resourceId, String resourceName, String resourceType, Date createTime) {
+        this.id = id;
+        this.userId = userId;
+        this.username = username;
+        this.nickname = nickname;
+        this.resourceId = resourceId;
+        this.resourceName = resourceName;
+        this.resourceType = resourceType;
+        this.createTime = createTime;
+    }
+
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+    public String getNickname() { return nickname; }
+    public void setNickname(String nickname) { this.nickname = nickname; }
+    public Long getResourceId() { return resourceId; }
+    public void setResourceId(Long resourceId) { this.resourceId = resourceId; }
+    public String getResourceName() { return resourceName; }
+    public void setResourceName(String resourceName) { this.resourceName = resourceName; }
+    public String getResourceType() { return resourceType; }
+    public void setResourceType(String resourceType) { this.resourceType = resourceType; }
+    public Date getCreateTime() { return createTime; }
+    public void setCreateTime(Date createTime) { this.createTime = createTime; }
+} 

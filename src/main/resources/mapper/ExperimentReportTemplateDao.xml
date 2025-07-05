@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.virtuallab.experiment.dao.ExperimentReportTemplateDao">
+    <resultMap id="BaseResultMap" type="com.edu.virtuallab.experiment.model.ExperimentReportTemplate">
+        <id column="id" property="id" />
+        <result column="experiment_id" property="experimentId" />
+        <result column="title" property="title" />
+        <result column="content" property="content" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+    <insert id="insert" parameterType="com.edu.virtuallab.experiment.model.ExperimentReportTemplate" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO experiment_report_template (experiment_id, title, content, create_time, update_time)
+        VALUES (#{experimentId}, #{title}, #{content}, NOW(), NOW())
+    </insert>
+    <update id="update" parameterType="com.edu.virtuallab.experiment.model.ExperimentReportTemplate">
+        UPDATE experiment_report_template
+        SET experiment_id=#{experimentId}, title=#{title}, content=#{content}, update_time=NOW()
+        WHERE id=#{id}
+    </update>
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM experiment_report_template WHERE id=#{id}
+    </delete>
+    <select id="findById" parameterType="long" resultMap="BaseResultMap">
+        SELECT * FROM experiment_report_template WHERE id=#{id}
+    </select>
+    <select id="findByExperimentId" parameterType="long" resultMap="BaseResultMap">
+        SELECT * FROM experiment_report_template WHERE experiment_id=#{experimentId}
+    </select>
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT * FROM experiment_report_template ORDER BY update_time DESC
+    </select>
+</mapper> 

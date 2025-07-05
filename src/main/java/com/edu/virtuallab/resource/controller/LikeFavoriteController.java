@@ -13,6 +13,11 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.constraints.NotNull;
 import com.edu.virtuallab.resource.model.LikeFavoriteStatus;
 import com.edu.virtuallab.log.annotation.OperationLogRecord;
+import com.edu.virtuallab.auth.util.JwtUtil;
+import com.edu.virtuallab.auth.dao.UserDao;
+import com.edu.virtuallab.auth.model.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequestMapping("/like-favorite")
@@ -23,15 +28,25 @@ public class LikeFavoriteController {
     
     @Autowired
     private ResourceFavoriteService resourceFavoriteService;
+    
+    @Autowired
+    private UserDao userDao;
 
     /**
      * 查询某个实验/资源的点赞/收藏状态
      */
     @GetMapping("/experiment/{experimentId}")
     public CommonResult<LikeFavoriteStatus> getLikeFavoriteStatus(
-            @PathVariable @NotNull Long experimentId,
-            @RequestParam @NotNull Long userId) {
+            @PathVariable @NotNull Long experimentId) {
         try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+            User user = userDao.findByUsername(username);
+            if (user == null) {
+                return CommonResult.failed("用户不存在");
+            }
+            Long userId = user.getId();
+            
             LikeFavoriteStatus status = likeFavoriteService.getStatus(experimentId, userId);
             return CommonResult.success(status, "查询成功");
         } catch (BusinessException e) {
@@ -46,9 +61,16 @@ public class LikeFavoriteController {
      */
     @GetMapping("/resource/{resourceId}")
     public CommonResult<LikeFavoriteStatus> getLikeFavoriteStatusByResource(
-            @PathVariable @NotNull Long resourceId,
-            @RequestParam @NotNull Long userId) {
+            @PathVariable @NotNull Long resourceId) {
         try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+            User user = userDao.findByUsername(username);
+            if (user == null) {
+                return CommonResult.failed("用户不存在");
+            }
+            Long userId = user.getId();
+            
             LikeFavoriteStatus status = likeFavoriteService.getStatus(resourceId, userId);
             return CommonResult.success(status, "查询成功");
         } catch (BusinessException e) {
@@ -62,8 +84,8 @@ public class LikeFavoriteController {
     @PostMapping("/like/{resourceId}")
     public CommonResult<?> like(@PathVariable Long resourceId, @RequestParam @NotNull Long userId) {
         try {
-            likeFavoriteService.like(resourceId, userId);
-            return CommonResult.success(null, "点赞成功");
+        likeFavoriteService.like(resourceId, userId);
+        return CommonResult.success(null, "点赞成功");
         } catch (BusinessException e) {
             return CommonResult.failed(e.getMessage());
         } catch (Exception e) {
@@ -75,8 +97,8 @@ public class LikeFavoriteController {
     @PostMapping("/unlike/{resourceId}")
     public CommonResult<?> unlike(@PathVariable Long resourceId, @RequestParam @NotNull Long userId) {
         try {
-            likeFavoriteService.unlike(resourceId, userId);
-            return CommonResult.success(null, "取消点赞成功");
+        likeFavoriteService.unlike(resourceId, userId);
+        return CommonResult.success(null, "取消点赞成功");
         } catch (BusinessException e) {
             return CommonResult.failed(e.getMessage());
         } catch (Exception e) {
@@ -88,8 +110,8 @@ public class LikeFavoriteController {
     @PostMapping("/favorite/{resourceId}")
     public CommonResult<?> favorite(@PathVariable Long resourceId, @RequestParam @NotNull Long userId) {
         try {
-            likeFavoriteService.favorite(resourceId, userId);
-            return CommonResult.success(null, "收藏成功");
+        likeFavoriteService.favorite(resourceId, userId);
+        return CommonResult.success(null, "收藏成功");
         } catch (BusinessException e) {
             return CommonResult.failed(e.getMessage());
         } catch (Exception e) {
@@ -101,8 +123,8 @@ public class LikeFavoriteController {
     @PostMapping("/unfavorite/{resourceId}")
     public CommonResult<?> unfavorite(@PathVariable Long resourceId, @RequestParam @NotNull Long userId) {
         try {
-            likeFavoriteService.unfavorite(resourceId, userId);
-            return CommonResult.success(null, "取消收藏成功");
+        likeFavoriteService.unfavorite(resourceId, userId);
+        return CommonResult.success(null, "取消收藏成功");
         } catch (BusinessException e) {
             return CommonResult.failed(e.getMessage());
         } catch (Exception e) {

@@ -56,14 +56,22 @@
         </if>
     </select>
 
-    <!-- 插入实验项目：主键自动回填 -->
     <insert id="insert" parameterType="com.edu.virtuallab.experiment.model.ExperimentProject"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO experiment_project
-        (name, category, description, level, image_url, video_url, collaboration_type, created_at, updated_at, created_by)
+        (
+            name, category, description, principle, purpose, method, steps,
+            level, image_url, video_url, collaboration_type,
+            created_at, updated_at, created_by
+        )
         VALUES
-            (#{name}, #{category}, #{description}, #{level}, #{imageUrl}, #{videoUrl}, #{projectType}, NOW(), NOW(), #{createdBy})
+            (
+                #{name}, #{category}, #{description}, #{principle}, #{purpose}, #{method}, #{steps},
+                #{level}, #{imageUrl}, #{videoUrl}, #{projectType},
+                NOW(), NOW(), #{createdBy}
+            )
     </insert>
+
 
 
     <select id="getProjectsByCreatedBy" resultType="com.edu.virtuallab.experiment.model.ExperimentProject">

@@ -84,7 +84,10 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
         project.setVideoUrl(request.getVideoUrl());
         project.setProjectType(request.getProjectType());
         project.setAuditStatus("pending");
-
+        project.setPrinciple(request.getPrinciple());
+        project.setPurpose(request.getPurpose());
+        project.setMethod(request.getMethod());
+        project.setSteps(request.getSteps());
         // ✅ 设置创建者用户名
         project.setCreatedBy(createdBy);
 

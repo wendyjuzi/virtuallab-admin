@@ -35,5 +35,41 @@ public class ExperimentProjectPublishRequest {
     public void setProjectType(String projectType) {
         this.projectType = projectType;
     }
+    private String principle;
+    private String purpose;
+    private String method;
+    private String steps;
+    public String getSteps() {
+        return steps;
+    }
+
+    public void setSteps(String steps) {
+        this.steps = steps;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public String getPurpose() {
+        return purpose;
+    }
+
+    public void setPurpose(String purpose) {
+        this.purpose = purpose;
+    }
+
+    public String getPrinciple() {
+        return principle;
+    }
+
+    public void setPrinciple(String principle) {
+        this.principle = principle;
+    }
+
 }
 

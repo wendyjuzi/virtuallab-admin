@@ -157,4 +157,33 @@
         LIMIT 0, 50
     </select>
 
+    <select id="selectLogs" resultType="com.edu.virtuallab.log.model.OperationLog">
+        SELECT * FROM operation_log
+        <where>
+            <if test="username != null and username != ''">
+                AND username = #{username}
+            </if>
+            <if test="operation != null and operation != ''">
+                AND operation = #{operation}
+            </if>
+            <if test="module != null and module != ''">
+                AND module = #{module}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND create_time &lt;= #{endTime}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="findAll" resultType="com.edu.virtuallab.log.model.OperationLog">
+        SELECT * FROM operation_log ORDER BY create_time DESC
+    </select>
+
 </mapper> 

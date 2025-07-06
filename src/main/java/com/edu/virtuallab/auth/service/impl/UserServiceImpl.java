@@ -3,6 +3,7 @@ package com.edu.virtuallab.auth.service.impl;
 import com.edu.virtuallab.auth.dao.RoleDao;
 import com.edu.virtuallab.auth.dao.UserDao;
 import com.edu.virtuallab.auth.dao.UserRoleDao;
+import com.edu.virtuallab.auth.dao.EmailVerificationCodeDao;
 import com.edu.virtuallab.auth.model.Role;
 import com.edu.virtuallab.auth.model.User;
 import com.edu.virtuallab.auth.model.UserRegisterDTO;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -33,6 +35,10 @@ public class UserServiceImpl implements UserService {
     private AuthFactorService authFactorService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private org.springframework.data.redis.core.StringRedisTemplate redisTemplate;
+    @Autowired
+    private com.edu.virtuallab.auth.dao.EmailVerificationCodeDao emailVerificationCodeDao;
 
     // ==================== 基础CRUD操作 ====================
 
@@ -81,53 +87,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
-    public boolean register(UserRegisterDTO dto) {
-        // 管理员注册只校验邮箱验证码
+    public void register(UserRegisterDTO dto) {
+        // 仅管理员注册需要校验邮箱验证码
         if ("admin".equalsIgnoreCase(dto.getUserType())) {
-            boolean emailValid = false;
-            if (dto.getEmailCode() != null && dto.getEmail() != null) {
-                emailValid = authFactorService.validateEmailCode(null, dto.getEmail(), dto.getEmailCode());
+            String cacheCode = redisTemplate.opsForValue().get("email:code:" + dto.getEmail());
+            boolean valid = false;
+            if (cacheCode != null && cacheCode.equals(dto.getCode())) {
+                valid = true;
+            } else {
+                // 数据库校验
+                int count = emailVerificationCodeDao.countValidCode(dto.getEmail(), dto.getCode(), new java.util.Date());
+                valid = count > 0;
             }
-            if (!emailValid) {
-                throw new RuntimeException("管理员注册需邮箱验证码校验通过");
+            if (!valid) {
+                throw new RuntimeException("邮箱验证码错误或已过期");
             }
         }
-        // 只校验用户名唯一
-        if (isUsernameExists(dto.getUsername())) {
-            throw new BusinessException("用户名已存在");
+        // 邮箱唯一性校验
+        if (existsByEmail(dto.getEmail())) {
+            throw new RuntimeException("邮箱已存在");
         }
-        User user = new User();
-        user.setUsername(dto.getUsername());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setEmail(dto.getEmail());
-        user.setRealName(dto.getRealName());
-        user.setStudentId(dto.getStudentId());
-        user.setDepartment(dto.getDepartment());
-        user.setMajor(dto.getMajor());
-        user.setGrade(dto.getGrade());
-        user.setClassName(dto.getClassName());
-        user.setStatus(User.STATUS_NORMAL);
-        user.setCreateTime(new Date());
-        user.setUpdateTime(new Date());
-        int userResult = userDao.insert(user);
-        if (userResult <= 0) {
-            throw new RuntimeException("用户注册失败");
-        }
-        Role role = roleDao.findByCode(dto.getRoleCode());
-        if (role == null) {
-            throw new IllegalArgumentException("角色不存在");
-        }
-        UserRole userRole = new UserRole();
-        userRole.setUserId(user.getId());
-        userRole.setRoleId(role.getId());
-        userRole.setCreateTime(new Date());
-        userRole.setUpdateTime(new Date());
-        int urResult = userRoleDao.insert(userRole);
-        if (urResult <= 0) {
-            throw new RuntimeException("用户角色绑定失败");
-        }
-        return true;
+        userDao.insert(dto.toUser());
     }
 
     @Override
@@ -358,6 +338,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isStudentIdExists(String studentId) {
         return userDao.findByStudentId(studentId) != null;
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userDao.countByEmail(email) > 0;
     }
 
     @Override

@@ -132,4 +132,5 @@ public interface UserDao {
     // +++ 新增：根据院系和角色ID查询用户 +++
     List<User> findByDepartmentAndRoleId(@Param("department") String department, @Param("roleId") Long roleId);
 
+    int countByEmail(String email);
 }

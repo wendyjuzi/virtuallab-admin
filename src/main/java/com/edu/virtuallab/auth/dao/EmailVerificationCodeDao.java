@@ -41,4 +41,6 @@ public interface EmailVerificationCodeDao {
      * 根据ID查询验证码
      */
     EmailVerificationCode findById(@Param("id") Long id);
+
+    int countValidCode(@Param("email") String email, @Param("code") String code, @Param("now") java.util.Date now);
 } 

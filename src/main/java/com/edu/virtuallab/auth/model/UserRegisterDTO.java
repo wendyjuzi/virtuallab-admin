@@ -13,6 +13,7 @@ public class UserRegisterDTO {
     private String roleCode;
     private String userType; // 用户类型：user/admin
     private String emailCode; // 邮箱验证码（管理员用）
+    private String code;
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
@@ -36,6 +37,34 @@ public class UserRegisterDTO {
     public void setRoleCode(String roleCode) { this.roleCode = roleCode; }
     public String getUserType() { return userType; }
     public void setUserType(String userType) { this.userType = userType; }
-    public String getEmailCode() { return emailCode; }
-    public void setEmailCode(String emailCode) { this.emailCode = emailCode; }
+    public String getEmailCode() {
+        return emailCode;
+    }
+    public void setEmailCode(String emailCode) {
+        this.emailCode = emailCode;
+        this.code = emailCode;
+    }
+    public String getCode() {
+        return code != null ? code : emailCode;
+    }
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public User toUser() {
+        User user = new User();
+        user.setUsername(this.username);
+        user.setPassword(this.password);
+        user.setEmail(this.email);
+        user.setRealName(this.realName);
+        user.setStudentId(this.studentId);
+        user.setDepartment(this.department);
+        user.setMajor(this.major);
+        user.setGrade(this.grade);
+        user.setClassName(this.className);
+        user.setStatus(User.STATUS_NORMAL);
+        user.setCreateTime(new java.util.Date());
+        user.setUpdateTime(new java.util.Date());
+        return user;
+    }
 } 

@@ -142,5 +142,10 @@
         WHERE teacher_name = #{teacherName}
           AND status = 'SUBMITTED'
     </select>
-
+    <select id="getScoresByProjectId" parameterType="long" resultType="int">
+        SELECT score
+        FROM experiment_report
+        WHERE project_id = #{projectId}
+          AND score IS NOT NULL
+    </select>
 </mapper>

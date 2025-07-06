@@ -31,10 +31,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import com.edu.virtuallab.log.annotation.OperationLogRecord;
 import org.springframework.web.multipart.MultipartFile;
@@ -242,6 +239,65 @@ public class ExperimentProjectController {
             ));
         }
     }
+    @GetMapping("/class-student-list")
+    public ResponseEntity<List<Map<String, Object>>> getClassStudentList() {
+        try {
+            List<Clazz> classes = classDao.getAllClasses(); // 查询所有班级
+            List<Map<String, Object>> result = new ArrayList<>();
+
+            for (Clazz clazz : classes) {
+                Map<String, Object> item = new HashMap<>();
+                item.put("classId", clazz.getId());
+                item.put("className", clazz.getName());
+
+                // 根据 classId 查询对应学生
+                List<Student> studentList = classDao.getStudentsByClassId(clazz.getId());
+                List<Map<String, Object>> students = new ArrayList<>();
+
+                for (Student s : studentList) {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", s.getId());
+                    // 如果还有其他字段可加入
+                    students.add(map);
+                }
+                item.put("students", students);
+
+                result.add(item);
+            }
+
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+    @GetMapping("/statistics")
+    public ResponseEntity<?> getScoreStatistics(@RequestParam Long projectId) {
+        try {
+            System.out.println("获取评分统计数据，项目ID：" + projectId);
+
+            List<Integer> scores = projectService.getScoresByProjectId(projectId);
+            double average = scores.stream().mapToInt(Integer::intValue).average().orElse(0);
+
+            return ResponseEntity.ok(Map.of(
+                    "code", 200,
+                    "success", true,
+                    "message", "成功",
+                    "data", Map.of(
+                            "scores", scores,
+                            "average", average
+                    )
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of(
+                    "code", 500,
+                    "success", false,
+                    "message", e.getMessage()
+            ));
+        }
+    }
+
 
     @GetMapping("/my-projects")
     public List<ExperimentProject> getMyProjects(HttpServletRequest request) {

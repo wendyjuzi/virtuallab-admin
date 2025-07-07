@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -29,6 +30,8 @@ public class ExperimentReport {
     private String steps;
     private String description;
     private String title;
+    private String comment;
+    private BigDecimal score;
 
     @TableField("manual_content")
     private String manualContent;//用户填入的实验结果

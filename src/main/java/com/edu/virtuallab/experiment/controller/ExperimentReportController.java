@@ -9,16 +9,25 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
 import com.edu.virtuallab.log.annotation.OperationLogRecord;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +46,20 @@ public class ExperimentReportController {
 
     @Autowired
     private ExperimentReportService experimentreportService;
+    @Value("${file.upload-dir}")
+    private String uploadDir;
+
+    @PostConstruct
+    public void init() {
+        // 确保上传目录存在
+        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+        try {
+            Files.createDirectories(uploadPath);
+            log.info("文件上传目录初始化为: {}", uploadPath);
+        } catch (IOException e) {
+            log.error("无法创建上传目录: {}", uploadPath, e);
+        }
+    }
 
     // 通过sessionId查询（业务标识）
     @GetMapping("/report/{sessionId}")
@@ -91,10 +114,24 @@ public class ExperimentReportController {
         return ResponseEntity.ok(report);
     }
 
+    @PostMapping("/teacherReport/{sessionId}/grade")
+    public ResponseEntity<ExperimentReport> gradeReport(
+            @PathVariable String sessionId,
+            @RequestParam ExperimentReport.Status status,
+            @RequestParam String comment,
+            @RequestParam BigDecimal score){
+        ExperimentReport gradedReport = experimentReportService.gradeReport(
+                sessionId,
+                status,
+                comment,
+                score
+        );
+        return ResponseEntity.ok(gradedReport);
+    }
 
     // 上传附件
     @OperationLogRecord(operation = "UPLOAD_EXPERIMENT_REPORT_ATTACHMENT", module = "EXPERIMENT", action = "上传实验报告附件", description = "用户上传实验报告附件", permissionCode = "EXPERIMENT_MANAGE")
-    @PostMapping("/report/{sessionId}/attachments")
+    @PostMapping("/report/{sessionId}/attachment")
     public ResponseEntity<String> uploadAttachment(
             @PathVariable String sessionId,
             @RequestParam("file") MultipartFile file) {
@@ -110,18 +147,39 @@ public class ExperimentReportController {
     }
 
     // 下载附件
-    @GetMapping("/report/{sessionId}/attachments/{filename}")
+    @GetMapping("/report/{sessionId}/attachment/download")
     public ResponseEntity<byte[]> downloadAttachment(
-            @PathVariable String sessionId,
-            @PathVariable String filename) {
+            @PathVariable String sessionId ){
         try {
             ExperimentReport report = experimentReportService.getReportBySession(sessionId);
-            byte[] fileContent = experimentReportService.downloadAttachment(sessionId, filename);
+
+            // 验证报告和附件信息
+            if (report == null || report.getAttachmentPath() == null) {
+                log.error("报告或附件路径不存在 - sessionId: {}", sessionId);
+                return ResponseEntity.notFound().build();
+            }
+
+            // 转换为绝对路径（上传目录在项目根目录下的uploads）
+            String projectRoot = System.getProperty("user.dir");
+            log.info("项目根目录:{}", projectRoot);
+
+            Path filePath = Paths.get(projectRoot, report.getAttachmentPath())
+                    .toAbsolutePath()
+                    .normalize();
+            log.info("尝试加载文件 - 完整路径: {}", filePath);
+
+            // 直接从文件系统读取字节
+            byte[] fileContent = Files.readAllBytes(filePath);
+
+            // 记录文件信息用于调试
+            log.info("下载文件: {}, 大小: {} bytes", report.getOriginalFilename(), fileContent.length);
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=\"" + report.getDownloadFilename() + "\"")
+                            "attachment; filename=\"" + URLEncoder.encode(report.getOriginalFilename(), "UTF-8")  + "\"")
+                    .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.CONTENT_DISPOSITION)
                     .contentType(MediaType.parseMediaType(report.getMimeType()))
+                    .contentLength(report.getFileSize())
                     .body(fileContent);
         } catch (BusinessException e) {
             return ResponseEntity.notFound().build();
@@ -130,14 +188,14 @@ public class ExperimentReportController {
         }
     }
 
+
     // 删除附件
     @OperationLogRecord(operation = "DELETE_EXPERIMENT_REPORT_ATTACHMENT", module = "EXPERIMENT", action = "删除实验报告附件", description = "用户删除实验报告附件", permissionCode = "EXPERIMENT_MANAGE")
-    @DeleteMapping("/report/{sessionId}/attachments/{filename}")
+    @DeleteMapping("/report/{sessionId}/attachment/delete")
     public ResponseEntity<Void> deleteAttachment(
-            @PathVariable String sessionId,
-            @PathVariable String filename) {
+            @PathVariable String sessionId) {
         try {
-            experimentReportService.deleteAttachment(sessionId, filename);
+            experimentReportService.deleteAttachment(sessionId);
             return ResponseEntity.ok().build();
         } catch (BusinessException e) {
             return ResponseEntity.notFound().build();

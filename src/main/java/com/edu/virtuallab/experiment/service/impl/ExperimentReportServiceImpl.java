@@ -4,7 +4,10 @@ import com.edu.virtuallab.common.exception.BusinessException;
 import com.edu.virtuallab.experiment.dao.ExperimentReportDao;
 import com.edu.virtuallab.experiment.model.ExperimentReport;
 import com.edu.virtuallab.experiment.service.ExperimentReportService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.jni.FileInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -106,17 +110,53 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
         return updatedReport;
     }
 
+
     @Override
     @Transactional
-    public void uploadAttachment(String sessionId, MultipartFile file) throws IOException {
+    public ExperimentReport gradeReport(String sessionId, ExperimentReport.Status status, String comment, BigDecimal score){
+
+        // 更新状态为 GRADED
+        int updated = experimentReportDao.gradeBySessionId(
+                sessionId,
+                ExperimentReport.Status.GRADED,
+                comment,
+                score);
+
+        ExperimentReport report2;
+        if (updated == 0) {
+            log.warn("没有记录被更新，可能sessionId不存在，将创建新报告");
+            report2 = createDefaultReport(sessionId);
+            report2.setStatus(status);
+            experimentReportDao.insert(report2);
+        }else{
+            // 获取更新后的报告
+            report2 = experimentReportDao.findBySessionId(sessionId);
+            report2.setStatus(status); // 确保状态正确
+        }
+
+        // 5. 返回更新后的报告
+        ExperimentReport updatedReport = experimentReportDao.findBySessionId(sessionId);
+        log.info("报告提交成功，sessionId: {}, 新状态: {}", sessionId, status);
+
+        return updatedReport;
+    }
+
+
+    @Override
+    @Transactional
+    public void uploadAttachment(String sessionId, MultipartFile file) throws BusinessException,IOException {
+
+        // 验证文件大小和类型
+        validateFile(file);
+
         ExperimentReport experimentReport = experimentReportDao.findBySessionId(sessionId);
 
         try {
             // 实现文件存储逻辑
-            String filename = storeFile(file);
+            FileInfo fileInfo = storeFile(file);
 
             //更新报告附件信息
-            experimentReport.setAttachmentPath("/uploads/" + filename);
+            experimentReport.setAttachmentPath(fileInfo.getStoredPath());
             experimentReport.setOriginalFilename(file.getOriginalFilename());
             experimentReport.setFileSize(file.getSize());
             experimentReport.setMimeType(file.getContentType());
@@ -128,7 +168,35 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
         }
     }
 
-    private String storeFile(MultipartFile file) throws IOException{
+    private void validateFile(MultipartFile file) throws BusinessException {
+
+        // 限制文件大小 (例如10MB)
+        long maxFileSize = 10 * 1024 * 1024; // 10MB
+        if (file.getSize() > maxFileSize) {
+            throw new BusinessException("文件大小不能超过10MB");
+        }
+
+        // 验证文件类型
+        String contentType = file.getContentType();
+        if (contentType == null || !isAllowedContentType(contentType)) {
+            throw new BusinessException("不支持的文件类型");
+        }
+    }
+
+    private boolean isAllowedContentType(String contentType) {
+        // 允许的文件类型列表
+        Set<String> allowedTypes = Set.of(
+                "application/pdf",
+                "application/msword",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "image/jpeg",
+                "image/png",
+                "text/plain"
+        );
+        return allowedTypes.contains(contentType);
+    }
+
+    private FileInfo storeFile(MultipartFile file) throws IOException{
         // 确保上传目录存在
         Path uploadPath = Paths.get(uploadDir);
         if(!Files.exists(uploadPath)){
@@ -139,63 +207,47 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
         String originalFilename = file.getOriginalFilename();
         String fileExtension = originalFilename != null ? originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
         String storedFilename = UUID.randomUUID() + fileExtension;
+        String storedPath = "/uploads/" + storedFilename;
 
         // 存储文件
         Path destination = uploadPath.resolve(storedFilename);
         Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
 
-        return storedFilename;
+        return new FileInfo(
+                originalFilename,
+                storedPath,
+                file.getSize(),
+                file.getContentType()
+        );
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public byte[] downloadAttachment(String sessionId, String filename) throws BusinessException {
-        ExperimentReport experimentReport = experimentReportDao.findBySessionId(sessionId);
-
-        if(experimentReport == null || !experimentReport.hasAttachment()){
-            throw new BusinessException("附件不存在");
-        }
-
-        try{
-            Path filePath = Paths.get(uploadDir).resolve(
-                    experimentReport.getAttachmentPath().replace("/uploads/"," "));
-                    return Files.readAllBytes(filePath);
-            }catch (IOException e){
-                log.error("下载附件失败", e);
-                throw new BusinessException("下载附件失败:" + e.getMessage());
-            }
+    // 辅助类
+    @Data
+    @AllArgsConstructor
+    private static class FileInfo {
+        private String originalFilename;
+        private String storedPath;
+        private long size;
+        private String mimeType;
     }
 
+    // 文件删除
     @Override
     @Transactional
-    public void deleteAttachment(String sessionId, String filename) throws BusinessException{
+    public void deleteAttachment(String sessionId) throws BusinessException{
         ExperimentReport experimentReport = experimentReportDao.findBySessionId(sessionId);
         if( experimentReport == null || !experimentReport.hasAttachment()){
             throw new BusinessException("附件不存在");
         }
 
-        try{
-            // 删除文件系统中的文件
-            deleteAttachment(experimentReport.getAttachmentPath());
+        // 清楚数据库中的附件信息
+        experimentReport.setAttachmentPath(null);
+        experimentReport.setOriginalFilename(null);
+        experimentReport.setFileSize(null);
+        experimentReport.setMimeType(null);
+        experimentReport.setUpdatedAt(new Date());
 
-            // 清楚数据库中的附件信息
-            experimentReport.setAttachmentPath(null);
-            experimentReport.setOriginalFilename(null);
-            experimentReport.setFileSize(null);
-            experimentReport.setMimeType(null);
-            experimentReport.setUpdatedAt(new Date());
-
-            experimentReportDao.updateById(experimentReport);
-        }catch (IOException e) {
-            throw new BusinessException("删除附件失败: " + e.getMessage());
-        }
-    }
-
-    private void deleteAttachment(String filePath) throws IOException {
-        if (filePath != null && !filePath.isEmpty()) {
-            Path path = Paths.get(uploadDir).resolve(filePath.replace("/uploads/", ""));
-            Files.deleteIfExists(path);
-        }
+        experimentReportDao.deleteAttachment(sessionId);
     }
 
     // 创建默认报告结构

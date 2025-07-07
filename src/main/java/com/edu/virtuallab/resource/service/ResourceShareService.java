@@ -13,7 +13,7 @@ public interface ResourceShareService {
     boolean cancelShare(Long id, String sharedBy);
     
     // 新增：通过用户名分享资源
-    boolean shareResourceByUsername(Long resourceId, String sharedBy, String targetUsername, String permission);
+    ShareResponse shareResourceByUsername(Long resourceId, String sharedBy, String targetUsername, String permission);
     
     // 新增：获取用户分享给其他人的资源列表
     List<ResourceShare> getSharesBySharedBy(String sharedBy);

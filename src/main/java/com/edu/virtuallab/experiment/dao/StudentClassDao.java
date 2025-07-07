@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 @Mapper
 public interface StudentClassDao {
 
@@ -14,5 +15,9 @@ public interface StudentClassDao {
     void deleteByStudentId(@Param("studentId") Long studentId);
 
     List<Long> findClassIdsByStudentId(@Param("studentId") Long studentId);
+
+    void deleteByStudentIdAndClassId(@Param("studentId") Long studentId, @Param("classId") Long classId);
+    List<Map<String, Object>> findByIds(@Param("classIds") List<Long> classIds);
+    List<Map<String, Object>> findAllClasses();
 }
 

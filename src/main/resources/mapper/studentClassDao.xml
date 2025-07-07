@@ -26,11 +26,28 @@
         DELETE FROM student_class WHERE student_id = #{studentId}
     </delete>
 
+    <delete id="deleteByStudentIdAndClassId" parameterType="map">
+        DELETE FROM student_class WHERE student_id = #{studentId} AND class_id = #{classId}
+    </delete>
+
     <!-- 可选：根据学生 ID 查询其所有班级 ID -->
     <select id="findClassIdsByStudentId" resultType="java.lang.Long" parameterType="long">
         SELECT class_id
         FROM student_class
         WHERE student_id = #{studentId}
+    </select>
+
+    <select id="findAllClasses" resultType="map">
+        SELECT * FROM class
+    </select>
+
+    <select id="findByIds" resultType="map" parameterType="list">
+        SELECT c.*
+        FROM class c
+        WHERE c.id IN
+        <foreach item="id" collection="classIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </select>
 
 </mapper>

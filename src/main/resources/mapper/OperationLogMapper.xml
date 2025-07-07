@@ -38,4 +38,14 @@
         WHERE DATE(create_time) = CURDATE()
           AND operation = 'LOGIN'
     </select>
+
+    <select id="countActiveByHourAndDay" resultType="map">
+        SELECT 
+            HOUR(create_time) as hour, 
+            (DAYOFWEEK(create_time) + 5) % 7 as dayOfWeek, 
+            COUNT(DISTINCT user_id) as cnt
+        FROM operation_log
+        WHERE create_time BETWEEN #{start} AND #{end}
+        GROUP BY dayOfWeek, hour
+    </select>
 </mapper>

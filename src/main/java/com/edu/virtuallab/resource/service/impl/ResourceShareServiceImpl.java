@@ -97,18 +97,25 @@ public class ResourceShareServiceImpl implements ResourceShareService {
 
     @Override
     @Transactional
-    public boolean shareResourceByUsername(Long resourceId, String sharedBy, String targetUsername, String permission) {
+    public ShareResponse shareResourceByUsername(Long resourceId, String sharedBy, String targetUsername, String permission) {
         try {
+            // 新增：校验targetUsername不能为空
+            if (targetUsername == null || targetUsername.trim().isEmpty()) {
+                throw new BusinessException("被分享者用户名不能为空");
+            }
             // 1. 验证资源是否存在
             Resource resource = resourceService.getById(resourceId);
             if (resource == null) {
                 throw new BusinessException("资源不存在");
             }
             
-            // 2. 验证分享者是否有权限分享该资源
-            if (!resource.getUploader().equals(sharedBy)) {
-                throw new BusinessException("您没有权限分享该资源");
-            }
+            // 2. 允许所有人分享资源，移除上传者校验
+            // if (resource.getUploader() == null) {
+            //     throw new BusinessException("资源缺少上传者信息，无法分享");
+            // }
+            // if (!resource.getUploader().equals(sharedBy)) {
+            //     throw new BusinessException("您没有权限分享该资源");
+            // }
             
             // 3. 验证目标用户是否存在
             User targetUser = userService.getByUsername(targetUsername);
@@ -139,7 +146,16 @@ public class ResourceShareServiceImpl implements ResourceShareService {
             // 6. 发送通知给目标用户
             sendShareNotification(resource, targetUser, sharedBy);
             
-            return true;
+            // 构造返回对象
+            ShareResponse response = new ShareResponse();
+            response.setId(share.getId());
+            response.setResourceId(resourceId);
+            response.setShareType("user");
+            response.setPermission(share.getPermission());
+            response.setCreatedAt(share.getCreatedAt());
+            response.setStatus(share.getStatus());
+            // 其它字段可按需补充
+            return response;
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {

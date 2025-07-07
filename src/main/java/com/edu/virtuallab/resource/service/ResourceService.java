@@ -3,7 +3,6 @@ package com.edu.virtuallab.resource.service;
 import com.edu.virtuallab.resource.model.Resource;
 import com.edu.virtuallab.resource.model.ResourceShare;
 import com.edu.virtuallab.resource.model.ResourceCopy;
-import com.edu.virtuallab.resource.model.ResourceInteraction;
 
 import java.util.List;
 
@@ -35,8 +34,4 @@ public interface ResourceService {
     
     Resource copyResource(ResourceCopy resourceCopy);
     
-    int addInteraction(ResourceInteraction interaction);
-    List<ResourceInteraction> getInteractions(Long resourceId);
-    double getAverageRating(Long resourceId);
-    int getInteractionCount(Long resourceId, String interactionType);
 } 

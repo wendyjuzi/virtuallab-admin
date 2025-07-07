@@ -17,4 +17,6 @@ public class ShareRequest {
     private String shareImage; // 分享图片
     private Boolean enableDownload; // 是否允许下载
     private Boolean enableComment; // 是否允许评论
+    private String targetUsername; // 单用户分享时的被分享者用户名
+    private String sharedBy; // 分享者用户名
 } 

@@ -375,4 +375,19 @@
     <select id="countByEmail" resultType="int">
         SELECT COUNT(*) FROM user WHERE email = #{email}
     </select>
+
+    <!-- 统计用户角色分布 -->
+    <select id="countUserByRole" resultType="map">
+        SELECT r.name as roleName, COUNT(u.id) as cnt
+        FROM user u
+        JOIN user_role ur ON u.id = ur.user_id
+        JOIN role r ON ur.role_id = r.id
+        GROUP BY r.name
+    </select>
+    <!-- 统计用户地域分布 -->
+    <select id="countUserByRegion" resultType="map">
+        SELECT region as name, COUNT(id) as value
+        FROM user
+        GROUP BY region
+    </select>
 </mapper>

@@ -3,6 +3,7 @@ package com.edu.virtuallab.resource.controller;
 import com.edu.virtuallab.resource.dto.ShareNotification;
 import com.edu.virtuallab.resource.service.ShareNotificationService;
 import com.edu.virtuallab.common.api.CommonResult;
+import com.edu.virtuallab.auth.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,9 @@ public class ShareNotificationController {
 
     @Autowired
     private ShareNotificationService shareNotificationService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     // 获取未读通知
     @GetMapping("/unread")

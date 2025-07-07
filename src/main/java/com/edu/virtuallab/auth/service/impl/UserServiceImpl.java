@@ -108,6 +108,24 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("邮箱已存在");
         }
         userDao.insert(dto.toUser());
+        // 新增：注册后根据用户选择的身份自动分配角色
+        User user = userDao.findByUsername(dto.getUsername());
+        if (user != null) {
+            String roleCode = dto.getRoleCode();
+            if (roleCode == null || roleCode.trim().isEmpty()) {
+                roleCode = "STUDENT"; // 默认学生
+            }
+            Role role = roleDao.findByCode(roleCode);
+            if (role == null) {
+                throw new RuntimeException("未找到对应的角色: " + roleCode);
+            }
+            UserRole userRole = new UserRole();
+            userRole.setUserId(user.getId());
+            userRole.setRoleId(role.getId());
+            userRole.setCreateTime(new java.util.Date());
+            userRole.setUpdateTime(new java.util.Date());
+            userRoleDao.insert(userRole);
+        }
     }
 
     @Override

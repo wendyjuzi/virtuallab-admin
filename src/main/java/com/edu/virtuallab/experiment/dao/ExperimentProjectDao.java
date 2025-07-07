@@ -3,6 +3,8 @@ package com.edu.virtuallab.experiment.dao;
 import com.edu.virtuallab.auth.model.User;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
 import java.util.List;
+
+import com.edu.virtuallab.project.model.Project;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -32,6 +34,9 @@ public interface ExperimentProjectDao {
 
     List<ExperimentProject> listPage(@Param("category") String category, @Param("sort") String sort, @Param("offset") int offset, @Param("size") int size);
     long countPage(@Param("category") String category);
+    int countPendingGradingReports(@Param("teacherName") String teacherName);
+    List<Integer> getScoresByProjectId(Long projectId);
+    int updateProject(ExperimentProject project);
 
     ExperimentProject  findById(@Param("id") Long id);
 }

@@ -136,4 +136,35 @@
         WHERE project_id = #{projectId}
           AND student_id = #{studentId}
     </update>
+    <select id="countPendingGradingReports" resultType="int">
+        SELECT COUNT(*)
+        FROM experiment_report
+        WHERE teacher_name = #{teacherName}
+          AND status = 'SUBMITTED'
+    </select>
+    <select id="getScoresByProjectId" parameterType="long" resultType="int">
+        SELECT score
+        FROM experiment_report
+        WHERE project_id = #{projectId}
+          AND score IS NOT NULL
+    </select>
+    <update id="updateProject">
+        UPDATE experiment_project
+        SET
+            name = #{name},
+            description = #{description},
+            principle = #{principle},
+            purpose = #{purpose},
+            method = #{method},
+            steps = #{steps},
+            category = #{category},
+            level = #{level},
+            collaboration_type = #{projectType},
+            image_url = #{imageUrl},
+            video_url = #{videoUrl}
+        WHERE id = #{id}
+    </update>
+    <select id="findById" resultType="com.edu.virtuallab.experiment.model.ExperimentProject">
+        SELECT * FROM experiment_project WHERE id = #{id}
+    </select>
 </mapper>

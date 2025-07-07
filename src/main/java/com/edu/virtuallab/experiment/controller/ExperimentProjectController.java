@@ -1,15 +1,21 @@
 package com.edu.virtuallab.experiment.controller;
 
 import com.edu.virtuallab.auth.util.JwtUtil;
+import com.edu.virtuallab.experiment.dao.ExperimentProjectDao;
+import com.edu.virtuallab.experiment.dao.StudentClassDao;
 import com.edu.virtuallab.experiment.dto.ExperimentProjectPublishRequest;
+import com.edu.virtuallab.experiment.model.Clazz;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
 import com.edu.virtuallab.experiment.model.ProjectTeam;
+import com.edu.virtuallab.experiment.model.Student;
 import com.edu.virtuallab.experiment.service.ExperimentProjectService;
 import com.edu.virtuallab.experiment.dto.ExperimentProjectListDTO;
 import com.edu.virtuallab.common.api.PageResult;
 import com.edu.virtuallab.common.api.CommonResult;
+import com.edu.virtuallab.project.model.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,15 +27,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import com.edu.virtuallab.log.annotation.OperationLogRecord;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,7 +43,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class ExperimentProjectController {
     @Autowired
     private ExperimentProjectService projectService;
-
+    private ExperimentProjectDao projectDao;
+    @Resource
+    private StudentClassDao classDao;
     @OperationLogRecord(operation = "CREATE_EXPERIMENT_PROJECT", module = "EXPERIMENT", action = "创建实验项目", description = "用户创建实验项目", permissionCode = "EXPERIMENT_MANAGE")
     @PostMapping("/create")
     public int create(@RequestBody ExperimentProject project) {
@@ -191,9 +197,108 @@ public class ExperimentProjectController {
 
         return ResponseEntity.ok(Map.of("url", url));
     }
+    @GetMapping("/class/list")
+    public List<Clazz> getAllClasses() {
+        return classDao.getAllClasses();
+    }
 
+    @GetMapping("/class/{classId}/students")
+    public List<Student> getStudentsByClass(@PathVariable Long classId) {
+        return classDao.getStudentsByClassId(classId);
+    }
+    @GetMapping("/studentCount")
+    public int getStudentCount() {
+        int count = classDao.countStudentClassRecords();
+        System.out.println("获取学生数量 count = " + count);
+        return count;
+    }
+    @GetMapping("/pendingGradingCount")
+    public ResponseEntity<Map<String, Object>> getPendingGradingCount(
+            @RequestParam String teacherName) {
+        try {
+            // 使用System.out代替log
+            System.out.println("获取待批改报告数量，教师: " + teacherName);
 
+            int count = projectService.countPendingGradingReports(teacherName);
+            System.out.println("待批改报告数量: " + count);
 
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "code", 200,
+                    "message", "成功",
+                    "data", count
+            ));
+        } catch (Exception e) {
+            // 打印错误堆栈
+            System.err.println("获取待批改数量失败:");
+            e.printStackTrace();
+
+            return ResponseEntity.status(500).body(Map.of(
+                    "success", false,
+                    "code", 500,
+                    "message", e.getMessage(),
+                    "data", null
+            ));
+        }
+    }
+    @GetMapping("/class-student-list")
+    public ResponseEntity<List<Map<String, Object>>> getClassStudentList() {
+        try {
+            List<Clazz> classes = classDao.getAllClasses(); // 查询所有班级
+            List<Map<String, Object>> result = new ArrayList<>();
+
+            for (Clazz clazz : classes) {
+                Map<String, Object> item = new HashMap<>();
+                item.put("classId", clazz.getId());
+                item.put("className", clazz.getName());
+
+                // 根据 classId 查询对应学生
+                List<Student> studentList = classDao.getStudentsByClassId(clazz.getId());
+                List<Map<String, Object>> students = new ArrayList<>();
+
+                for (Student s : studentList) {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", s.getId());
+                    // 如果还有其他字段可加入
+                    students.add(map);
+                }
+                item.put("students", students);
+
+                result.add(item);
+            }
+
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+    @GetMapping("/statistics")
+    public ResponseEntity<?> getScoreStatistics(@RequestParam Long projectId) {
+        try {
+            System.out.println("获取评分统计数据，项目ID：" + projectId);
+
+            List<Integer> scores = projectService.getScoresByProjectId(projectId);
+            double average = scores.stream().mapToInt(Integer::intValue).average().orElse(0);
+
+            return ResponseEntity.ok(Map.of(
+                    "code", 200,
+                    "success", true,
+                    "message", "成功",
+                    "data", Map.of(
+                            "scores", scores,
+                            "average", average
+                    )
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of(
+                    "code", 500,
+                    "success", false,
+                    "message", e.getMessage()
+            ));
+        }
+    }
 
 
     @GetMapping("/my-projects")
@@ -246,6 +351,33 @@ public class ExperimentProjectController {
         return updated > 0 ?
                 ResponseEntity.ok("已更新为 completed") :
                 ResponseEntity.status(500).body("更新失败");
+    }
+    // ✅ 你需要有这个方法才能处理 PUT 请求
+    @PutMapping("/editupdate")
+    public ResponseEntity<?> updateProject(@RequestBody ExperimentProject project) {
+        System.out.println("收到的更新内容: " + project);
+        // TODO: 调用 service 更新项目逻辑
+        boolean updated = projectService.updateProject(project); // 你自己的更新逻辑
+        if (updated) {
+            return ResponseEntity.ok().body(Map.of("success", true));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("更新失败");
+        }
+    }
+
+    @GetMapping("/editdetail")
+    public ResponseEntity<?> getProjectById(@RequestParam Long projectId) {
+        System.out.println("收到前端请求，projectId = " + projectId); // 打印接收到的参数
+
+        ExperimentProject project = projectService.findById(projectId);
+        System.out.println("查询到的项目 = " + project); // 打印查询结果
+
+        if (project != null) {
+            return ResponseEntity.ok(project);
+        } else {
+            System.out.println("未找到对应实验项目");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("实验不存在");
+        }
     }
 
 

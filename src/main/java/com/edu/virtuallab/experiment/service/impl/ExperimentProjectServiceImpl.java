@@ -1,22 +1,23 @@
 package com.edu.virtuallab.experiment.service.impl;
 
-import com.edu.virtuallab.experiment.dao.ExperimentProjectClassDao;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.edu.virtuallab.audit.dao.ExperimentProjectMapper;
+import com.edu.virtuallab.experiment.dao.*;
 import com.edu.virtuallab.experiment.dto.ExperimentProjectPublishRequest;
+import com.edu.virtuallab.experiment.dto.StudentExperimentProjectDTO;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
-import com.edu.virtuallab.experiment.dao.ExperimentProjectDao;
 import com.edu.virtuallab.experiment.service.ExperimentProjectService;
-import com.edu.virtuallab.experiment.dao.StudentClassDao;
-import com.edu.virtuallab.experiment.dao.StudentProjectProgressDao;
 import com.edu.virtuallab.experiment.model.StudentProjectProgress;
 import com.edu.virtuallab.experiment.service.ProjectTeamService;
+import com.edu.virtuallab.project.model.Project;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.Date;
 
 @Service
 public class ExperimentProjectServiceImpl implements ExperimentProjectService {
@@ -28,13 +29,15 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
     private ExperimentProjectClassDao experimentProjectClassDao;
     @Autowired
     private StudentClassDao studentClassDao; // ✅ 解决 Cannot resolve symbol
-
+    @Autowired
+    private ExperimentProjectMapper projectMapper;
     @Autowired
     private StudentProjectProgressDao studentProjectProgressDao; // ✅ 解决 Cannot resolve symbol
 
     @Autowired
     private ProjectTeamService projectTeamService;
-
+    @Autowired
+    private ExperimentReportDao reportDao;
 
     @Override
     public int create(ExperimentProject project) {
@@ -207,4 +210,98 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
     public int markAsCompleted(Integer projectId, String studentId) {
         return projectDao.updateStatusToCompleted(projectId, studentId);
     }
+    @Override
+    public int countPendingGradingReports(String teacherName) {
+        return projectDao.countPendingGradingReports(teacherName);
+    }
+
+    @Override
+    public List<Integer> getScoresByProjectId(Long projectId) {
+        return projectDao.getScoresByProjectId(projectId);
+    }
+    @Override
+    public boolean updateProject(ExperimentProject project) {
+        return projectDao.updateProject(project) > 0;
+    }
+
+    // 在实现类中添加实现
+// ExperimentProjectServiceImpl.java
+    @Override
+    public Page<StudentExperimentProjectDTO> getProjectsByStudentId(
+            Long studentId,
+            String keyword,
+            int pageNum,
+            int pageSize) {
+        // 1. 根据学生ID查询班级ID列表
+        List<Long> classIds = studentClassDao.findClassIdsByStudentId(studentId);
+        if (classIds.isEmpty()) {
+            return new Page<>(pageNum, pageSize);
+        }
+
+        // 2. 根据班级ID列表查询项目ID列表
+        List<Long> projectIds = experimentProjectClassDao.findProjectIdsByClassIds(classIds);
+        if (projectIds.isEmpty()) {
+            return new Page<>(pageNum, pageSize);
+        }
+
+        // 3. 批量查询进度状态
+        Map<Long, String> progressMap = studentProjectProgressDao.findByStudentId(studentId).stream()
+                .filter(p -> projectIds.contains(p.getProjectId()))
+                .collect(Collectors.toMap(
+                        StudentProjectProgress::getProjectId,
+                        StudentProjectProgress::getStatus
+                ));
+
+        // 4. 批量查询成绩
+        Map<Long, BigDecimal> scoreMap = reportDao.findByStudentId(studentId).stream()
+                .filter(r -> projectIds.contains(Long.parseLong(r.getProjectId()))) // 转换为Long
+                .collect(Collectors.toMap(
+                        r -> Long.parseLong(r.getProjectId()), // 键转换为Long
+                        r -> r.getScore() != null ? r.getScore() : null,
+                        (existing, replacement) -> existing != null ? existing : replacement
+                ));
+
+        // 5. 根据项目ID列表分页获取项目详情
+        // 计算偏移量
+        long offset = (long) (pageNum - 1) * pageSize;
+
+        // 查询总数
+        long total = projectMapper.countApprovedProjectsByIds(projectIds, keyword);
+
+        // 查询当前页数据
+        List<ExperimentProject> records = projectMapper.selectApprovedProjectsByIdsManual(
+                projectIds, keyword, offset, pageSize);
+
+        // 创建Page对象
+        Page<ExperimentProject> page = new Page<>(pageNum, pageSize);
+        page.setTotal(total);
+        page.setRecords(records);
+        page.setPages((total + pageSize - 1) / pageSize); // 计算总页数
+
+        // 6. 转换为DTO并添加进度状态和成绩
+        List<StudentExperimentProjectDTO> dtoList = page.getRecords().stream()
+                .map(project -> {
+                    StudentExperimentProjectDTO dto = new StudentExperimentProjectDTO();
+                    BeanUtils.copyProperties(project, dto);
+
+                    // 设置进度状态，如果不存在则为"未开始"
+                    dto.setProgressStatus(
+                            progressMap.getOrDefault(project.getId(), "未开始")
+                    );
+
+                    // 设置成绩
+                    dto.setScore(scoreMap.get(project.getId()));
+
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        // 7. 创建分页结果
+        Page<StudentExperimentProjectDTO> resultPage = new Page<>();
+        BeanUtils.copyProperties(page, resultPage, "records");
+        resultPage.setRecords(dtoList);
+
+        return resultPage;
+    }
+
 }

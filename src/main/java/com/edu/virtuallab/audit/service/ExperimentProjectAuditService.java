@@ -1,5 +1,6 @@
 package com.edu.virtuallab.audit.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.edu.virtuallab.audit.dao.ExperimentProjectAuditLogMapper;
 import com.edu.virtuallab.audit.dao.ExperimentProjectClassMapper;
 import com.edu.virtuallab.audit.dao.ExperimentProjectMapper;
@@ -100,13 +101,6 @@ public class ExperimentProjectAuditService {
     }
 
     /**
-     * 获取待审核项目列表
-     */
-    public List<ExperimentProject> getPendingProjects() {
-        return projectMapper.selectPendingProjects();
-    }
-
-    /**
      * 获取项目审核历史
      */
     public List<ExperimentProjectAuditLog> getAuditHistory(Long projectId) {
@@ -139,26 +133,6 @@ public class ExperimentProjectAuditService {
         auditLogMapper.insert(log);
     }
 
-
-    // 新增方法：获取所有实验项目
-    public List<ExperimentProject> getAllProjects() {
-        return projectMapper.selectAll();
-    }
-
-    /**
-     * 获取已通过审核的项目列表
-     */
-    public List<ExperimentProject> getApprovedProjects() {
-        return projectMapper.selectApprovedProjects();
-    }
-
-    /**
-     * 获取已驳回的项目列表
-     */
-    public List<ExperimentProject> getRejectedProjects() {
-        return projectMapper.selectRejectedProjects();
-    }
-
     /**
      * 提交实验项目审核（从draft改为pending）
      */
@@ -178,5 +152,65 @@ public class ExperimentProjectAuditService {
         // +++ 新增: 发送通知给管理员 +++
         notificationService.sendProjectAuditNotification(projectId, project.getCreatedBy());
     }
+
+    public Page<ExperimentProject> getAllProjects(
+            String keyword,
+            String department,
+            int pageNum,
+            int pageSize) {
+
+        return projectMapper.selectAll(
+                new Page<>(pageNum, pageSize),
+                keyword,
+                department
+        );
+    }
+
+    public Page<ExperimentProject> getApprovedProjects(
+            String keyword,
+            String department,
+            int pageNum,
+            int pageSize) {
+
+        return projectMapper.selectApprovedProjects(
+                new Page<>(pageNum, pageSize),
+                keyword,
+                department
+        );
+    }
+
+    public Page<ExperimentProject> getRejectedProjects(
+            String keyword,
+            String department,
+            int pageNum,
+            int pageSize) {
+
+        return projectMapper.selectRejectedProjects(
+                new Page<>(pageNum, pageSize),
+                keyword,
+                department
+        );
+    }
+
+    public Page<ExperimentProject> getPendingProjects(
+            String keyword,
+            String department,
+            int pageNum,
+            int pageSize) {
+
+        return projectMapper.selectPendingProjects(
+                new Page<>(pageNum, pageSize),
+                keyword,
+                department
+        );
+    }
+
+    private String determineDepartment(String departmentFilter, String currentUserDepartment) {
+        if (departmentFilter != null && !departmentFilter.isEmpty()) {
+            return departmentFilter;
+        }
+        return currentUserDepartment;
+    }
+
 }
 

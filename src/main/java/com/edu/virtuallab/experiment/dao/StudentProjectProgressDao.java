@@ -3,6 +3,7 @@ package com.edu.virtuallab.experiment.dao;
 import com.edu.virtuallab.experiment.model.StudentProjectProgress;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 @Mapper
@@ -27,5 +28,8 @@ public interface StudentProjectProgressDao {
 
     // 删除某个项目的所有进度记录（可选）
     void deleteByProjectId(@Param("projectId") Long projectId);
+
+    @Select("SELECT * FROM student_project_progress WHERE student_id = #{studentId}")
+    List<StudentProjectProgress> findByStudentId(@Param("studentId") Long studentId);
 }
 

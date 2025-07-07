@@ -9,6 +9,7 @@ import com.edu.virtuallab.experiment.dao.StudentClassDao;
 import com.edu.virtuallab.experiment.dao.StudentProjectProgressDao;
 import com.edu.virtuallab.experiment.model.StudentProjectProgress;
 import com.edu.virtuallab.experiment.service.ProjectTeamService;
+import com.edu.virtuallab.project.model.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -216,5 +217,9 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
     @Override
     public List<Integer> getScoresByProjectId(Long projectId) {
         return projectDao.getScoresByProjectId(projectId);
+    }
+    @Override
+    public boolean updateProject(ExperimentProject project) {
+        return projectDao.updateProject(project) > 0;
     }
 }

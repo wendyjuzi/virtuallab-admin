@@ -167,4 +167,74 @@
     <select id="findById" resultType="com.edu.virtuallab.experiment.model.ExperimentProject">
         SELECT * FROM experiment_project WHERE id = #{id}
     </select>
+
+
+    <select id="listPageWithSort" resultType="com.edu.virtuallab.experiment.model.ExperimentProject">
+        SELECT
+        p.*,
+        COALESCE(l.like_count, 0) AS like_count,
+        COALESCE(f.favorite_count, 0) AS favorite_count,
+        COALESCE(l.like_count, 0) + COALESCE(f.favorite_count, 0) AS hot_count
+        FROM experiment_project p
+        LEFT JOIN (
+        SELECT resource_id, COUNT(*) AS like_count
+        FROM resource_like
+        GROUP BY resource_id
+        ) l ON p.id = l.resource_id
+        LEFT JOIN (
+        SELECT resource_id, COUNT(*) AS favorite_count
+        FROM resource_favorite
+        GROUP BY resource_id
+        ) f ON p.id = f.resource_id
+        WHERE p.created_by IN
+        <foreach item="username" collection="adminUsernames" open="(" separator="," close=")">
+            #{username}
+        </foreach>
+        <if test="category != null and category != ''">
+            AND p.category = #{category}
+        </if>
+        <if test="level != null and level != ''">
+            AND p.level = #{level}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (p.name LIKE CONCAT('%', #{keyword}, '%') OR p.description LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        ORDER BY
+        <choose>
+            <when test="sort == 'hot'">
+                hot_count DESC
+            </when>
+            <when test="sort == 'newest'">
+                p.updated_at DESC
+            </when>
+            <when test="sort == 'likes'">
+                like_count DESC
+            </when>
+            <when test="sort == 'favorites'">
+                favorite_count DESC
+            </when>
+            <otherwise>
+                p.updated_at DESC
+            </otherwise>
+        </choose>
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="countWithSort" resultType="long">
+        SELECT COUNT(*)
+        FROM experiment_project p
+        WHERE p.created_by IN
+        <foreach item="username" collection="adminUsernames" open="(" separator="," close=")">
+            #{username}
+        </foreach>
+        <if test="category != null and category != ''">
+            AND p.category = #{category}
+        </if>
+        <if test="level != null and level != ''">
+            AND p.level = #{level}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (p.name LIKE CONCAT('%', #{keyword}, '%') OR p.description LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+    </select>
 </mapper>

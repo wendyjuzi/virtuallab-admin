@@ -1,6 +1,7 @@
 package com.edu.virtuallab.experiment.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.edu.virtuallab.common.api.PageResult;
 import com.edu.virtuallab.experiment.dto.ExperimentProjectPublishRequest;
 import com.edu.virtuallab.experiment.dto.StudentExperimentProjectDTO;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
@@ -40,4 +41,16 @@ public interface ExperimentProjectService {
             String keyword,
             int pageNum,
             int pageSize);
+
+    // 首页分类查询
+    PageResult<ExperimentProject> listWithSort(
+            List<String> adminUsernames,
+            String category,
+            String level,
+            String keyword,
+            String sort,
+            int page,
+            int size
+    );
+    List<String> getAdminUsernames();
 }

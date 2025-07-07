@@ -30,6 +30,8 @@ public class ExperimentReport {
     private String steps;
     private String description;
     private String title;
+    private String comment;
+    private BigDecimal score;
 
 
     public BigDecimal getScore() {

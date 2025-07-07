@@ -12,8 +12,7 @@ public interface ExperimentReportService {
     ExperimentReport getReportBySession(String sessionId);
     ExperimentReport saveReportContent(String sessionId, String manualContent, ExperimentReport.Status status);
     void uploadAttachment(String sessionId, MultipartFile file) throws BusinessException, IOException;
-    byte[] downloadAttachment(String sessionId, String filename) throws BusinessException;
-    void deleteAttachment(String sessionId, String filename) throws BusinessException;
+    void deleteAttachment(String sessionId) throws BusinessException;
     ExperimentReport submitReport(String sessionId, ExperimentReport.Status status);
     List<ExperimentReport> getReportList(Long studentId);
     List<ExperimentReport> getSubmittedAndGradedReports();
@@ -31,4 +30,6 @@ public interface ExperimentReportService {
 //    int delete(Long id);
 
 //    int update(ExperimentReport report);
+    ExperimentReport gradeReport(String sessionId, ExperimentReport.Status status, String comment, BigDecimal score);
+//    List<ExperimentReport> getReportByProject(Long projectId);
 }

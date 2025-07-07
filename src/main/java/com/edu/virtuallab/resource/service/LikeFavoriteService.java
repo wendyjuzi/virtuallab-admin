@@ -14,4 +14,5 @@ public interface LikeFavoriteService {
     java.util.List<com.edu.virtuallab.resource.model.ResourceLike> getUserLikes(Long userId, int page, int size);
     int countUserLikes(Long userId);
     boolean isResourceLiked(Long userId, Long resourceId);
+    int countResourceLikes(Long resourceId);
 } 

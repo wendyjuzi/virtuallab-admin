@@ -1,5 +1,6 @@
 package com.edu.virtuallab.audit.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.edu.virtuallab.audit.dao.ExperimentProjectAuditLogMapper;
 import com.edu.virtuallab.audit.dao.ExperimentProjectClassMapper;
 import com.edu.virtuallab.audit.dao.ExperimentProjectMapper;
@@ -72,12 +73,15 @@ public class ExperimentProjectAuditService {
     }
 
     /**
-     * 发布实验项目到班级
+     * 发布实验项目到班级（使用已关联的班级）
      */
     @Transactional
-    public void publishProject(Long projectId, List<Long> classIds, Long publisherId) {
+    public void publishProject(Long projectId) { // 移除 classIds 和 publisherId 参数
+        // 1. 获取已关联的班级ID
+        List<Long> classIds = projectClassMapper.findClassIdsByProjectId(projectId);
+
         if (classIds == null || classIds.isEmpty()) {
-            throw new BusinessException("请选择要发布的班级");
+            throw new BusinessException("项目未关联任何班级，无法发布");
         }
 
         ExperimentProject project = projectMapper.selectById(projectId);
@@ -88,24 +92,12 @@ public class ExperimentProjectAuditService {
             throw new BusinessException("项目未审核通过");
         }
 
-        // 删除原有的班级关联
-        projectClassMapper.deleteByProjectId(projectId);
-
-        // 添加新的班级关联
-        projectClassMapper.batchInsert(projectId, classIds);
-
-        // 更新项目发布状态
+        // 2. 不再需要删除和重新添加关联，因为关联已存在
+        // 3. 更新项目发布状态
         projectMapper.publishProject(projectId);
 
-        // 发送通知给相关班级的师生
+        // 4. 发送通知给相关班级的师生
         notificationService.sendProjectPublishNotification(projectId, classIds);
-    }
-
-    /**
-     * 获取待审核项目列表
-     */
-    public List<ExperimentProject> getPendingProjects() {
-        return projectMapper.selectPendingProjects();
     }
 
     /**
@@ -141,26 +133,6 @@ public class ExperimentProjectAuditService {
         auditLogMapper.insert(log);
     }
 
-
-    // 新增方法：获取所有实验项目
-    public List<ExperimentProject> getAllProjects() {
-        return projectMapper.selectAll();
-    }
-
-    /**
-     * 获取已通过审核的项目列表
-     */
-    public List<ExperimentProject> getApprovedProjects() {
-        return projectMapper.selectApprovedProjects();
-    }
-
-    /**
-     * 获取已驳回的项目列表
-     */
-    public List<ExperimentProject> getRejectedProjects() {
-        return projectMapper.selectRejectedProjects();
-    }
-
     /**
      * 提交实验项目审核（从draft改为pending）
      */
@@ -176,6 +148,69 @@ public class ExperimentProjectAuditService {
 
         // 更新项目状态为pending
         projectMapper.updateAuditStatusToPending(projectId);
+
+        // +++ 新增: 发送通知给管理员 +++
+        notificationService.sendProjectAuditNotification(projectId, project.getCreatedBy());
     }
+
+    public Page<ExperimentProject> getAllProjects(
+            String keyword,
+            String department,
+            int pageNum,
+            int pageSize) {
+
+        return projectMapper.selectAll(
+                new Page<>(pageNum, pageSize),
+                keyword,
+                department
+        );
+    }
+
+    public Page<ExperimentProject> getApprovedProjects(
+            String keyword,
+            String department,
+            int pageNum,
+            int pageSize) {
+
+        return projectMapper.selectApprovedProjects(
+                new Page<>(pageNum, pageSize),
+                keyword,
+                department
+        );
+    }
+
+    public Page<ExperimentProject> getRejectedProjects(
+            String keyword,
+            String department,
+            int pageNum,
+            int pageSize) {
+
+        return projectMapper.selectRejectedProjects(
+                new Page<>(pageNum, pageSize),
+                keyword,
+                department
+        );
+    }
+
+    public Page<ExperimentProject> getPendingProjects(
+            String keyword,
+            String department,
+            int pageNum,
+            int pageSize) {
+
+        return projectMapper.selectPendingProjects(
+                new Page<>(pageNum, pageSize),
+                keyword,
+                department
+        );
+    }
+
+    private String determineDepartment(String departmentFilter, String currentUserDepartment) {
+        if (departmentFilter != null && !departmentFilter.isEmpty()) {
+            return departmentFilter;
+        }
+        return currentUserDepartment;
+    }
+
 }
 

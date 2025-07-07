@@ -18,4 +18,23 @@
     <select id="selectAll" resultType="com.edu.virtuallab.experiment.model.ExperimentReport">
         SELECT * FROM experiment_report
     </select>
+    <update id="updateManualScore">
+        UPDATE experiment_report
+        SET score = #{score},
+            comment = #{comment},
+            status = 'GRADED',
+            updated_at = NOW()
+        WHERE session_id = #{sessionId}
+    </update>
+    <select id="getManualScoreBySessionId" resultType="com.edu.virtuallab.experiment.model.ExperimentReport">
+        SELECT session_id, score, comment
+        FROM experiment_report
+        WHERE session_id = #{sessionId}
+    </select>
+    <update id="deleteManualScore">
+        UPDATE experiment_report
+        SET score = NULL,
+            comment = NULL
+        WHERE session_id = #{sessionId}
+    </update>
 </mapper> 

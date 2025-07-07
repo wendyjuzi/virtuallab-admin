@@ -1,42 +1,127 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.edu.virtuallab.resource.dao.ResourceLikeDao">
-    <insert id="insert" parameterType="com.edu.virtuallab.resource.model.ResourceLike" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO resource_like (user_id, resource_id)
-        VALUES (#{userId}, #{resourceId})
+
+    <resultMap id="BaseResultMap" type="com.edu.virtuallab.resource.model.ResourceLike">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="resource_id" property="resourceId" jdbcType="BIGINT"/>
+        <result column="created_at" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, user_id, resource_id, created_at
+    </sql>
+
+    <insert id="insert" parameterType="com.edu.virtuallab.resource.model.ResourceLike">
+        INSERT INTO resource_like (user_id, resource_id, created_at)
+        VALUES (#{userId}, #{resourceId}, #{createTime})
     </insert>
-    <delete id="deleteById" parameterType="long">
+
+    <delete id="deleteById" parameterType="java.lang.Long">
         DELETE FROM resource_like WHERE id = #{id}
     </delete>
-    <select id="selectById" resultType="com.edu.virtuallab.resource.model.ResourceLike">
-        SELECT * FROM resource_like WHERE id = #{id}
+
+    <select id="selectById" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM resource_like
+        WHERE id = #{id}
     </select>
-    <select id="selectByUserId" resultType="com.edu.virtuallab.resource.model.ResourceLike">
-        SELECT id, user_id, resource_id
+
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
         FROM resource_like
         WHERE user_id = #{userId}
-        ORDER BY id DESC
+        ORDER BY created_at DESC
         LIMIT #{offset}, #{size}
     </select>
-    <select id="countByUserId" resultType="int">
-        SELECT COUNT(*) FROM resource_like WHERE user_id = #{userId}
+
+    <select id="countByUserId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM resource_like
+        WHERE user_id = #{userId}
     </select>
+
     <update id="updateById" parameterType="com.edu.virtuallab.resource.model.ResourceLike">
         UPDATE resource_like
-        SET user_id = #{userId}, resource_id = #{resourceId}
+        SET user_id = #{userId},
+            resource_id = #{resourceId},
+            created_at = #{createTime}
         WHERE id = #{id}
     </update>
-    <select id="selectByUserAndResource" resultType="com.edu.virtuallab.resource.model.ResourceLike">
-        SELECT * FROM resource_like WHERE user_id = #{userId} AND resource_id = #{resourceId}
+
+    <select id="selectByUserAndResource" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM resource_like
+        WHERE user_id = #{userId} AND resource_id = #{resourceId}
     </select>
-    <select id="countByUserIdAndResourceId" resultType="int">
-        SELECT COUNT(*) FROM resource_like WHERE user_id = #{userId} AND resource_id = #{resourceId}
+
+    <select id="countByUserIdAndResourceId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM resource_like
+        WHERE user_id = #{userId} AND resource_id = #{resourceId}
     </select>
+
     <insert id="insertByUserAndResource">
-        INSERT IGNORE INTO resource_like (user_id, resource_id) VALUES (#{userId}, #{resourceId})
+        INSERT INTO resource_like (user_id, resource_id, created_at)
+        VALUES (#{userId}, #{resourceId}, NOW())
     </insert>
+
     <delete id="delete">
-        DELETE FROM resource_like WHERE user_id = #{userId} AND resource_id = #{resourceId}
+        DELETE FROM resource_like
+        WHERE user_id = #{userId} AND resource_id = #{resourceId}
     </delete>
+
+    <select id="countByResourceId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM resource_like
+        WHERE resource_id = #{resourceId}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM resource_like
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 新增统计方法 -->
+    <select id="countTotalLikes" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM resource_like
+    </select>
+
+    <select id="selectTopUsersByLikes" resultType="com.edu.virtuallab.resource.dto.UserLikeFavoriteStats">
+        SELECT 
+            u.id as userId,
+            u.username,
+            u.real_name as nickname,
+            COUNT(l.id) as likeCount,
+            0 as favoriteCount,
+            COUNT(l.id) as totalInteractions,
+            MAX(l.created_at) as lastActivity,
+            u.create_time as joinTime
+        FROM user u
+        LEFT JOIN resource_like l ON u.id = l.user_id
+        GROUP BY u.id, u.username, u.real_name, u.create_time
+        ORDER BY likeCount DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="selectTopResourcesByLikes" resultType="com.edu.virtuallab.resource.dto.ResourceLikeFavoriteStats">
+        SELECT 
+            r.id as resourceId,
+            r.name as resourceName,
+            'experiment' as resourceType,
+            COUNT(l.id) as likeCount,
+            0 as favoriteCount,
+            COUNT(l.id) as totalInteractions,
+            r.category,
+            r.created_at as createTime,
+            MAX(l.created_at) as lastInteraction
+        FROM experiment_project r
+        LEFT JOIN resource_like l ON r.id = l.resource_id
+        GROUP BY r.id, r.name, r.category, r.created_at
+        ORDER BY likeCount DESC
+        LIMIT #{limit}
+    </select>
+
 </mapper> 

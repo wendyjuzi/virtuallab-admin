@@ -32,5 +32,18 @@
         FROM student_class
         WHERE student_id = #{studentId}
     </select>
+    <select id="getAllClasses" resultType="com.edu.virtuallab.experiment.model.Clazz">
+        SELECT id, name, department, major, grade
+        FROM class
+    </select>
+
+    <select id="getStudentsByClassId" parameterType="long" resultType="com.edu.virtuallab.experiment.model.Student">
+        SELECT student_id AS id
+        FROM student_class
+        WHERE class_id = #{classId}
+    </select>
+    <select id="countStudentClassRecords" resultType="int">
+        SELECT COUNT(*) FROM student_class
+    </select>
 
 </mapper>

@@ -45,22 +45,6 @@ public class MonitorController {
         return CommonResult.success(statusDTO, "获取系统状态成功");
     }
 
-    /**
-     * 日志分页查询
-     */
-    @GetMapping("/operation-logs")
-    public CommonResult<Map<String, Object>> getOperationLogs(
-            @RequestParam int page,
-            @RequestParam int size,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String type) {
-
-        PageResult<OperationLog> pageResult = operationLogService.queryLogs(page, size, keyword, type);
-        Map<String, Object> result = new HashMap<>();
-        result.put("records", pageResult.getRecords());
-        result.put("total", pageResult.getTotal());
-        return CommonResult.success(result, "获取日志成功");
-    }
 
     /**
      * 日志详情
@@ -147,18 +131,7 @@ public class MonitorController {
     /**
      * 详细操作日志分页接口
      */
-    @GetMapping("/operation-logs")
-    public CommonResult<Map<String, Object>> getOperationLogs(
-            @RequestParam int page,
-            @RequestParam int size,
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String type) {
-        PageResult<OperationLog> pageResult = operationLogService.queryLogs(page, size, keyword, type);
-        Map<String, Object> result = new HashMap<>();
-        result.put("records", pageResult.getRecords());
-        result.put("total", pageResult.getTotal());
-        return CommonResult.success(result, "获取操作日志成功");
-    }
+
 
     /**
      * 实时操作监控接口，返回最近N条详细日志

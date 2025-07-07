@@ -213,11 +213,11 @@
         WHERE r.code = 'SYSTEM_ADMIN' OR r.code = 'DEPARTMENT_ADMIN'
     </select>
 
-    <!-- 根据班级ID列表查询用户ID -->
+    <!-- 根据班级ID列表查询学生ID -->
     <select id="findUserIdsByClassIds" resultType="java.lang.Long">
-        SELECT DISTINCT uc.user_id
-        FROM `user_class` uc
-        WHERE uc.class_id IN
+        SELECT DISTINCT sc.student_id
+        FROM `student_class` sc
+        WHERE sc.class_id IN
         <foreach item="classId" collection="classIds" open="(" separator="," close=")">
             #{classId}
         </foreach>
@@ -350,5 +350,25 @@
         SELECT username
         FROM user
         WHERE department = #{department}
+    </select>
+
+    <!-- 批量查询用户 -->
+    <select id="findByIds" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE id IN
+        <foreach item="userId" collection="userIds" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据院系和角色ID查询用户 -->
+    <select id="findByDepartmentAndRoleId" resultType="com.edu.virtuallab.auth.model.User">
+        SELECT u.*
+        FROM user u
+                 JOIN user_role ur ON u.id = ur.user_id
+        WHERE u.department = #{department}
+          AND ur.role_id = #{roleId}
     </select>
 </mapper>

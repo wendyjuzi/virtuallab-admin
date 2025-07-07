@@ -21,6 +21,10 @@ public interface ExperimentProjectService {
     long countPage(String category);
     List<Long> getTeamsByStudentId(Long studentId);
     Long getStudentIdByUserId(Long userId);
+    int markAsInProgress(Integer projectId, String studentId);
+    int markAsCompleted(Integer projectId, String studentId);
+    int countPendingGradingReports(String teacherName);
+    List<Integer> getScoresByProjectId(Long projectId);
 
     void save(ExperimentProject project);
     void approve(Long id, boolean approve, String comment);

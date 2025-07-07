@@ -64,4 +64,11 @@ public interface ExperimentReportDao extends BaseMapper<ExperimentReport> {
 
     @Select("SELECT * FROM experiment_report WHERE status IN ('SUBMITTED', 'GRADED')")
     List<ExperimentReport> findSubmittedAndGradedReports();
+
+    int updateManualScore(@Param("sessionId") Long sessionId,
+                          @Param("score") BigDecimal score,
+                          @Param("comment") String comment);
+    ExperimentReport getManualScoreBySessionId(@Param("sessionId") String sessionId);
+    boolean deleteManualScore(@Param("sessionId") String sessionId);
+
 }

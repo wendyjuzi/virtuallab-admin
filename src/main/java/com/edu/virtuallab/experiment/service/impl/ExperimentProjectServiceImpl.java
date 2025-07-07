@@ -12,6 +12,7 @@ import com.edu.virtuallab.experiment.service.ProjectTeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -84,7 +85,10 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
         project.setVideoUrl(request.getVideoUrl());
         project.setProjectType(request.getProjectType());
         project.setAuditStatus("pending");
-
+        project.setPrinciple(request.getPrinciple());
+        project.setPurpose(request.getPurpose());
+        project.setMethod(request.getMethod());
+        project.setSteps(request.getSteps());
         // ✅ 设置创建者用户名
         project.setCreatedBy(createdBy);
 
@@ -195,5 +199,22 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
     @Override
     public Long getStudentIdByUserId(Long userId) {
         return projectDao.getStudentIdByUserId(userId);
+    }
+    @Override
+    public int markAsInProgress(Integer projectId, String studentId) {
+        return projectDao.updateStatusToInProgress(projectId, studentId);
+    }
+    @Override
+    public int markAsCompleted(Integer projectId, String studentId) {
+        return projectDao.updateStatusToCompleted(projectId, studentId);
+    }
+    @Override
+    public int countPendingGradingReports(String teacherName) {
+        return projectDao.countPendingGradingReports(teacherName);
+    }
+
+    @Override
+    public List<Integer> getScoresByProjectId(Long projectId) {
+        return projectDao.getScoresByProjectId(projectId);
     }
 }

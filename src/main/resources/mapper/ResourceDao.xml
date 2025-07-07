@@ -3,89 +3,87 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.edu.virtuallab.resource.dao.ResourceDao">
     <insert id="insert" parameterType="com.edu.virtuallab.resource.model.Resource">
-        INSERT INTO resource (name, type, category, url, status, file_size, file_type, uploader, created_at, updated_at)
-        VALUES (#{name}, #{type}, #{category}, #{url}, #{status}, #{fileSize}, #{fileType}, #{uploader}, NOW(), NOW())
+        INSERT INTO experiment_project (name, category, description, level, image_url, video_url, created_at, updated_at, audit_status, publish_status, created_by)
+        VALUES (#{name}, #{category}, #{description}, #{level}, #{imageUrl}, #{videoUrl}, NOW(), NOW(), 'draft', 'unpublished', #{createdBy})
     </insert>
 
     <update id="update" parameterType="com.edu.virtuallab.resource.model.Resource">
-        UPDATE resource
+        UPDATE experiment_project
         SET name = #{name},
-            type = #{type},
             category = #{category},
-            url = #{url},
-            status = #{status},
-            file_size = #{fileSize},
-            file_type = #{fileType},
-            uploader = #{uploader},
+            description = #{description},
+            level = #{level},
+            image_url = #{imageUrl},
+            video_url = #{videoUrl},
             updated_at = NOW()
         WHERE id = #{id}
     </update>
 
     <delete id="delete" parameterType="long">
-        DELETE FROM resource WHERE id = #{id}
+        DELETE FROM experiment_project WHERE id = #{id}
     </delete>
 
     <select id="selectById" parameterType="long" resultType="com.edu.virtuallab.resource.model.Resource">
-        SELECT id, name, type, category, url, status, file_size as fileSize, file_type as fileType, 
-               uploader, created_at as createdAt, updated_at as updatedAt
-        FROM resource
+        SELECT id, name, category, description, level, image_url as imageUrl, video_url as videoUrl, 
+               created_at as createdAt, updated_at as updatedAt, audit_status as auditStatus, publish_status as publishStatus, created_by as createdBy
+        FROM experiment_project
         WHERE id = #{id}
     </select>
 
     <select id="selectAll" resultType="com.edu.virtuallab.resource.model.Resource">
-        SELECT id, name, type, category, url, status, file_size as fileSize, file_type as fileType, 
-               uploader, created_at as createdAt, updated_at as updatedAt
-        FROM resource
+        SELECT id, name, category, description, level, image_url as imageUrl, video_url as videoUrl, 
+               created_at as createdAt, updated_at as updatedAt, audit_status as auditStatus, publish_status as publishStatus, created_by as createdBy
+        FROM experiment_project
         ORDER BY created_at DESC
     </select>
 
     <select id="selectByType" parameterType="string" resultType="com.edu.virtuallab.resource.model.Resource">
-        SELECT id, name, type, category, url, status, file_size as fileSize, file_type as fileType, 
-               uploader, created_at as createdAt, updated_at as updatedAt
-        FROM resource
-        WHERE type = #{type}
+        SELECT id, name, category, description, level, image_url as imageUrl, video_url as videoUrl, 
+               created_at as createdAt, updated_at as updatedAt, audit_status as auditStatus, publish_status as publishStatus, created_by as createdBy
+        FROM experiment_project
+        WHERE level = #{type}
         ORDER BY created_at DESC
     </select>
 
     <select id="selectByCategory" parameterType="string" resultType="com.edu.virtuallab.resource.model.Resource">
-        SELECT id, name, type, category, url, status, file_size as fileSize, file_type as fileType, 
-               uploader, created_at as createdAt, updated_at as updatedAt
-        FROM resource
+        SELECT id, name, category, description, level, image_url as imageUrl, video_url as videoUrl, 
+               created_at as createdAt, updated_at as updatedAt, audit_status as auditStatus, publish_status as publishStatus, created_by as createdBy
+        FROM experiment_project
         WHERE category = #{category}
         ORDER BY created_at DESC
     </select>
 
     <select id="selectByStatus" parameterType="string" resultType="com.edu.virtuallab.resource.model.Resource">
-        SELECT id, name, type, category, url, status, file_size as fileSize, file_type as fileType, 
-               uploader, created_at as createdAt, updated_at as updatedAt
-        FROM resource
-        WHERE status = #{status}
+        SELECT id, name, category, description, level, image_url as imageUrl, video_url as videoUrl, 
+               created_at as createdAt, updated_at as updatedAt, audit_status as auditStatus, publish_status as publishStatus, created_by as createdBy
+        FROM experiment_project
+        WHERE publish_status = #{status}
         ORDER BY created_at DESC
     </select>
 
     <select id="selectByUploader" parameterType="string" resultType="com.edu.virtuallab.resource.model.Resource">
-        SELECT id, name, type, category, url, status, file_size as fileSize, file_type as fileType, 
-               uploader, created_at as createdAt, updated_at as updatedAt
-        FROM resource
-        WHERE uploader = #{uploader}
+        SELECT id, name, category, description, level, image_url as imageUrl, video_url as videoUrl, 
+               created_at as createdAt, updated_at as updatedAt, audit_status as auditStatus, publish_status as publishStatus, created_by as createdBy
+        FROM experiment_project
+        WHERE created_by = #{uploader}
         ORDER BY created_at DESC
     </select>
 
     <select id="searchByName" parameterType="string" resultType="com.edu.virtuallab.resource.model.Resource">
-        SELECT id, name, type, category, url, status, file_size as fileSize, file_type as fileType, 
-               uploader, created_at as createdAt, updated_at as updatedAt
-        FROM resource
+        SELECT id, name, category, description, level, image_url as imageUrl, video_url as videoUrl, 
+               created_at as createdAt, updated_at as updatedAt, audit_status as auditStatus, publish_status as publishStatus, created_by as createdBy
+        FROM experiment_project
         WHERE name LIKE CONCAT('%', #{name}, '%')
         ORDER BY created_at DESC
     </select>
 
     <select id="selectByTypeAndCategory" resultType="com.edu.virtuallab.resource.model.Resource">
-        SELECT id, name, type, category, url, status, file_size as fileSize, file_type as fileType, 
-               uploader, created_at as createdAt, updated_at as updatedAt
-        FROM resource
+        SELECT id, name, category, description, level, image_url as imageUrl, video_url as videoUrl, 
+               created_at as createdAt, updated_at as updatedAt, audit_status as auditStatus, publish_status as publishStatus, created_by as createdBy
+        FROM experiment_project
         <where>
             <if test="type != null and type != ''">
-                AND type = #{type}
+                AND level = #{type}
             </if>
             <if test="category != null and category != ''">
                 AND category = #{category}

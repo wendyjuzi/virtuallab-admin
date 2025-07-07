@@ -16,6 +16,20 @@ public interface ExperimentReportService {
     ExperimentReport submitReport(String sessionId, ExperimentReport.Status status);
     List<ExperimentReport> getReportList(Long studentId);
     List<ExperimentReport> getSubmittedAndGradedReports();
+    boolean updateManualScore(Long sessionId, BigDecimal score, String comment);
+    ExperimentReport getManualScore(String sessionId);
+    boolean deleteManualScore(String sessionId);
+
+//
+//    List<ExperimentReport> listAll();
+//
+//    ExperimentReport getById(Long id);
+//
+//    int create(ExperimentReport report);
+//
+//    int delete(Long id);
+
+//    int update(ExperimentReport report);
     ExperimentReport gradeReport(String sessionId, ExperimentReport.Status status, String comment, BigDecimal score);
 //    List<ExperimentReport> getReportByProject(Long projectId);
 }

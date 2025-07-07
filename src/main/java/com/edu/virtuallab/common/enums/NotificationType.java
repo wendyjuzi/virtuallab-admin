@@ -8,6 +8,9 @@ public enum NotificationType {
     PROJECT_APPROVED("project_approved"),  // 项目审核通过
     PROJECT_REJECTED("project_rejected"),  // 项目审核驳回
     PROJECT_PUBLISHED("project_published"),  // 项目发布
+    RESOURCE_SHARED("resource_shared"),  // 资源分享
+    RESOURCE_SHARE_REVOKED("resource_share_revoked"),  // 资源分享撤销
+    RESOURCE_SHARE_PERMISSION_UPDATED("resource_share_permission_updated"),  // 资源分享权限更新
     SYSTEM("system");  // 系统通知
 
     private final String value;

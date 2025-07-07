@@ -33,6 +33,26 @@ public class ExperimentReport {
     private String comment;
     private BigDecimal score;
 
+
+    public BigDecimal getScore() {
+        return score;
+    }
+
+    public void setScore(BigDecimal score) {
+        this.score = score;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    private BigDecimal score;
+    private String comment;
+
     @TableField("manual_content")
     private String manualContent;//用户填入的实验结果
 

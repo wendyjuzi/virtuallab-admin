@@ -24,8 +24,8 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public int create(Resource resource) {
         // 设置默认状态
-        if (resource.getStatus() == null) {
-            resource.setStatus(Resource.STATUS_ACTIVE);
+        if (resource.getPublishStatus() == null) {
+            resource.setPublishStatus(Resource.STATUS_ACTIVE);
         }
         return resourceDao.insert(resource);
     }
@@ -84,7 +84,7 @@ public class ResourceServiceImpl implements ResourceService {
     public boolean activateResource(Long id) {
         Resource resource = getById(id);
         if (resource != null) {
-            resource.setStatus(Resource.STATUS_ACTIVE);
+            resource.setPublishStatus(Resource.STATUS_ACTIVE);
             return update(resource) > 0;
         }
         return false;
@@ -94,7 +94,7 @@ public class ResourceServiceImpl implements ResourceService {
     public boolean deactivateResource(Long id) {
         Resource resource = getById(id);
         if (resource != null) {
-            resource.setStatus(Resource.STATUS_INACTIVE);
+            resource.setPublishStatus(Resource.STATUS_INACTIVE);
             return update(resource) > 0;
         }
         return false;
@@ -104,7 +104,7 @@ public class ResourceServiceImpl implements ResourceService {
     public boolean softDelete(Long id) {
         Resource resource = getById(id);
         if (resource != null) {
-            resource.setStatus(Resource.STATUS_DELETED);
+            resource.setPublishStatus(Resource.STATUS_DELETED);
             return update(resource) > 0;
         }
         return false;
@@ -170,7 +170,7 @@ public class ResourceServiceImpl implements ResourceService {
         }
         
         // 检查是否是资源所有者
-        if (resource.getUploader().equals(username)) {
+        if (resource.getCreatedBy().equals(username)) {
             return true;
         }
         
@@ -203,15 +203,14 @@ public class ResourceServiceImpl implements ResourceService {
         Resource newResource = new Resource();
         newResource.setName(resourceCopy.getNewName() != null ? resourceCopy.getNewName() : 
                           sourceResource.getName() + " (副本)");
-        newResource.setType(sourceResource.getType());
+        newResource.setLevel(sourceResource.getLevel());
         newResource.setCategory(resourceCopy.getTargetCategory() != null ? 
                               resourceCopy.getTargetCategory() : sourceResource.getCategory());
-        newResource.setUrl(resourceCopy.getTargetUrl() != null ? 
-                         resourceCopy.getTargetUrl() : sourceResource.getUrl());
-        newResource.setFileSize(sourceResource.getFileSize());
-        newResource.setFileType(sourceResource.getFileType());
-        newResource.setUploader(resourceCopy.getCopiedBy());
-        newResource.setStatus(Resource.STATUS_ACTIVE);
+        newResource.setDescription(sourceResource.getDescription());
+        newResource.setImageUrl(sourceResource.getImageUrl());
+        newResource.setVideoUrl(sourceResource.getVideoUrl());
+        newResource.setCreatedBy(resourceCopy.getCopiedBy());
+        newResource.setPublishStatus(Resource.STATUS_ACTIVE);
         
         // 保存新资源
         int result = create(newResource);

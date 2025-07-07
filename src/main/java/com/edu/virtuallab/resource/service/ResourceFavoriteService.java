@@ -10,4 +10,5 @@ public interface ResourceFavoriteService {
     List<ResourceFavorite> getFavoritesByUserId(Long userId, int offset, int size);
     int countFavoritesByUserId(Long userId);
     ResourceFavorite getFavoriteByUserAndResource(Long userId, Long resourceId);
+    int countResourceFavorites(Long resourceId);
 }

@@ -6,10 +6,10 @@ public class ExperimentReportTemplate {
     private Long id;
     private Long experimentId;
     private String title;
-    private String content; // 模板内容（可为PDF/HTML/Markdown等）
+    private String content;
     private Date createTime;
     private Date updateTime;
-
+    // getter/setter
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public Long getExperimentId() { return experimentId; }

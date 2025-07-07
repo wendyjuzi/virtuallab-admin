@@ -33,4 +33,11 @@ public interface OperationLogDao {
     OperationLog findById(@Param("id") Long id);
 
     List<OperationLog> selectByConditions(@Param("keyword") String keyword, @Param("type") String type);
+
+    List<OperationLog> selectLogs(@org.apache.ibatis.annotations.Param("username") String username,
+                                  @org.apache.ibatis.annotations.Param("operation") String operation,
+                                  @org.apache.ibatis.annotations.Param("module") String module,
+                                  @org.apache.ibatis.annotations.Param("status") Integer status,
+                                  @org.apache.ibatis.annotations.Param("startTime") String startTime,
+                                  @org.apache.ibatis.annotations.Param("endTime") String endTime);
 } 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.virtuallab.log.dao.OperationLogSimpleDao">
+
+    <insert id="insert" parameterType="com.edu.virtuallab.log.model.OperationLog">
+        INSERT INTO operation_log (
+            user_id, username, operation, module, description, request_method, request_url,
+            request_params, response_result, ip_address, user_agent, execution_time, status,
+            error_message, create_time, permission_code
+        ) VALUES (
+            #{userId}, #{username}, #{operation}, #{module}, #{description}, #{requestMethod}, #{requestUrl},
+            #{requestParams}, #{responseResult}, #{ipAddress}, #{userAgent}, #{executionTime}, #{status},
+            #{errorMessage}, #{createTime}, #{permissionCode}
+        )
+    </insert>
+
+    <select id="selectAll" resultType="com.edu.virtuallab.log.model.OperationLog">
+        SELECT * FROM operation_log ORDER BY create_time DESC
+    </select>
+</mapper> 

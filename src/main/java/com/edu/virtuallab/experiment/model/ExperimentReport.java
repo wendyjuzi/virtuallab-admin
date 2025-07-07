@@ -50,6 +50,8 @@ public class ExperimentReport {
         this.comment = comment;
     }
 
+
+
     @TableField("manual_content")
     private String manualContent;//用户填入的实验结果
 

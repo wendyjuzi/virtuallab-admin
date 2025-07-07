@@ -109,14 +109,10 @@ public class UserController {
     @OperationLogRecord(operation = "REGISTER", module = "USER", action = "用户注册", description = "用户注册账号", permissionCode = "USER_MANAGE")
     @PostMapping("/register")
     @ApiOperation("用户注册")
-    public CommonResult<Boolean> register(@RequestBody UserRegisterDTO dto) {
+    public CommonResult<?> register(@RequestBody UserRegisterDTO dto) {
         try {
-        boolean success = userService.register(dto);
-        if (success) {
-                return CommonResult.success(true, "资源更新成功");
-        } else {
-            return CommonResult.failed("注册失败");
-            }
+            userService.register(dto);
+            return CommonResult.success(null, "注册成功");
         } catch (Exception e) {
             return CommonResult.failed("注册失败: " + e.getMessage());
         }

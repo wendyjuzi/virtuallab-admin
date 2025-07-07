@@ -59,14 +59,4 @@ public class ResourceController {
     public ResponseEntity<?> copyResource(@RequestBody ResourceCopy resourceCopy) {
         return ResponseEntity.ok(resourceService.copyResource(resourceCopy));
     }
-
-    @PostMapping("/interaction")
-    public ResponseEntity<?> addInteraction(@RequestBody ResourceInteraction interaction) {
-        return ResponseEntity.ok(resourceService.addInteraction(interaction));
-    }
-
-    @GetMapping("/interaction/{resourceId}")
-    public ResponseEntity<?> getInteractions(@PathVariable Long resourceId) {
-        return ResponseEntity.ok(resourceService.getInteractions(resourceId));
-    }
 }

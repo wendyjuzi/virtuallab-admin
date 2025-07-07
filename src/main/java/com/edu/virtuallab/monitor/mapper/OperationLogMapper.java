@@ -12,4 +12,5 @@ public interface OperationLogMapper {
     List<Map<String, Object>> countOperationByHour(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
     int countTodayLoginOperations();
     int countTodayLoginUserCount();
+    java.util.List<java.util.Map<String, Object>> countActiveByHourAndDay(java.sql.Timestamp start, java.sql.Timestamp end);
 }

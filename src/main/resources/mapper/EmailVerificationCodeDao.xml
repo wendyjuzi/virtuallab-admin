@@ -53,4 +53,12 @@
         WHERE id = #{id}
     </select>
 
+    <select id="countValidCode" resultType="int">
+        SELECT COUNT(*) FROM email_verification_code
+        WHERE email = #{email}
+          AND code = #{code}
+          AND used = FALSE
+          AND expire_time &gt; #{now}
+    </select>
+
 </mapper> 

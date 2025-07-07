@@ -1,6 +1,8 @@
 package com.edu.virtuallab.experiment.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.edu.virtuallab.experiment.dto.ExperimentProjectPublishRequest;
+import com.edu.virtuallab.experiment.dto.StudentExperimentProjectDTO;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
 import com.edu.virtuallab.project.model.Project;
 
@@ -32,4 +34,10 @@ public interface ExperimentProjectService {
     void save(ExperimentProject project);
     void approve(Long id, boolean approve, String comment);
     ExperimentProject findById(Long id);
+
+    Page<StudentExperimentProjectDTO> getProjectsByStudentId(
+            Long studentId,
+            String keyword,
+            int pageNum,
+            int pageSize);
 }

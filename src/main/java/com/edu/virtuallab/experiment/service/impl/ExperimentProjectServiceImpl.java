@@ -241,6 +241,8 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
             String keyword,
             int pageNum,
             int pageSize) {
+
+        System.out.println("===开始查询学生实验项目===");
         // 1. 根据学生ID查询班级ID列表
         List<Long> classIds = studentClassDao.findClassIdsByStudentId(studentId);
         if (classIds.isEmpty()) {
@@ -261,13 +263,19 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
                         StudentProjectProgress::getStatus
                 ));
 
-        // 4. 批量查询成绩
+        // 修改成绩映射逻辑，处理null和类型转换
         Map<Long, BigDecimal> scoreMap = reportDao.findByStudentId(studentId).stream()
-                .filter(r -> projectIds.contains(Long.parseLong(r.getProjectId()))) // 转换为Long
+                .filter(r -> {
+                    try {
+                        Long.parseLong(r.getProjectId()); // 验证projectId可转为Long
+                        return true;
+                    } catch (NumberFormatException e) {
+                        return false; // 跳过无效ID
+                    }
+                })
                 .collect(Collectors.toMap(
-                        r -> Long.parseLong(r.getProjectId()), // 键转换为Long
-                        r -> r.getScore() != null ? r.getScore() : null,
-                        (existing, replacement) -> existing != null ? existing : replacement
+                        r -> Long.parseLong(r.getProjectId()),
+                        r -> r.getScore() != null ? r.getScore() : BigDecimal.ZERO // 处理null
                 ));
 
         // 5. 根据项目ID列表分页获取项目详情
@@ -299,7 +307,17 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
                     );
 
                     // 设置成绩
-                    dto.setScore(scoreMap.get(project.getId()));
+                    // 修改成绩映射逻辑
+                    dto.setScore(Optional.ofNullable(scoreMap.get(project.getId()))
+                            .orElse(BigDecimal.ZERO)); // 处理null值
+
+                    // 添加属性复制保护
+                    try {
+                        BeanUtils.copyProperties(project, dto);
+                    } catch (Exception e) {
+                        System.out.println("属性复制失败: project={}");
+                        throw new RuntimeException("数据转换异常");
+                    }
 
                     return dto;
                 })

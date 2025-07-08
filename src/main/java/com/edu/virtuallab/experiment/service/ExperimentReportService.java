@@ -16,7 +16,7 @@ public interface ExperimentReportService {
     ExperimentReport submitReport(String sessionId, ExperimentReport.Status status);
     List<ExperimentReport> getReportList(Long studentId);
     List<ExperimentReport> getSubmittedAndGradedReports();
-    boolean updateManualScore(Long sessionId, BigDecimal score, String comment);
+    boolean updateManualScore(String sessionId, BigDecimal score, String comment);
     ExperimentReport getManualScore(String sessionId);
     boolean deleteManualScore(String sessionId);
 

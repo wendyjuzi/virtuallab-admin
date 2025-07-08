@@ -50,8 +50,7 @@ public class ExperimentReport {
         this.comment = comment;
     }
 
-    private BigDecimal score;
-    private String comment;
+
 
     @TableField("manual_content")
     private String manualContent;//用户填入的实验结果

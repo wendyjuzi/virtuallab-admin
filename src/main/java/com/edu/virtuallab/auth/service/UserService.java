@@ -38,7 +38,7 @@ public interface UserService {
     /**
      * 用户注册
      */
-    boolean register(UserRegisterDTO dto);
+    void register(UserRegisterDTO dto);
     
     /**
      * 更新用户信息
@@ -182,4 +182,6 @@ public interface UserService {
      * 批量查询用户
      */
     List<User> getUsersByIds(List<Long> userIds);
+
+    boolean existsByEmail(String email);
 }

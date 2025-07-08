@@ -1,7 +1,12 @@
 package com.edu.virtuallab.experiment.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.edu.virtuallab.common.api.PageResult;
 import com.edu.virtuallab.experiment.dto.ExperimentProjectPublishRequest;
+import com.edu.virtuallab.experiment.dto.StudentExperimentProjectDTO;
 import com.edu.virtuallab.experiment.model.ExperimentProject;
+import com.edu.virtuallab.project.model.Project;
+
 import java.util.List;
 
 public interface ExperimentProjectService {
@@ -25,8 +30,27 @@ public interface ExperimentProjectService {
     int markAsCompleted(Integer projectId, String studentId);
     int countPendingGradingReports(String teacherName);
     List<Integer> getScoresByProjectId(Long projectId);
+    boolean updateProject(ExperimentProject project);
 
     void save(ExperimentProject project);
     void approve(Long id, boolean approve, String comment);
     ExperimentProject findById(Long id);
+
+    Page<StudentExperimentProjectDTO> getProjectsByStudentId(
+            Long studentId,
+            String keyword,
+            int pageNum,
+            int pageSize);
+
+    // 首页分类查询
+    PageResult<ExperimentProject> listWithSort(
+            List<String> adminUsernames,
+            String category,
+            String level,
+            String keyword,
+            String sort,
+            int page,
+            int size
+    );
+    List<String> getAdminUsernames();
 }

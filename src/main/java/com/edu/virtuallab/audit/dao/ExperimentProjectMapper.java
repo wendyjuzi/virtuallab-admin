@@ -108,4 +108,39 @@ public interface ExperimentProjectMapper extends BaseMapper<ExperimentProject> {
             "</script>"
     })
     int countProjectsByUsernames(@Param("usernames") List<String> usernames);
+
+    @Select("<script>" +
+            "SELECT p.* FROM experiment_project p " +
+            "WHERE p.audit_status = 'approved' " +
+            "AND p.id IN " +
+            "<foreach item='id' collection='projectIds' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            "<if test='keyword != null and keyword != \"\"'> " +
+            "   AND (p.name LIKE CONCAT('%', #{keyword}, '%') " +
+            "   OR p.description LIKE CONCAT('%', #{keyword}, '%')) " +
+            "</if>" +
+            "LIMIT #{offset}, #{size}" +
+            "</script>")
+    List<ExperimentProject> selectApprovedProjectsByIdsManual(
+            @Param("projectIds") List<Long> projectIds,
+            @Param("keyword") String keyword,
+            @Param("offset") long offset,
+            @Param("size") long size);
+
+    @Select("<script>" +
+            "SELECT COUNT(*) FROM experiment_project p " +
+            "WHERE p.audit_status = 'approved' " +
+            "AND p.id IN " +
+            "<foreach item='id' collection='projectIds' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            "<if test='keyword != null and keyword != \"\"'> " +
+            "   AND (p.name LIKE CONCAT('%', #{keyword}, '%') " +
+            "   OR p.description LIKE CONCAT('%', #{keyword}, '%')) " +
+            "</if>" +
+            "</script>")
+    long countApprovedProjectsByIds(
+            @Param("projectIds") List<Long> projectIds,
+            @Param("keyword") String keyword);
 }

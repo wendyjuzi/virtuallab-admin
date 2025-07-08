@@ -12,8 +12,10 @@ import com.edu.virtuallab.experiment.service.ExperimentProjectService;
 import com.edu.virtuallab.experiment.dto.ExperimentProjectListDTO;
 import com.edu.virtuallab.common.api.PageResult;
 import com.edu.virtuallab.common.api.CommonResult;
+import com.edu.virtuallab.project.model.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -349,6 +351,33 @@ public class ExperimentProjectController {
         return updated > 0 ?
                 ResponseEntity.ok("已更新为 completed") :
                 ResponseEntity.status(500).body("更新失败");
+    }
+    // ✅ 你需要有这个方法才能处理 PUT 请求
+    @PutMapping("/editupdate")
+    public ResponseEntity<?> updateProject(@RequestBody ExperimentProject project) {
+        System.out.println("收到的更新内容: " + project);
+        // TODO: 调用 service 更新项目逻辑
+        boolean updated = projectService.updateProject(project); // 你自己的更新逻辑
+        if (updated) {
+            return ResponseEntity.ok().body(Map.of("success", true));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("更新失败");
+        }
+    }
+
+    @GetMapping("/editdetail")
+    public ResponseEntity<?> getProjectById(@RequestParam Long projectId) {
+        System.out.println("收到前端请求，projectId = " + projectId); // 打印接收到的参数
+
+        ExperimentProject project = projectService.findById(projectId);
+        System.out.println("查询到的项目 = " + project); // 打印查询结果
+
+        if (project != null) {
+            return ResponseEntity.ok(project);
+        } else {
+            System.out.println("未找到对应实验项目");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("实验不存在");
+        }
     }
 
 

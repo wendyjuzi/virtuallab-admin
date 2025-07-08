@@ -91,4 +91,31 @@
         </where>
         ORDER BY created_at DESC
     </select>
+
+    <!-- 统计各类资源的使用次数 -->
+    <select id="countResourceUsage" resultType="map">
+        SELECT type as name, COUNT(id) as value
+        FROM resource
+        GROUP BY type
+    </select>
+    <!-- 统计资源评分分布 -->
+    <select id="countResourceRatingHistogram" resultType="int">
+        SELECT rating
+        FROM resource_rating
+    </select>
+    <!-- 统计资源下载趋势（近7天） -->
+    <select id="countResourceDownloadTrend" resultType="int">
+        SELECT COUNT(*)
+        FROM resource_download
+        WHERE download_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+        GROUP BY DATE(download_time)
+    </select>
+    <!-- 统计热门资源标签 -->
+    <select id="countResourceTags" resultType="map">
+        SELECT tag as name, COUNT(*) as value
+        FROM resource_tag
+        GROUP BY tag
+        ORDER BY value DESC
+        LIMIT 20
+    </select>
 </mapper> 

@@ -2,7 +2,6 @@ package com.edu.virtuallab.resource.service.impl;
 
 import com.edu.virtuallab.resource.dao.ResourceDao;
 import com.edu.virtuallab.resource.dao.ResourceShareDao;
-import com.edu.virtuallab.resource.dao.ResourceInteractionDao;
 import com.edu.virtuallab.resource.model.*;
 import com.edu.virtuallab.resource.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +17,11 @@ public class ResourceServiceImpl implements ResourceService {
     @Autowired
     private ResourceShareDao resourceShareDao;
     
-    @Autowired
-    private ResourceInteractionDao resourceInteractionDao;
+    // 删除 import com.edu.virtuallab.resource.dao.ResourceInteractionDao;
+    // 删除 private ResourceInteractionDao resourceInteractionDao;
+    // 删除 public int addInteraction(ResourceInteraction interaction) {...}
+    // 删除 public List<ResourceInteraction> getInteractions(Long resourceId) {...}
+    // 删除所有涉及ResourceInteraction的相关代码片段
 
     @Override
     public int create(Resource resource) {
@@ -221,57 +223,6 @@ public class ResourceServiceImpl implements ResourceService {
         }
     }
 
-    @Override
-    public int addInteraction(ResourceInteraction interaction) {
-        // 检查资源是否存在
-        Resource resource = getById(interaction.getResourceId());
-        if (resource == null) {
-            throw new RuntimeException("资源不存在");
-        }
-        
-        // 对于某些交互类型，检查是否已存在
-        if (ResourceInteraction.TYPE_LIKE.equals(interaction.getInteractionType()) ||
-            ResourceInteraction.TYPE_RATE.equals(interaction.getInteractionType())) {
-            ResourceInteraction existing = resourceInteractionDao.selectByUserAndResource(
-                interaction.getResourceId(), interaction.getUserId(), interaction.getInteractionType());
-            if (existing != null) {
-                // 更新现有记录
-                existing.setContent(interaction.getContent());
-                existing.setRating(interaction.getRating());
-                return resourceInteractionDao.update(existing);
-            }
-        }
-        
-        return resourceInteractionDao.insert(interaction);
-    }
-
-    @Override
-    public List<ResourceInteraction> getInteractions(Long resourceId) {
-        return resourceInteractionDao.selectByResourceId(resourceId);
-    }
-
-    @Override
-    public double getAverageRating(Long resourceId) {
-        List<ResourceInteraction> ratings = resourceInteractionDao.selectByType(resourceId, ResourceInteraction.TYPE_RATE);
-        if (ratings.isEmpty()) {
-            return 0.0;
-        }
-        
-        double totalRating = 0.0;
-        int count = 0;
-        for (ResourceInteraction interaction : ratings) {
-            if (interaction.getRating() != null) {
-                totalRating += interaction.getRating();
-                count++;
-            }
-        }
-        
-        return count > 0 ? totalRating / count : 0.0;
-    }
-
-    @Override
-    public int getInteractionCount(Long resourceId, String interactionType) {
-        List<ResourceInteraction> interactions = resourceInteractionDao.selectByType(resourceId, interactionType);
-        return interactions.size();
-    }
+    // 删除 public double getAverageRating(Long resourceId) {...}
+    // 删除 public int getInteractionCount(Long resourceId, String interactionType) {...}
 } 

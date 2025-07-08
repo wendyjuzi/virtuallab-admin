@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import com.edu.virtuallab.resource.dto.ShareResponse;
+import com.edu.virtuallab.resource.dto.ShareRequest;
 
 @RestController
 @RequestMapping("/resource-share")
@@ -25,11 +27,9 @@ public class ResourceShareController {
     @OperationLogRecord(operation = "CREATE_RESOURCE_SHARE", module = "RESOURCE", action = "创建资源分享", description = "用户创建资源分享", permissionCode = "RESOURCE_MANAGE")
     @PostMapping("/generate")
     public CommonResult<String> generateShareLink(@RequestParam Long resourceId,
-                                                  @RequestParam(required = false) Long expireMinutes,
-                                                  HttpServletRequest request) {
+                                                  @RequestParam String sharedBy,
+                                                  @RequestParam(required = false) Long expireMinutes) {
         try {
-            String token = extractToken(request);
-            String sharedBy = jwtUtil.getUsernameFromToken(token);
             String link = resourceShareService.generateShareLink(resourceId, sharedBy, expireMinutes);
             return CommonResult.success(link, "生成分享链接成功");
         } catch (BusinessException e) {
@@ -42,15 +42,15 @@ public class ResourceShareController {
     // 通过用户名分享资源
     @OperationLogRecord(operation = "SHARE_RESOURCE_BY_USERNAME", module = "RESOURCE", action = "通过用户名分享资源", description = "用户通过用户名分享资源", permissionCode = "RESOURCE_MANAGE")
     @PostMapping("/share-by-username")
-    public CommonResult<Boolean> shareResourceByUsername(@RequestParam Long resourceId,
-                                                         @RequestParam String targetUsername,
-                                                         @RequestParam(defaultValue = "read") String permission,
-                                                         HttpServletRequest request) {
+    public CommonResult<ShareResponse> shareResourceByUsername(@RequestBody ShareRequest request) {
         try {
-            String token = extractToken(request);
-            String sharedBy = jwtUtil.getUsernameFromToken(token);
-            boolean result = resourceShareService.shareResourceByUsername(resourceId, sharedBy, targetUsername, permission);
-            return CommonResult.success(result, "分享成功");
+            ShareResponse response = resourceShareService.shareResourceByUsername(
+                request.getResourceId(),
+                request.getSharedBy(),
+                request.getTargetUsername(),
+                request.getPermission()
+            );
+            return CommonResult.success(response, "分享成功");
         } catch (BusinessException e) {
             return CommonResult.failed(e.getMessage());
         } catch (Exception e) {
@@ -73,10 +73,8 @@ public class ResourceShareController {
 
     // 获取用户分享给其他人的资源列表
     @GetMapping("/shared-by-me")
-    public CommonResult<List<ResourceShare>> getSharesBySharedBy(HttpServletRequest request) {
+    public CommonResult<List<ResourceShare>> getSharesBySharedBy(@RequestParam String sharedBy) {
         try {
-            String token = extractToken(request);
-            String sharedBy = jwtUtil.getUsernameFromToken(token);
             List<ResourceShare> shares = resourceShareService.getSharesBySharedBy(sharedBy);
             return CommonResult.success(shares, "查询成功");
         } catch (BusinessException e) {
@@ -121,10 +119,8 @@ public class ResourceShareController {
     // 取消分享
     @OperationLogRecord(operation = "DELETE_RESOURCE_SHARE", module = "RESOURCE", action = "删除资源分享", description = "用户删除资源分享", permissionCode = "RESOURCE_MANAGE")
     @DeleteMapping("/cancel")
-    public CommonResult<String> cancelShare(@RequestParam Long id, HttpServletRequest request) {
+    public CommonResult<String> cancelShare(@RequestParam Long id, @RequestParam String sharedBy) {
         try {
-            String token = extractToken(request);
-            String sharedBy = jwtUtil.getUsernameFromToken(token);
             resourceShareService.cancelShare(id, sharedBy);
             return CommonResult.success("取消分享成功", "取消分享成功");
         } catch (BusinessException e) {
@@ -137,10 +133,8 @@ public class ResourceShareController {
     // 撤销分享
     @OperationLogRecord(operation = "REVOKE_RESOURCE_SHARE", module = "RESOURCE", action = "撤销资源分享", description = "用户撤销资源分享", permissionCode = "RESOURCE_MANAGE")
     @PostMapping("/revoke/{shareId}")
-    public CommonResult<Boolean> revokeShare(@PathVariable Long shareId, HttpServletRequest request) {
+    public CommonResult<Boolean> revokeShare(@PathVariable Long shareId, @RequestParam String sharedBy) {
         try {
-            String token = extractToken(request);
-            String sharedBy = jwtUtil.getUsernameFromToken(token);
             boolean result = resourceShareService.revokeShare(shareId, sharedBy);
             return CommonResult.success(result, "撤销分享成功");
         } catch (BusinessException e) {
@@ -155,10 +149,8 @@ public class ResourceShareController {
     @PutMapping("/update-permission/{shareId}")
     public CommonResult<Boolean> updateSharePermission(@PathVariable Long shareId,
                                                        @RequestParam String permission,
-                                                       HttpServletRequest request) {
+                                                       @RequestParam String sharedBy) {
         try {
-            String token = extractToken(request);
-            String sharedBy = jwtUtil.getUsernameFromToken(token);
             boolean result = resourceShareService.updateSharePermission(shareId, permission, sharedBy);
             return CommonResult.success(result, "更新权限成功");
         } catch (BusinessException e) {

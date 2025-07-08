@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.edu.virtuallab.experiment.dao.ExperimentReportTemplateDao">
     <resultMap id="BaseResultMap" type="com.edu.virtuallab.experiment.model.ExperimentReportTemplate">
@@ -9,9 +9,9 @@
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
     </resultMap>
-    <insert id="insert" parameterType="com.edu.virtuallab.experiment.model.ExperimentReportTemplate" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" parameterType="com.edu.virtuallab.experiment.model.ExperimentReportTemplate">
         INSERT INTO experiment_report_template (experiment_id, title, content, create_time, update_time)
-        VALUES (#{experimentId}, #{title}, #{content}, NOW(), NOW())
+        VALUES (#{experimentId}, #{title}, #{content}, #{createTime}, #{updateTime})
     </insert>
     <update id="update" parameterType="com.edu.virtuallab.experiment.model.ExperimentReportTemplate">
         UPDATE experiment_report_template

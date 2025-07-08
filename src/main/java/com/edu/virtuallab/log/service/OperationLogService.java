@@ -11,6 +11,7 @@ public interface OperationLogService {
     List<OperationLog> listAll();
     List<OperationLog> getLatestLogs(int limit);
     PageResult<OperationLog> queryLogs(int page, int size, String keyword, String type);
+    List<OperationLog> queryLogs(String username, String operation, String module, Integer status, String startTime, String endTime);
 
     OperationLog getLogById(Long id);
 

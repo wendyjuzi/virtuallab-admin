@@ -29,7 +29,7 @@
 
     <!-- 根据角色ID查询用户角色 -->
     <select id="findByRoleId" resultMap="BaseResultMap" parameterType="java.lang.Long">
-        SELECT <include refid="Base_Column_List"/>
+        SELECT *
         FROM user_role
         WHERE role_id = #{roleId}
         ORDER BY create_time DESC

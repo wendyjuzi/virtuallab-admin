@@ -485,6 +485,27 @@ public class SystemAdminController {
 
     // ==================== 实验项目管理 ====================
 
+//    @GetMapping("/experiments")
+//    @ApiOperation("分页查询实验项目列表")
+//    public CommonResult<PageResult<ExperimentProject>> getExperimentList(
+//            @RequestParam(defaultValue = "1") int page,
+//            @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(required = false) String category,
+//            @RequestParam(required = false) String level,
+//            @RequestParam(required = false) String keyword) {
+//        try {
+//            List<ExperimentProject> projects = experimentProjectService.search(category, level, keyword);
+//            int total = projects.size();
+//            int start = (page - 1) * size;
+//            int end = Math.min(start + size, total);
+//            List<ExperimentProject> pageData = projects.subList(start, end);
+//            PageResult<ExperimentProject> result = new PageResult<>(total, pageData);
+//            return CommonResult.success(result, "资源更新成功");
+//        } catch (Exception e) {
+//            return CommonResult.failed("获取实验项目列表失败: " + e.getMessage());
+//        }
+//    }
+
     @GetMapping("/experiments")
     @ApiOperation("分页查询实验项目列表")
     public CommonResult<PageResult<ExperimentProject>> getExperimentList(
@@ -492,15 +513,18 @@ public class SystemAdminController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String level,
-            @RequestParam(required = false) String keyword) {
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false, defaultValue = "newest") String sort
+    ) {
         try {
-            List<ExperimentProject> projects = experimentProjectService.search(category, level, keyword);
-            int total = projects.size();
-            int start = (page - 1) * size;
-            int end = Math.min(start + size, total);
-            List<ExperimentProject> pageData = projects.subList(start, end);
-            PageResult<ExperimentProject> result = new PageResult<>(total, pageData);
-            return CommonResult.success(result, "资源更新成功");
+            // 获取系统管理员的用户名列表
+            List<String> adminUsernames = experimentProjectService.getAdminUsernames();
+
+            PageResult<ExperimentProject> result = experimentProjectService.listWithSort(
+                    adminUsernames, category, level, keyword, sort, page, size
+            );
+
+            return CommonResult.success(result, "查询成功");
         } catch (Exception e) {
             return CommonResult.failed("获取实验项目列表失败: " + e.getMessage());
         }

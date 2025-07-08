@@ -44,6 +44,11 @@ public class OperationLogServiceImpl implements OperationLogService {
     }
 
     @Override
+    public List<OperationLog> queryLogs(String username, String operation, String module, Integer status, String startTime, String endTime) {
+        return operationLogDao.selectLogs(username, operation, module, status, startTime, endTime);
+    }
+
+    @Override
     public OperationLog getLogById(Long id) {
         return operationLogDao.findById(id);
     }

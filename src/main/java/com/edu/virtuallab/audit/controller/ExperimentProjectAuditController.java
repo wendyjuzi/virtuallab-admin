@@ -42,6 +42,8 @@ public class ExperimentProjectAuditController {
             @RequestParam  Long auditorId) {
 
         auditService.auditProject(projectId, status, comment, auditorId);
+        auditService.publishProject(projectId);
+
         return CommonResult.success("实验项目审核操作已完成", "资源更新成功");
     }
 

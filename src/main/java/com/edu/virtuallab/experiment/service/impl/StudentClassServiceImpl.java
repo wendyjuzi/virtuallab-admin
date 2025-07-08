@@ -15,24 +15,29 @@ public class StudentClassServiceImpl implements StudentClassService {
 
     @Override
     public void selectClass(Long studentId, Long classId) {
-        // TODO: 实现
+        studentClassDao.insert(studentId, classId);
     }
 
     @Override
     public List<Long> getClassIdsByStudent(Long studentId) {
-        // TODO: 实现
-        return null;
+        return studentClassDao.findClassIdsByStudentId(studentId);
     }
 
     @Override
     public void quitClass(Long studentId, Long classId) {
-        // TODO: 实现
+        int rows = studentClassDao.deleteByStudentIdAndClassId(studentId, classId);
+        if (rows == 0) {
+            throw new RuntimeException("数据库无此班级记录，删除失败！");
+        }
     }
 
     @Override
     public List<Map<String, Object>> getClassDetailsByStudent(Long studentId) {
-        // TODO: 实现
-        return null;
+        List<Long> classIds = studentClassDao.findClassIdsByStudentId(studentId);
+        if (classIds == null || classIds.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+        return studentClassDao.findByIds(classIds);
     }
 
     @Override

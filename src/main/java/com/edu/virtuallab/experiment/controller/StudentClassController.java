@@ -1,5 +1,6 @@
 package com.edu.virtuallab.experiment.controller;
 
+import com.edu.virtuallab.experiment.dto.StudentClassActionRequest;
 import com.edu.virtuallab.experiment.service.StudentClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +20,10 @@ public class StudentClassController {
      * 学生选择班级
      */
     @PostMapping("/select")
-    public Map<String, Object> selectClass(@RequestParam Long studentId, @RequestParam Long classId) {
+    public Map<String, Object> selectClass(@RequestBody StudentClassActionRequest request) {
         Map<String, Object> res = new HashMap<>();
         try {
-            studentClassService.selectClass(studentId, classId);
+            studentClassService.selectClass(request.getStudentId(), request.getClassId());
             res.put("code", 200);
             res.put("msg", "选择班级成功");
         } catch (Exception e) {
@@ -48,10 +49,10 @@ public class StudentClassController {
      * 退出班级
      */
     @PostMapping("/quit")
-    public Map<String, Object> quitClass(@RequestParam Long studentId, @RequestParam Long classId) {
+    public Map<String, Object> quitClass(@RequestBody StudentClassActionRequest request) {
         Map<String, Object> res = new HashMap<>();
         try {
-            studentClassService.quitClass(studentId, classId);
+            studentClassService.quitClass(request.getStudentId(), request.getClassId());
             res.put("code", 200);
             res.put("msg", "退出班级成功");
         } catch (Exception e) {

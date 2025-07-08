@@ -435,8 +435,12 @@ public class UserController {
     @ApiOperation("退出登录")
     public CommonResult<Boolean> logout(HttpServletRequest request) {
         try {
-            // 这里可以添加登出逻辑，比如清除token等
-            return CommonResult.success(true, "资源更新成功");
+            // 清理 session（如有）
+            if (request.getSession(false) != null) {
+                request.getSession().invalidate();
+            }
+            // JWT 场景只需前端清除 token，后端直接返回成功
+            return CommonResult.success(true, "退出登录成功");
         } catch (Exception e) {
             return CommonResult.failed("退出登录失败: " + e.getMessage());
         }

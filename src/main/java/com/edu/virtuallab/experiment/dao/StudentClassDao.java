@@ -18,7 +18,7 @@ public interface StudentClassDao {
 
     List<Long> findClassIdsByStudentId(@Param("studentId") Long studentId);
 
-    void deleteByStudentIdAndClassId(@Param("studentId") Long studentId, @Param("classId") Long classId);
+    int deleteByStudentIdAndClassId(@Param("studentId") Long studentId, @Param("classId") Long classId);
     List<Map<String, Object>> findByIds(@Param("classIds") List<Long> classIds);
     List<Map<String, Object>> findAllClasses();
     List<Clazz> getAllClasses();

@@ -3,15 +3,15 @@ package com.edu.virtuallab.experiment.dto;
 import java.math.BigDecimal;
 
 public class ManualScoreRequest {
-    private Long sessionId;
+    private String sessionId;
     private BigDecimal score;
     private String comment;
 
     // Getter and Setter
-    public Long getSessionId() {
+    public String getSessionId() {
         return sessionId;
     }
-    public void setSessionId(Long sessionId) {
+    public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
 

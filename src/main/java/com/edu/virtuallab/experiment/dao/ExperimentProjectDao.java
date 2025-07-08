@@ -39,4 +39,23 @@ public interface ExperimentProjectDao {
     int updateProject(ExperimentProject project);
 
     ExperimentProject  findById(@Param("id") Long id);
+
+    // 新增分页查询方法（支持不同排序）
+    List<ExperimentProject> listPageWithSort(
+            @Param("adminUsernames") List<String> adminUsernames,
+            @Param("category") String category,
+            @Param("level") String level,
+            @Param("keyword") String keyword,
+            @Param("sort") String sort,
+            @Param("offset") int offset,
+            @Param("size") int size
+    );
+
+    // 新增计数方法
+    long countWithSort(
+            @Param("adminUsernames") List<String> adminUsernames,
+            @Param("category") String category,
+            @Param("level") String level,
+            @Param("keyword") String keyword
+    );
 }

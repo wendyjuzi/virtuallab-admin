@@ -284,7 +284,7 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
         return experimentReportDao.findSubmittedAndGradedReports();
     }
 
-    public boolean updateManualScore(Long sessionId, BigDecimal score, String comment) {
+    public boolean updateManualScore(String sessionId, BigDecimal score, String comment) {
         int updated = experimentReportDao.updateManualScore(sessionId, score, comment);
         return updated > 0;
     }

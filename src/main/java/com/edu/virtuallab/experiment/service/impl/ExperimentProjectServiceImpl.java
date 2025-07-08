@@ -2,6 +2,11 @@ package com.edu.virtuallab.experiment.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.edu.virtuallab.audit.dao.ExperimentProjectMapper;
+import com.edu.virtuallab.auth.dao.UserDao;
+import com.edu.virtuallab.auth.dao.UserRoleDao;
+import com.edu.virtuallab.auth.model.User;
+import com.edu.virtuallab.auth.model.UserRole;
+import com.edu.virtuallab.common.api.PageResult;
 import com.edu.virtuallab.experiment.dao.*;
 import com.edu.virtuallab.experiment.dto.ExperimentProjectPublishRequest;
 import com.edu.virtuallab.experiment.dto.StudentExperimentProjectDTO;
@@ -33,6 +38,10 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
     private ExperimentProjectMapper projectMapper;
     @Autowired
     private StudentProjectProgressDao studentProjectProgressDao; // ✅ 解决 Cannot resolve symbol
+    @Autowired
+    private UserDao userDao;
+    @Autowired
+    private UserRoleDao userRoleDao;
 
     @Autowired
     private ProjectTeamService projectTeamService;
@@ -304,4 +313,43 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
         return resultPage;
     }
 
+    // 首页获取热门、最新、点赞、收藏项目排列
+    @Override
+    public PageResult<ExperimentProject> listWithSort(
+            List<String> adminUsernames,
+            String category,
+            String level,
+            String keyword,
+            String sort,
+            int page,
+            int size
+    ) {
+        int offset = (page - 1) * size;
+        List<ExperimentProject> projects = projectDao.listPageWithSort(
+                adminUsernames, category, level, keyword, sort, offset, size
+        );
+
+        long total = projectDao.countWithSort(
+                adminUsernames, category, level, keyword
+        );
+
+        return new PageResult<>(total, projects);
+    }
+
+    // 获取系统管理员的用户名列表
+    public List<String> getAdminUsernames() {
+        // 1. 获取系统管理员角色ID为1的用户ID列表
+        List<UserRole> adminRoles = userRoleDao.findByRoleId(1L);
+        if (adminRoles.isEmpty()) return Collections.emptyList();
+
+        List<Long> userIds = adminRoles.stream()
+                .map(UserRole::getUserId)
+                .collect(Collectors.toList());
+
+        // 2. 根据用户ID获取用户名列表
+        List<User> users = userDao.findByIds(userIds);
+        return users.stream()
+                .map(User::getUsername)
+                .collect(Collectors.toList());
+    }
 }

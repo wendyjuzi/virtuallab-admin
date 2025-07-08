@@ -1,5 +1,7 @@
 package com.edu.virtuallab.experiment.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "laboratories")
+@TableName("laboratories") // 明确指定表名
 public class Laboratory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +31,9 @@ public class Laboratory {
     @Column(nullable = false)
     private Integer capacity;
 
+    @Column(nullable = false, length = 50)
+    private String department;
+
     @Lob
     private String description;
 
@@ -39,6 +44,7 @@ public class Laboratory {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    @TableField(exist = false)  // 告诉MyBatis-Plus这不是数据库字段
     @OneToMany(mappedBy = "laboratory", cascade = CascadeType.ALL)
     private List<Reservation> reservations;
 

@@ -35,4 +35,7 @@ public class LaboratoryServiceImpl extends ServiceImpl<LaboratoryMapper, Laborat
         Page<Laboratory> page = new Page<>(pageNum, pageSize);
         return baseMapper.selectPage(page, queryWrapper);
     }
+    public boolean customDelete(Integer id) {
+        return getBaseMapper().customDeleteById(id) > 0;
+    }
 }

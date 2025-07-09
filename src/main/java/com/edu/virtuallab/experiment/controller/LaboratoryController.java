@@ -28,7 +28,7 @@ public class LaboratoryController {
     @ApiOperation("删除实验室")
     @DeleteMapping("/{id}")
     public CommonResult<Void> deleteLaboratory(@PathVariable Integer id) {
-        boolean success = laboratoryService.removeById(id);
+        boolean success = laboratoryService.customDelete(id);
         return success ? CommonResult.success(null, "实验室删除成功") :
                 CommonResult.failed("删除实验室失败");
     }

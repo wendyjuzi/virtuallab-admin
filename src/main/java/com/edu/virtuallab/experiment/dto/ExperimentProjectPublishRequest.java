@@ -71,5 +71,19 @@ public class ExperimentProjectPublishRequest {
         this.principle = principle;
     }
 
+    private String screenshot;
+    private String sceneData;
+    private String experimentParams;
+    private String sceneJsonPath;
+    public String getSceneJsonPath() { return sceneJsonPath; }
+    public void setSceneJsonPath(String sceneJsonPath) { this.sceneJsonPath = sceneJsonPath; }
+
+    public String getScreenshot() { return screenshot; }
+    public void setScreenshot(String screenshot) { this.screenshot = screenshot; }
+    public String getSceneData() { return sceneData; }
+    public void setSceneData(String sceneData) { this.sceneData = sceneData; }
+    public String getExperimentParams() { return experimentParams; }
+    public void setExperimentParams(String experimentParams) { this.experimentParams = experimentParams; }
+
 }
 

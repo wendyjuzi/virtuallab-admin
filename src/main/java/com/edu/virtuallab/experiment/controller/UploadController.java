@@ -16,6 +16,7 @@ import java.util.UUID;
 public class UploadController {
 
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/main/resources/static/images/uploads/";
+    private static final String SCENE_JSON_DIR = System.getProperty("user.dir") + "/src/main/resources/static/json/";
 
     @OperationLogRecord(operation = "UPLOAD_EXPERIMENT_FILE", module = "EXPERIMENT", action = "上传实验文件", description = "用户上传实验文件", permissionCode = "EXPERIMENT_MANAGE")
     @PostMapping("/upload")
@@ -36,6 +37,22 @@ public class UploadController {
         Map<String, Object> map = new HashMap<>();
         map.put("url", url);
         return "上传成功";
+    }
+
+    @PostMapping("/scene-json")
+    public Map<String, Object> uploadSceneJson(@RequestParam("file") MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new RuntimeException("文件为空");
+        }
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        File dir = new File(SCENE_JSON_DIR);
+        if (!dir.exists()) dir.mkdirs();
+        File dest = new File(dir, fileName);
+        file.transferTo(dest);
+        String path = "/static/json/" + fileName;
+        Map<String, Object> result = new HashMap<>();
+        result.put("path", path);
+        return result;
     }
 }
 

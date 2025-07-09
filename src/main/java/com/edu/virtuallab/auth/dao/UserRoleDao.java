@@ -21,4 +21,5 @@ public interface UserRoleDao {
     List<com.edu.virtuallab.auth.model.Role> findRolesByUserIds(@Param("userIds") List<Long> userIds);
     // 批量查用户的UserRole
     List<UserRole> findByUserIds(@Param("userIds") List<Long> userIds);
+    java.util.List<Long> findRoleIdsByUserId(Long userId);
 } 

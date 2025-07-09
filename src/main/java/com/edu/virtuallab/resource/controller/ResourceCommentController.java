@@ -51,9 +51,20 @@ public class ResourceCommentController {
 
     @OperationLogRecord(operation = "DELETE_RESOURCE_COMMENT", module = "RESOURCE", action = "删除资源评论", description = "用户删除资源评论", permissionCode = "RESOURCE_MANAGE")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Integer> delete(@PathVariable Long id) {
-        int result = resourceCommentService.deleteComment(id);
-        return ResponseEntity.ok(result);
+    public ResponseEntity<?> deleteComment(
+        @PathVariable Long id,
+        @RequestParam(required = false) Long userId,
+        javax.servlet.http.HttpServletRequest request
+    ) {
+        if (userId == null) {
+            return ResponseEntity.badRequest().body("缺少用户ID参数，无法校验权限");
+        }
+        try {
+            int result = resourceCommentService.deleteComment(id, userId);
+            return ResponseEntity.ok(result);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(403).body(e.getMessage());
+        }
     }
 
     @OperationLogRecord(operation = "REPLY_RESOURCE_COMMENT", module = "RESOURCE", action = "回复资源评论", description = "用户回复资源评论", permissionCode = "RESOURCE_MANAGE")

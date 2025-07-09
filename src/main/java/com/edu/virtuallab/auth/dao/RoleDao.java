@@ -63,4 +63,6 @@ public interface RoleDao {
     List<Role> findByDepartmentId(@Param("departmentId") Long departmentId);
 
     List<Role> selectRolesByUserId(@Param("userId") Long userId);
+
+    java.util.List<String> findCodesByIds(java.util.List<Long> roleIds);
 } 

@@ -44,38 +44,9 @@ public class SystemAdminController {
     private ExperimentSceneService experimentSceneService;
 
     // ==================== 统计数据 ====================
+    // 已由 SystemAdminStatisticsController 提供统计接口，避免路径冲突，这里不再实现 getSystemStatistics。
 
-    @GetMapping("/statistics/overview")
-    @ApiOperation("获取系统概览统计")
-    public CommonResult<Map<String, Object>> getSystemStatistics() {
-        try {
-            Map<String, Object> statistics = new HashMap<>();
-
-            // 获取用户统计
-            PageResult<User> userPage = systemAdminService.getUserList(null, null, null, null, null, 1, 1);
-            statistics.put("totalUsers", userPage.getTotal());
-
-            // 获取活跃用户数（最近7天登录的用户）
-            statistics.put("activeUsers", systemAdminService.getActiveUserCount());
-
-            // 获取院系数量
-            List<Department> departments = systemAdminService.getDepartmentList();
-            statistics.put("totalDepartments", departments.size());
-
-            // 获取今日登录数
-            statistics.put("todayLogins", systemAdminService.getTodayLoginCount());
-
-            return CommonResult.success(statistics, "资源更新成功");
-        } catch (Exception e) {
-            return CommonResult.failed("获取统计数据失败: " + e.getMessage());
-        }
-    }
-
-    @GetMapping("/statistics")
-    public CommonResult<AdminStatisticsDTO> getStatistics() {
-        AdminStatisticsDTO dto = systemAdminService.getStatistics();
-        return CommonResult.success(dto, "获取统计数据成功");
-    }
+    
 
     // ==================== 账号全生命周期管理 ====================
 

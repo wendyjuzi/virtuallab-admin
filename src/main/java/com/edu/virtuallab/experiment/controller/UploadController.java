@@ -16,7 +16,7 @@ import java.util.UUID;
 public class UploadController {
 
     private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/src/main/resources/static/images/uploads/";
-    private static final String SCENE_JSON_DIR = System.getProperty("user.dir") + "/src/main/resources/static/json/";
+    // 已彻底移除 SCENE_JSON_DIR 及 3D 场景 JSON 文件上传相关代码，3D 场景 JSON 由前端本地导出并手动放入 public/static/json/ 目录。
 
     @OperationLogRecord(operation = "UPLOAD_EXPERIMENT_FILE", module = "EXPERIMENT", action = "上传实验文件", description = "用户上传实验文件", permissionCode = "EXPERIMENT_MANAGE")
     @PostMapping("/upload")
@@ -39,18 +39,20 @@ public class UploadController {
         return "上传成功";
     }
 
-    @PostMapping("/scene-json")
-    public Map<String, Object> uploadSceneJson(@RequestParam("file") MultipartFile file) throws IOException {
+    // 自动上传 3D 场景 JSON 文件到前端 public/static/json 目录
+    @PostMapping("/scene-json-to-frontend")
+    public Map<String, Object> uploadSceneJsonToFrontend(@RequestParam("file") MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             throw new RuntimeException("文件为空");
         }
-        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        File dir = new File(SCENE_JSON_DIR);
+        String frontendJsonDir = "D:/大二下/实训/virtuallab/virtuallab-frontend/public/static/json/";
+        String fileName = java.util.UUID.randomUUID() + "_" + file.getOriginalFilename();
+        java.io.File dir = new java.io.File(frontendJsonDir);
         if (!dir.exists()) dir.mkdirs();
-        File dest = new File(dir, fileName);
+        java.io.File dest = new java.io.File(dir, fileName);
         file.transferTo(dest);
         String path = "/static/json/" + fileName;
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new java.util.HashMap<>();
         result.put("path", path);
         return result;
     }

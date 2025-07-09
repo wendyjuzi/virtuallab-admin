@@ -70,7 +70,14 @@
                 #{name}, #{category}, #{description}, #{principle}, #{purpose}, #{method}, #{steps},
                 #{level}, #{imageUrl}, #{videoUrl}, #{projectType},
                 NOW(), NOW(), #{createdBy},
-                #{screenshot}, #{sceneData}, #{experimentParams}, #{sceneJsonPath}
+                #{screenshot},
+                <if test="sceneData != null and sceneData != ''">
+                  #{sceneData}
+                </if>
+                <if test="sceneData == null or sceneData == ''">
+                  null
+                </if>,
+                #{experimentParams}, #{sceneJsonPath}
             )
     </insert>
 

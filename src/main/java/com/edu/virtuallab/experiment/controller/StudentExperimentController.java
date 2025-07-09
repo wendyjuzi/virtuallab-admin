@@ -5,19 +5,17 @@ import com.edu.virtuallab.auth.dao.UserDao;
 import com.edu.virtuallab.auth.model.User;
 import com.edu.virtuallab.experiment.dto.ExperimentStatsResponse;
 import com.edu.virtuallab.experiment.dto.StudentExperimentProjectDTO;
-import com.edu.virtuallab.experiment.model.ExperimentProject;
-import com.edu.virtuallab.experiment.model.ExperimentReport;
 import com.edu.virtuallab.experiment.service.ExperimentProjectService;
 import com.edu.virtuallab.common.api.CommonResult;
 import com.edu.virtuallab.experiment.service.ExperimentReportService;
-import com.edu.virtuallab.experiment.service.impl.ExperimentReportServiceImpl;
-import com.sun.tools.jconsole.JConsoleContext;
+import com.edu.virtuallab.experiment.service.StudentClassService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -29,12 +27,14 @@ public class StudentExperimentController {
     private final ExperimentProjectService projectService;
     private final UserDao userDao;
     private final ExperimentReportService reportService;
+    private final StudentClassService studentClassService;
 
     @Autowired
-    public StudentExperimentController(ExperimentProjectService projectService, UserDao userDao, ExperimentReportService reportService) {
+    public StudentExperimentController(ExperimentProjectService projectService, UserDao userDao, ExperimentReportService reportService,StudentClassService studentClassService) {
         this.projectService = projectService;
         this.userDao = userDao;
         this.reportService = reportService;
+        this.studentClassService = studentClassService;
     }
 
     @ApiOperation("获取学生实验项目列表（分页 + 统计）")
@@ -88,6 +88,31 @@ public class StudentExperimentController {
             return null; // 计算失败返回null，外层会处理为0.0
         }
     }
+
+    @GetMapping("/project-class/{projectId}")
+    public ResponseEntity<List<Long>> getClassIdByProjectId(
+            @PathVariable Long projectId) {
+        Long classId = projectService.getClassIdByProjectId(projectId);
+        if (classId == null) {
+            return ResponseEntity.notFound().build();
+        }
+        System.out.println("对应的classId为:");
+        System.out.println(classId);
+        return ResponseEntity.ok(Collections.singletonList(classId));
+    }
+
+    @GetMapping("/student-class/{classId}")
+    public ResponseEntity<List<Long>> getStudentIdsByClassId(@PathVariable Long classId) {
+        try {
+            List<Long> studentIds = studentClassService.getStudentIdsByClassId(classId);
+            System.out.println("对应的studentIds为:");
+            System.out.println(studentIds);
+            return ResponseEntity.ok(studentIds);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
 
 

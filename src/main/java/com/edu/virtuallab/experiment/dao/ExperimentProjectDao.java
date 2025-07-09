@@ -8,6 +8,7 @@ import com.edu.virtuallab.project.model.Project;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import com.edu.virtuallab.experiment.dto.NameValueDTO;
+import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface ExperimentProjectDao {
@@ -69,4 +70,7 @@ public interface ExperimentProjectDao {
     // 实验参与人数Top5
     List<NameValueDTO> topByParticipants();
     int countAll();
+
+    @Select("SELECT class_id as classId FROM experiment_project_class WHERE project_id = #{projectId}")
+    List<Long> findClassIdsByProjectId(@Param("projectId") Long projectId);
 }

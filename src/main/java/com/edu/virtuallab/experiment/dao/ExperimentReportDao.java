@@ -51,13 +51,6 @@ public interface ExperimentReportDao extends BaseMapper<ExperimentReport> {
                           @Param("status") ExperimentReport.Status status
     );
 
-    @Update("UPDATE experiment_report SET status = 'GRADED', comment = #{comment}, score = #{score} WHERE session_id = #{sessionId} AND status = 'DRAFT'")
-    int gradeBySessionId(@Param("sessionId") String sessionId,
-                    @Param("status") ExperimentReport.Status status,
-                    @Param("comment") String comment,
-                    @Param("score") BigDecimal score
-    );
-
     @Select("SELECT * FROM experiment_report WHERE student_id = #{studentId} ORDER BY updated_at DESC")
     @ResultMap("reportMap")
     List<ExperimentReport> findByStudentId(@Param("studentId")Long studentId);
@@ -74,5 +67,19 @@ public interface ExperimentReportDao extends BaseMapper<ExperimentReport> {
     @Select("SELECT * FROM experiment_report WHERE student_id = #{studentId} AND status = #{status}")
     List<ExperimentReport> findByStudentIdAndStatus(@Param("studentId") Long studentId,
                                                     @Param("status") ExperimentReport.Status status);
-
+    @Insert({
+            "<script>",
+            "INSERT INTO experiment_report",
+            "(session_id, student_id, project_id, status, principle, purpose, ",
+            "category, method, steps, description, title, created_at, updated_at)",
+            "VALUES ",
+            "<foreach collection='list' item='report' separator=','>",
+            "(#{report.sessionId}, #{report.studentId}, #{report.projectId}, #{report.status}, ",
+            "#{report.principle}, #{report.purpose}, #{report.category}, #{report.method}, ",
+            "#{report.steps}, #{report.description}, #{report.title}, ",
+            "#{report.createdAt}, #{report.updatedAt})",
+            "</foreach>",
+            "</script>"
+    })
+    void batchInsertReports(@Param("list") List<ExperimentReport> reports);
 }

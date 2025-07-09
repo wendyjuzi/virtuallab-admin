@@ -14,12 +14,11 @@ import com.edu.virtuallab.experiment.model.ExperimentProject;
 import com.edu.virtuallab.experiment.service.ExperimentProjectService;
 import com.edu.virtuallab.experiment.model.StudentProjectProgress;
 import com.edu.virtuallab.experiment.service.ProjectTeamService;
-import com.edu.virtuallab.project.model.Project;
+import io.micrometer.core.ipc.http.HttpSender;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -370,4 +369,19 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
                 .map(User::getUsername)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public ExperimentProject getProjectDetailsForReport(Long projectId) {
+        return projectDao.findById(projectId);
+    }
+
+    @Override
+    public Long getClassIdByProjectId(Long projectId) {
+        Long classId = experimentProjectClassDao.findClassIdByProjectId(projectId);
+        if (classId == null) {
+            throw new RuntimeException("未找到项目对应的班级");
+        }
+        return classId;
+    }
+
 }

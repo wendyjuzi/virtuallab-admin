@@ -20,17 +20,5 @@ public interface ExperimentReportService {
     ExperimentReport getManualScore(String sessionId);
     boolean deleteManualScore(String sessionId);
     Double calculateAverageScore(Long studentId);
-
-//
-//    List<ExperimentReport> listAll();
-//
-//    ExperimentReport getById(Long id);
-//
-//    int create(ExperimentReport report);
-//
-//    int delete(Long id);
-
-//    int update(ExperimentReport report);
-//    ExperimentReport gradeReport(String sessionId, ExperimentReport.Status status, String comment, BigDecimal score);
-//    List<ExperimentReport> getReportByProject(Long projectId);
+    List<ExperimentReport> publishReport(List<Long> studentIds, ExperimentReport report);
 }

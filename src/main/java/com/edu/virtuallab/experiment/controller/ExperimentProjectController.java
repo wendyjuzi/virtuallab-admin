@@ -43,7 +43,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ExperimentProjectController {
     @Autowired
     private ExperimentProjectService projectService;
-    private ExperimentProjectDao projectDao;
     @Resource
     private StudentClassDao classDao;
     @OperationLogRecord(operation = "CREATE_EXPERIMENT_PROJECT", module = "EXPERIMENT", action = "创建实验项目", description = "用户创建实验项目", permissionCode = "EXPERIMENT_MANAGE")
@@ -385,10 +384,10 @@ public class ExperimentProjectController {
         }
     }
 
-
-
-
-
+    @GetMapping("/details/{projectId}")  // 明确接口路径
+    public ExperimentProject getProjectDetailsForReport(@PathVariable Long projectId) {
+        return projectService.getProjectDetailsForReport(projectId);
+    }
 
 class ApproveRequest {
     private boolean approve;

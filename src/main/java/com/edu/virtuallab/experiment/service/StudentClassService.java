@@ -28,4 +28,7 @@ public interface StudentClassService {
      * 获取所有班级
      */
     List<Map<String, Object>> getAllClasses();
-} 
+
+    //根据班级id获取学生id
+    List<Long> getStudentIdsByClassId(Long classId);
+}

@@ -296,4 +296,35 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
             return null;
         }
     }
+
+//    @Override
+//    public ExperimentReport publishReport(ExperimentReport report) {
+//        report.setStatus(ExperimentReport.Status.DRAFT);
+//        experimentReportDao.insertReport(report);
+//        return report;
+//    }
+
+    @Override
+    @Transactional
+    public List<ExperimentReport> publishReport(List<Long> studentIds, ExperimentReport templateReport) {
+
+        List<ExperimentReport> reports = new ArrayList<>();
+        String sessionPrefix = "SESS" + System.currentTimeMillis() ;
+
+        // 为每个学生创建报告
+        for (int i = 0; i < studentIds.size(); i++) {
+            ExperimentReport report = new ExperimentReport(templateReport);// 使用拷贝构造
+            report.setStudentId(studentIds.get(i));
+            report.setStatus(ExperimentReport.Status.DRAFT);
+            report.setSessionId(sessionPrefix + i); // 生成唯一sessionId
+
+            reports.add(report);
+        }
+
+        // 批量插入
+        experimentReportDao.batchInsertReports(reports);
+
+        return reports;
+    }
+
 }

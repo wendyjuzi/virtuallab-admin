@@ -25,4 +25,8 @@ public interface ExperimentProjectClassDao {
             "</script>"
     })
     List<Long> findProjectIdsByClassIds(@Param("classIds") List<Long> classIds);
+
+
+    @Select("SELECT class_id FROM experiment_project_class WHERE project_id = #{projectId} LIMIT 1")
+    Long findClassIdByProjectId(Long projectId);
 }

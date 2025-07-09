@@ -20,7 +20,7 @@ public class ExperimentReport {
     private Long id;
     private String sessionId;
     @TableField("student_id")
-    private String studentId;
+    private Long studentId;
     @TableField("project_id")
     private String projectId;
     private String principle;
@@ -106,15 +106,31 @@ public class ExperimentReport {
         return attachmentPath != null && !attachmentPath.isEmpty();
     }
 
-    public String getStudentId() {
+    public Long getStudentId() {
         return this.studentId;
     }
 
-    public void setStudentId(String studentId) {
+    public void setStudentId(Long studentId) {
         this.studentId = studentId;
     }
     public void setProjectId(String projectId) {
         this.projectId = projectId;
+    }
+
+    // 拷贝构造函数（新增）
+    public ExperimentReport(ExperimentReport other) {
+        this.sessionId = other.sessionId;
+        this.projectId = other.projectId;
+        this.status = other.status;
+        this.principle = other.principle;
+        this.purpose = other.purpose;
+        this.category = other.category;
+        this.method = other.method;
+        this.steps = other.steps;
+        this.description = other.description;
+        this.title = other.title;
+        this.createdAt = other.createdAt != null ? new Date(other.createdAt.getTime()) : null;
+        this.updatedAt = other.updatedAt != null ? new Date(other.updatedAt.getTime()) : null;
     }
 
 }

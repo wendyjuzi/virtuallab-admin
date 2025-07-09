@@ -195,7 +195,9 @@ public class ExperimentProjectController {
         String url = "/images/uploads/" + fileName;
         System.out.println("返回文件URL: " + url);
 
-        return ResponseEntity.ok(Map.of("url", url));
+        Map<String, Object> result = new HashMap<>();
+        result.put("url", url);
+        return ResponseEntity.ok(result);
     }
     @GetMapping("/class/list")
     public List<Clazz> getAllClasses() {
@@ -222,23 +224,23 @@ public class ExperimentProjectController {
             int count = projectService.countPendingGradingReports(teacherName);
             System.out.println("待批改报告数量: " + count);
 
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "code", 200,
-                    "message", "成功",
-                    "data", count
-            ));
+            Map<String, Object> result = new HashMap<>();
+            result.put("success", true);
+            result.put("code", 200);
+            result.put("message", "成功");
+            result.put("data", count);
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
             // 打印错误堆栈
             System.err.println("获取待批改数量失败:");
             e.printStackTrace();
 
-            return ResponseEntity.status(500).body(Map.of(
-                    "success", false,
-                    "code", 500,
-                    "message", e.getMessage(),
-                    "data", null
-            ));
+            Map<String, Object> result = new HashMap<>();
+            result.put("success", false);
+            result.put("code", 500);
+            result.put("message", e.getMessage());
+            result.put("data", null);
+            return ResponseEntity.status(500).body(result);
         }
     }
     @GetMapping("/class-student-list")
@@ -281,22 +283,23 @@ public class ExperimentProjectController {
             List<Integer> scores = projectService.getScoresByProjectId(projectId);
             double average = scores.stream().mapToInt(Integer::intValue).average().orElse(0);
 
-            return ResponseEntity.ok(Map.of(
-                    "code", 200,
-                    "success", true,
-                    "message", "成功",
-                    "data", Map.of(
-                            "scores", scores,
-                            "average", average
-                    )
-            ));
+            Map<String, Object> data = new HashMap<>();
+            data.put("scores", scores);
+            data.put("average", average);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("code", 200);
+            result.put("success", true);
+            result.put("message", "成功");
+            result.put("data", data);
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body(Map.of(
-                    "code", 500,
-                    "success", false,
-                    "message", e.getMessage()
-            ));
+            Map<String, Object> result = new HashMap<>();
+            result.put("code", 500);
+            result.put("success", false);
+            result.put("message", e.getMessage());
+            return ResponseEntity.status(500).body(result);
         }
     }
 
@@ -359,7 +362,9 @@ public class ExperimentProjectController {
         // TODO: 调用 service 更新项目逻辑
         boolean updated = projectService.updateProject(project); // 你自己的更新逻辑
         if (updated) {
-            return ResponseEntity.ok().body(Map.of("success", true));
+            Map<String, Object> result = new HashMap<>();
+            result.put("success", true);
+            return ResponseEntity.ok().body(result);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("更新失败");
         }

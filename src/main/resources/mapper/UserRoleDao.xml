@@ -95,4 +95,8 @@
         </foreach>
     </select>
 
+    <select id="findRoleIdsByUserId" resultType="long">
+        SELECT role_id FROM user_role WHERE user_id = #{userId}
+    </select>
+
 </mapper> 

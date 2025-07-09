@@ -331,12 +331,17 @@ public class ExperimentProjectController {
         }
 
         int updated = projectService.markAsInProgress(projectId, studentId);
+
         if (updated > 0) {
             return ResponseEntity.ok("已开始实验");
         } else {
-            return ResponseEntity.status(500).body("更新失败，可能不存在记录");
+            // ⚠️更新为 0，不是异常，可能是 created_by = admin
+            return ResponseEntity.ok("无需更新，实验可能由 admin 创建，已跳过");
+            // 或者更语义化地写：
+            // return ResponseEntity.status(204).body("跳过更新");
         }
     }
+
     @PostMapping("/complete")
     public ResponseEntity<String> completeExperiment(@RequestBody Map<String, Object> payload) {
         Object projectIdObj = payload.get("projectId");
@@ -345,16 +350,21 @@ public class ExperimentProjectController {
         Object studentIdObj = payload.get("studentId");
         String studentId = studentIdObj != null ? studentIdObj.toString() : null;
 
-
         if (projectId == null || studentId == null) {
             return ResponseEntity.badRequest().body("缺少必要参数");
         }
 
         int updated = projectService.markAsCompleted(projectId, studentId);
-        return updated > 0 ?
-                ResponseEntity.ok("已更新为 completed") :
-                ResponseEntity.status(500).body("更新失败");
+
+        if (updated > 0) {
+            return ResponseEntity.ok("已更新为 completed");
+        } else {
+            return ResponseEntity.ok("无需更新，可能由 admin 创建，已跳过");
+            // 也可以选择：
+            // return ResponseEntity.status(204).build();
+        }
     }
+
     // ✅ 你需要有这个方法才能处理 PUT 请求
     @PutMapping("/editupdate")
     public ResponseEntity<?> updateProject(@RequestBody ExperimentProject project) {

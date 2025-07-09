@@ -19,6 +19,7 @@ public interface ExperimentReportService {
     boolean updateManualScore(String sessionId, BigDecimal score, String comment);
     ExperimentReport getManualScore(String sessionId);
     boolean deleteManualScore(String sessionId);
+    Double calculateAverageScore(Long studentId);
 
 //
 //    List<ExperimentReport> listAll();
@@ -30,6 +31,6 @@ public interface ExperimentReportService {
 //    int delete(Long id);
 
 //    int update(ExperimentReport report);
-    ExperimentReport gradeReport(String sessionId, ExperimentReport.Status status, String comment, BigDecimal score);
+//    ExperimentReport gradeReport(String sessionId, ExperimentReport.Status status, String comment, BigDecimal score);
 //    List<ExperimentReport> getReportByProject(Long projectId);
 }

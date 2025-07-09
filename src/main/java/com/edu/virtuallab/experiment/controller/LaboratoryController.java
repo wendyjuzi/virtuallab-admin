@@ -9,6 +9,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/laboratories")
 @Api(tags = "实验室管理")
@@ -28,17 +30,24 @@ public class LaboratoryController {
     @ApiOperation("删除实验室")
     @DeleteMapping("/{id}")
     public CommonResult<Void> deleteLaboratory(@PathVariable Integer id) {
-        boolean success = laboratoryService.removeById(id);
+        boolean success = laboratoryService.customDelete(id);
         return success ? CommonResult.success(null, "实验室删除成功") :
                 CommonResult.failed("删除实验室失败");
     }
 
     @ApiOperation("更新实验室")
     @PutMapping
-    public CommonResult<Laboratory> updateLaboratory(@RequestBody Laboratory laboratory) {
-        boolean success = laboratoryService.updateById(laboratory);
-        return success ? CommonResult.success(laboratory, "实验室更新成功") :
-                CommonResult.failed("更新实验室失败");
+    public CommonResult<Laboratory> updateLaboratory(@RequestBody @Valid Laboratory laboratory) {
+        // 使用服务层方法处理完整业务逻辑
+        try {
+            Laboratory updatedLab = laboratoryService.updateLaboratory(laboratory);
+            return CommonResult.success(updatedLab, "实验室更新成功");
+        } catch (IllegalArgumentException e) {
+            return CommonResult.failed(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("更新实验室异常");
+            return CommonResult.failed("系统错误，更新失败");
+        }
     }
 
     @ApiOperation("获取实验室详情")

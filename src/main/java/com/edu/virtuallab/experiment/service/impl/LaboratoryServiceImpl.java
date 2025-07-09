@@ -35,4 +35,37 @@ public class LaboratoryServiceImpl extends ServiceImpl<LaboratoryMapper, Laborat
         Page<Laboratory> page = new Page<>(pageNum, pageSize);
         return baseMapper.selectPage(page, queryWrapper);
     }
+    public boolean customDelete(Integer id) {
+        return getBaseMapper().customDeleteById(id) > 0;
+    }
+
+    public Laboratory updateLaboratory(Laboratory laboratory) {
+        try {
+            // 参数校验
+            if (laboratory.getLabId() == null) {
+                log.error("实验室ID不能为空");
+                throw new IllegalArgumentException("实验室ID不能为空");
+            }
+
+            // 检查存在性
+            Laboratory existingLab = getById(laboratory.getLabId());
+            if (existingLab == null) {
+                System.out.println("实验室不存在，ID: {}");
+                throw new IllegalArgumentException("实验室不存在");
+            }
+
+            System.out.println("更新实验室数据，ID: {}，变更内容: {}");
+
+            // 执行更新
+            if (!updateById(laboratory)) {
+                System.out.println("数据库更新操作失败，ID: {}");
+                throw new RuntimeException("更新实验室失败");
+            }
+
+            return getById(laboratory.getLabId());
+        } catch (Exception e) {
+            System.out.println("更新实验室异常，ID: {}，错误: {}");
+            throw e;
+        }
+    }
 }

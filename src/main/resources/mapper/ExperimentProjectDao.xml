@@ -127,7 +127,13 @@
     <update id="updateStatusToInProgress" parameterType="map">
         UPDATE student_project_progress
         SET status = 'in_progress'
-        WHERE project_id = #{projectId} AND student_id = #{studentId}
+        WHERE project_id = #{projectId}
+          AND student_id = #{studentId}
+          AND EXISTS (
+            SELECT 1 FROM experiment_project
+            WHERE id = #{projectId}
+              AND created_by != 'admin'
+        )
     </update>
     <!-- 更新 status 为 completed -->
     <update id="updateStatusToCompleted" parameterType="map">
@@ -135,6 +141,10 @@
         SET status = 'completed'
         WHERE project_id = #{projectId}
           AND student_id = #{studentId}
+          AND EXISTS (
+            SELECT 1 FROM experiment_project
+            WHERE id = #{projectId}
+              AND created_by != 'admin'
     </update>
     <select id="countPendingGradingReports" resultType="int">
         SELECT COUNT(*)

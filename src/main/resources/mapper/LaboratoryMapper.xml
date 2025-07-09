@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.virtuallab.experiment.dao.LaboratoryMapper">
+
+    <resultMap id="BaseResultMap" type="com.edu.virtuallab.experiment.model.Laboratory">
+        <id column="lab_id" property="labId" jdbcType="INTEGER"/>
+        <result column="lab_name" property="labName" jdbcType="VARCHAR"/>
+        <result column="location" property="location" jdbcType="VARCHAR"/>
+        <result column="capacity" property="capacity" jdbcType="INTEGER"/>
+        <result column="description" property="description" jdbcType="LONGVARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+        <result column="department" property="department" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        lab_id, lab_name, location, capacity, description, status, created_at, department
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM laboratories
+        WHERE lab_id = #{id}
+    </select>
+
+    <delete id="customDeleteById">
+        DELETE FROM laboratories WHERE lab_id = #{id}
+    </delete>
+
+</mapper>

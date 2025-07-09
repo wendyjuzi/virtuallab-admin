@@ -15,6 +15,10 @@ import java.util.List;
 public class ResourceCommentServiceImpl implements ResourceCommentService {
     @Autowired
     private ResourceCommentDao resourceCommentDao;
+    @Autowired
+    private com.edu.virtuallab.auth.dao.UserRoleDao userRoleDao;
+    @Autowired
+    private com.edu.virtuallab.auth.dao.RoleDao roleDao;
 
     @Override
     public int addComment(ResourceComment comment) {
@@ -41,23 +45,20 @@ public class ResourceCommentServiceImpl implements ResourceCommentService {
     }
 
     @Override
-    public int deleteComment(Long id) {
+    public int deleteComment(Long id, Long userId) {
         // 仅管理员可删任意，普通用户只能删自己
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
-            throw new RuntimeException("请先登录");
-        }
-        Object principal = auth.getPrincipal();
         boolean isAdmin = false;
-        Long currentUserId = null;
-        if (principal instanceof com.edu.virtuallab.auth.model.User) {
-            com.edu.virtuallab.auth.model.User user = (com.edu.virtuallab.auth.model.User) principal;
-            currentUserId = user.getId();
-            isAdmin = "SYSTEM_ADMIN".equals(user.getRoleList() != null && !user.getRoleList().isEmpty() ? user.getRoleList().get(0).getCode() : "");
+        if (userId != null) {
+            // 通过 user_role 联查是否为管理员
+            java.util.List<Long> roleIds = userRoleDao.findRoleIdsByUserId(userId);
+            if (roleIds != null && !roleIds.isEmpty()) {
+                java.util.List<String> adminCodes = roleDao.findCodesByIds(roleIds);
+                isAdmin = adminCodes.stream().anyMatch(code -> code.equals("SYSTEM_ADMIN"));
+            }
         }
         ResourceComment comment = resourceCommentDao.selectById(id);
         if (comment == null) throw new RuntimeException("评论不存在");
-        if (!isAdmin && (currentUserId == null || !currentUserId.equals(comment.getUserId()))) {
+        if (!isAdmin && (userId == null || !userId.equals(comment.getUserId()))) {
             throw new RuntimeException("无权限删除他人评论");
         }
         return resourceCommentDao.deleteById(id);

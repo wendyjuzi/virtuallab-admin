@@ -133,4 +133,9 @@ public interface UserDao {
     List<User> findByDepartmentAndRoleId(@Param("department") String department, @Param("roleId") Long roleId);
 
     int countByEmail(String email);
+
+    int countAll();
+
+    // 用户角色分布统计
+    java.util.List<com.edu.virtuallab.experiment.dto.NameValueDTO> countUserByRole();
 }

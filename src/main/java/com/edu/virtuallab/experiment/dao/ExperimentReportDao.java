@@ -71,4 +71,8 @@ public interface ExperimentReportDao extends BaseMapper<ExperimentReport> {
     ExperimentReport getManualScoreBySessionId(@Param("sessionId") String sessionId);
     boolean deleteManualScore(@Param("sessionId") String sessionId);
 
+    @Select("SELECT * FROM experiment_report WHERE student_id = #{studentId} AND status = #{status}")
+    List<ExperimentReport> findByStudentIdAndStatus(@Param("studentId") Long studentId,
+                                                    @Param("status") ExperimentReport.Status status);
+
 }

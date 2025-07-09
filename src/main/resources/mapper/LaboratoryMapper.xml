@@ -28,4 +28,17 @@
         DELETE FROM laboratories WHERE lab_id = #{id}
     </delete>
 
+
+    <update id="updateById">
+        UPDATE laboratories
+        <set>
+            <if test="laboratory.labName != null">lab_name = #{laboratory.labName},</if>
+            <if test="laboratory.location != null">location = #{laboratory.location},</if>
+            <if test="laboratory.capacity != null">capacity = #{laboratory.capacity},</if>
+            <if test="laboratory.description != null">description = #{laboratory.description},</if>
+            <if test="laboratory.status != null">status = #{laboratory.status},</if>
+            <if test="laboratory.department != null">department = #{laboratory.department},</if>
+        </set>
+        WHERE lab_id = #{laboratory.labId}
+    </update>
 </mapper>

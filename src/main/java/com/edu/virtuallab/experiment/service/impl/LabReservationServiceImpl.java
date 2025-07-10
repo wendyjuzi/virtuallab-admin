@@ -64,29 +64,24 @@ public class LabReservationServiceImpl implements LabReservationService {
 
     @Override
     @Transactional
-    public Reservation approveReservation(Long reservationId, Long adminId){
-        Reservation reservation = labReservationDao.findById(reservationId);
-        reservation.setStatus(Reservation.ReservationStatus.approved);
-        reservation.setAdminId(adminId);
-        labReservationDao.updateStatus(reservation);
-
-        return reservation;
+    public Reservation approveReservation(Long reservationId){
+        // 先执行更新
+        int updated = labReservationDao.approveReservation(reservationId);
+        if (updated <= 0) {
+            throw new BusinessException("批准预约失败，可能记录不存在");
+        }
+        // 再查询返回最新数据
+        return labReservationDao.findById(reservationId);
     }
 
    @Override
    @Transactional
-   public Reservation rejectReservation(Long reservationId, Long adminId, String adminComment){
-        Reservation reservation = labReservationDao.findById(reservationId);
-        if(StringUtils.isBlank(adminComment)){
-            throw new IllegalArgumentException("必须填写拒绝理由");
-        }
-        reservation.setStatus(Reservation.ReservationStatus.rejected);
-        reservation.setAdminId(adminId);
-        reservation.setAdminComment(adminComment);
-        labReservationDao.updateStatus(reservation);
-
-        return reservation;
-
+   public Reservation rejectReservation(Long reservationId){
+       int updated = labReservationDao.rejectReservation(reservationId);
+       if (updated <= 0) {
+           throw new BusinessException("拒绝预约失败，可能记录不存在");
+       }
+       return labReservationDao.findById(reservationId);
    }
    @Override
    @Transactional
@@ -99,27 +94,8 @@ public class LabReservationServiceImpl implements LabReservationService {
        }
 
        reservation.setStatus(Reservation.ReservationStatus.cancelled);
-       labReservationDao.updateStatus(reservation);
+       labReservationDao.cancelReservation(reservationId);
 
        return reservation;
    }
-
-    @Override
-    @Transactional
-    public Laboratory updateStatus(Long labId, Laboratory.LabStatus status) {
-        // 先验证实验室是否存在
-        Laboratory lab = labReservationDao.getLabById(labId);
-        if (lab == null) {
-            throw new RuntimeException("实验室不存在");
-        }
-
-        // 验证状态值是否合法
-        if (!Arrays.asList("available", "unavailable", "maintenance").contains(status)) {
-            throw new RuntimeException("无效的状态值");
-        }
-
-        // 执行更新
-        log.info("将实验室{}状态更改为{}:",labId, status);
-        return updateStatus(labId, status);
-    }
 }

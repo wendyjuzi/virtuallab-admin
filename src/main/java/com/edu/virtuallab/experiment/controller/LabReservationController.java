@@ -33,42 +33,6 @@ public class LabReservationController {
         return ResponseEntity.ok(laboratories != null ? laboratories : Collections.emptyList());
     }
 
-    @PostMapping("/laboratories/{labId}")
-    public ResponseEntity<Laboratory> updateLabStatus(
-            @PathVariable Long labId,
-            @RequestBody Map<String, String> statusRequest) {
-        log.info("接收到更新实验室状态请求，实验室ID: {}, 新状态: {}", labId, statusRequest.get("status"));
-        try {
-            // 验证状态值是否有效
-            String statusStr = statusRequest.get("status");
-            if (statusStr == null) {
-                throw new IllegalArgumentException("状态值不能为空");
-            }
-
-            // 转换状态值为枚举
-            Laboratory.LabStatus status;
-            try {
-                status = Laboratory.LabStatus.valueOf(statusStr.toLowerCase());
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("无效的状态值: " + statusStr);
-            }
-
-            // 调用服务层更新状态
-            Laboratory updatedLab = labReservationService.updateStatus(labId, status);
-
-            log.info("实验室状态更新成功，实验室ID: {}", labId);
-            return ResponseEntity.ok(updatedLab);
-
-        } catch (IllegalArgumentException e) {
-            log.error("参数错误: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(null);
-        } catch (Exception e) {
-            log.error("更新实验室状态失败: {}", e.getMessage());
-            return ResponseEntity.internalServerError().body(null);
-        }
-
-    }
-
     @GetMapping("/reservations")
     public ResponseEntity<List<Reservation>> getReservations() {
         log.info("接收到获取预约列表请求");
@@ -98,21 +62,17 @@ public class LabReservationController {
 
     @PostMapping("/reservations/{reservationId}/approve")
     public ResponseEntity<Reservation> approveReservation(
-            @PathVariable Long reservationId,
-            @RequestParam Long adminId) {
-        log.info("接收到批准预约请求，预约ID: {}, 管理员ID: {}", reservationId, adminId);
-        Reservation approved = labReservationService.approveReservation(reservationId, adminId);
+            @PathVariable Long reservationId) {
+        log.info("接收到批准预约请求", reservationId);
+        Reservation approved = labReservationService.approveReservation(reservationId);
         return ResponseEntity.ok(approved);
     }
 
     @PostMapping("/reservations/{reservationId}/reject")
     public ResponseEntity<Reservation> rejectReservation(
-            @PathVariable Long reservationId,
-            @RequestParam Long adminId,
-            @RequestParam String comment) {
-        log.info("接收到拒绝预约请求，预约ID: {}, 管理员ID: {}, 理由: {}",
-                reservationId, adminId, comment);
-        Reservation rejected = labReservationService.rejectReservation(reservationId, adminId, comment);
+            @PathVariable Long reservationId) {
+        log.info("接收到拒绝预约请求，预约ID: {}", reservationId);
+        Reservation rejected = labReservationService.rejectReservation(reservationId);
         return ResponseEntity.ok(rejected);
     }
 

@@ -42,8 +42,10 @@ public interface LabReservationDao{
             "JOIN laboratories l ON r.lab_id = l.lab_id " +
             "WHERE r.user_id = #{userId}")
     List<Reservation> getReservationsById(@Param("userId") Long userId);
+
     @Select("SELECT * FROM reservations WHERE reservation_id = #{reservationId}")
     Reservation findById(Long reservationId);
+
     @Select("SELECT r.*, l.lab_name FROM reservations r " +
             "JOIN laboratories l ON r.lab_id = l.lab_id " +
             "WHERE r.status = #{status}")
@@ -55,12 +57,18 @@ public interface LabReservationDao{
     @Options(useGeneratedKeys = true, keyProperty = "reservationId")
     int saveReservation(Reservation reservation);
 
-    @Update("UPDATE reservations SET " +
-            "status = #{status}, " +
-            "admin_id = #{adminId}, " +
-            "admin_comment = #{adminComment} " +
-            "WHERE reservation_id = #{reservationId}")
-    int updateStatus(Reservation reservation);
+    // 更新预约状态为已取消
+    @Update("UPDATE reservations SET status = 'cancelled' WHERE reservation_id = #{reservationId}")
+    int cancelReservation(@Param("reservationId") Long reservationId);
+
+    // 更新预约状态为已批准
+    @Update("UPDATE reservations SET status = 'approved' WHERE reservation_id = #{reservationId}")
+    int approveReservation(@Param("reservationId") Long reservationId);
+
+    // 更新预约状态为已拒绝
+    @Update("UPDATE reservations SET status = 'rejected' WHERE reservation_id = #{reservationId}")
+    int rejectReservation(@Param("reservationId") Long reservationId);
+
 
 
 }

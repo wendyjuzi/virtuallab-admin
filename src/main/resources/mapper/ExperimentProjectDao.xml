@@ -62,13 +62,22 @@
         (
             name, category, description, principle, purpose, method, steps,
             level, image_url, video_url, collaboration_type,
-            created_at, updated_at, created_by
+            created_at, updated_at, created_by,
+            screenshot, scene_data, experiment_params, scene_json_path
         )
         VALUES
             (
                 #{name}, #{category}, #{description}, #{principle}, #{purpose}, #{method}, #{steps},
                 #{level}, #{imageUrl}, #{videoUrl}, #{projectType},
-                NOW(), NOW(), #{createdBy}
+                NOW(), NOW(), #{createdBy},
+                #{screenshot},
+                <if test="sceneData != null and sceneData != ''">
+                  #{sceneData}
+                </if>
+                <if test="sceneData == null or sceneData == ''">
+                  null
+                </if>,
+                #{experimentParams}, #{sceneJsonPath}
             )
     </insert>
 
@@ -171,7 +180,11 @@
             level = #{level},
             collaboration_type = #{projectType},
             image_url = #{imageUrl},
-            video_url = #{videoUrl}
+            video_url = #{videoUrl},
+            screenshot = #{screenshot},
+            scene_data = #{sceneData},
+            experiment_params = #{experimentParams},
+            scene_json_path = #{sceneJsonPath}
         WHERE id = #{id}
     </update>
     <select id="findById" resultType="com.edu.virtuallab.experiment.model.ExperimentProject">

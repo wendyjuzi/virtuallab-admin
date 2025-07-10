@@ -11,4 +11,7 @@ public interface LaboratoryMapper extends BaseMapper<Laboratory> {
     Laboratory selectById(Integer id);
     // 自定义删除方法
     int customDeleteById(@Param("id") Integer id);
+
+    int updateById(@Param("laboratory") Laboratory laboratory);
+
 }

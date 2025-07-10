@@ -24,8 +24,6 @@ public class Equipment {
     @TableField("serial_number")
     private String serialNumber;
 
-    @TableField("purchase_date")
-    private Date purchaseDate;
 
     private BigDecimal price;
     private String manufacturer;

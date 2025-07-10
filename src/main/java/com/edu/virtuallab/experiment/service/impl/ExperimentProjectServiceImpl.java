@@ -99,6 +99,10 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
         project.setPurpose(request.getPurpose());
         project.setMethod(request.getMethod());
         project.setSteps(request.getSteps());
+        project.setScreenshot(request.getScreenshot());
+        project.setSceneData(request.getSceneData());
+        project.setExperimentParams(request.getExperimentParams());
+        project.setSceneJsonPath(request.getSceneJsonPath());
         // ✅ 设置创建者用户名
         project.setCreatedBy(createdBy);
 

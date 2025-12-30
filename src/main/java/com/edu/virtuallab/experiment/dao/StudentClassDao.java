@@ -4,6 +4,7 @@ import com.edu.virtuallab.experiment.model.Clazz;
 import com.edu.virtuallab.experiment.model.Student;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,6 @@ import java.util.Map;
 public interface StudentClassDao {
 
     List<Long> findStudentIdsByClassIds(@Param("list") List<Long> classIds);
-
     void insert(@Param("studentId") Long studentId, @Param("classId") Long classId);
 
     void deleteByStudentId(@Param("studentId") Long studentId);
@@ -25,5 +25,9 @@ public interface StudentClassDao {
     List<Student> getStudentsByClassId(@Param("classId") Long classId);
     int countStudentClassRecords();
 
+
+    @Select("SELECT student_id FROM student_class WHERE class_id = #{classId}")
+    List<Long> findStudentIdsByClassId(@Param("classId") Long classId);
 }
+
 

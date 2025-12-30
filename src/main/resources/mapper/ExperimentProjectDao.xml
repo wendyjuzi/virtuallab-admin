@@ -62,13 +62,22 @@
         (
             name, category, description, principle, purpose, method, steps,
             level, image_url, video_url, collaboration_type,
-            created_at, updated_at, created_by
+            created_at, updated_at, created_by,
+            screenshot, scene_data, experiment_params, scene_json_path
         )
         VALUES
             (
                 #{name}, #{category}, #{description}, #{principle}, #{purpose}, #{method}, #{steps},
                 #{level}, #{imageUrl}, #{videoUrl}, #{projectType},
-                NOW(), NOW(), #{createdBy}
+                NOW(), NOW(), #{createdBy},
+                #{screenshot},
+                <if test="sceneData != null and sceneData != ''">
+                  #{sceneData}
+                </if>
+                <if test="sceneData == null or sceneData == ''">
+                  null
+                </if>,
+                #{experimentParams}, #{sceneJsonPath}
             )
     </insert>
 
@@ -127,7 +136,13 @@
     <update id="updateStatusToInProgress" parameterType="map">
         UPDATE student_project_progress
         SET status = 'in_progress'
-        WHERE project_id = #{projectId} AND student_id = #{studentId}
+        WHERE project_id = #{projectId}
+          AND student_id = #{studentId}
+          AND EXISTS (
+            SELECT 1 FROM experiment_project
+            WHERE id = #{projectId}
+              AND created_by != 'admin'
+        )
     </update>
     <!-- 更新 status 为 completed -->
     <update id="updateStatusToCompleted" parameterType="map">
@@ -135,6 +150,10 @@
         SET status = 'completed'
         WHERE project_id = #{projectId}
           AND student_id = #{studentId}
+          AND EXISTS (
+            SELECT 1 FROM experiment_project
+            WHERE id = #{projectId}
+              AND created_by != 'admin'
     </update>
     <select id="countPendingGradingReports" resultType="int">
         SELECT COUNT(*)
@@ -161,7 +180,11 @@
             level = #{level},
             collaboration_type = #{projectType},
             image_url = #{imageUrl},
-            video_url = #{videoUrl}
+            video_url = #{videoUrl},
+            screenshot = #{screenshot},
+            scene_data = #{sceneData},
+            experiment_params = #{experimentParams},
+            scene_json_path = #{sceneJsonPath}
         WHERE id = #{id}
     </update>
     <select id="findById" resultType="com.edu.virtuallab.experiment.model.ExperimentProject">
@@ -236,5 +259,42 @@
         <if test="keyword != null and keyword != ''">
             AND (p.name LIKE CONCAT('%', #{keyword}, '%') OR p.description LIKE CONCAT('%', #{keyword}, '%'))
         </if>
+    </select>
+
+    <select id="countByType" resultType="com.edu.virtuallab.experiment.dto.NameValueDTO">
+      SELECT category AS name, COUNT(*) AS value
+      FROM experiment_project
+      GROUP BY category
+    </select>
+
+    <select id="countActiveByDay" resultType="com.edu.virtuallab.experiment.dto.NameValueDTO">
+      SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS name, COUNT(*) AS value
+      FROM experiment_project
+      WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+      GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
+      ORDER BY name
+    </select>
+
+    <select id="rankByFinishRate" resultType="com.edu.virtuallab.experiment.dto.NameValueDTO">
+      SELECT p.name AS name,
+             ROUND(SUM(CASE WHEN pr.progress = 'completed' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS value
+      FROM experiment_project p
+      JOIN project_progress pr ON p.id = pr.project_id
+      GROUP BY p.id, p.name
+      ORDER BY value DESC
+      LIMIT 5
+    </select>
+
+    <select id="topByParticipants" resultType="com.edu.virtuallab.experiment.dto.NameValueDTO">
+      SELECT p.name AS name, COUNT(DISTINCT pr.student_id) AS value
+      FROM experiment_project p
+      JOIN project_progress pr ON p.id = pr.project_id
+      GROUP BY p.id, p.name
+      ORDER BY value DESC
+      LIMIT 5
+    </select>
+
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*) FROM experiment_project
     </select>
 </mapper>

@@ -58,7 +58,7 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
                 report.setManualContent(manualContent);
                 report.setStatus(status);
                 experimentReportDao.insert(report);
-            }else{
+            } else {
                 // 获取更新后的报告
                 report = experimentReportDao.findBySessionId(sessionId);
                 report.setStatus(status); // 确保状态正确
@@ -97,7 +97,7 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
             report1 = createDefaultReport(sessionId);
             report1.setStatus(status);
             experimentReportDao.insert(report1);
-        }else{
+        } else {
             // 获取更新后的报告
             report1 = experimentReportDao.findBySessionId(sessionId);
             report1.setStatus(status); // 确保状态正确
@@ -110,41 +110,9 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
         return updatedReport;
     }
 
-
     @Override
     @Transactional
-    public ExperimentReport gradeReport(String sessionId, ExperimentReport.Status status, String comment, BigDecimal score){
-
-        // 更新状态为 GRADED
-        int updated = experimentReportDao.gradeBySessionId(
-                sessionId,
-                ExperimentReport.Status.GRADED,
-                comment,
-                score);
-
-        ExperimentReport report2;
-        if (updated == 0) {
-            log.warn("没有记录被更新，可能sessionId不存在，将创建新报告");
-            report2 = createDefaultReport(sessionId);
-            report2.setStatus(status);
-            experimentReportDao.insert(report2);
-        }else{
-            // 获取更新后的报告
-            report2 = experimentReportDao.findBySessionId(sessionId);
-            report2.setStatus(status); // 确保状态正确
-        }
-
-        // 5. 返回更新后的报告
-        ExperimentReport updatedReport = experimentReportDao.findBySessionId(sessionId);
-        log.info("报告提交成功，sessionId: {}, 新状态: {}", sessionId, status);
-
-        return updatedReport;
-    }
-
-
-    @Override
-    @Transactional
-    public void uploadAttachment(String sessionId, MultipartFile file) throws BusinessException,IOException {
+    public void uploadAttachment(String sessionId, MultipartFile file) throws BusinessException, IOException {
 
         // 验证文件大小和类型
         validateFile(file);
@@ -163,7 +131,7 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
             experimentReport.setUpdatedAt(new Date());
 
             experimentReportDao.updateById(experimentReport);
-        }catch(IOException e){
+        } catch (IOException e) {
             throw new RuntimeException("文件上传失败:" + e.getMessage(), e);
         }
     }
@@ -196,10 +164,10 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
         return allowedTypes.contains(contentType);
     }
 
-    private FileInfo storeFile(MultipartFile file) throws IOException{
+    private FileInfo storeFile(MultipartFile file) throws IOException {
         // 确保上传目录存在
         Path uploadPath = Paths.get(uploadDir);
-        if(!Files.exists(uploadPath)){
+        if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
 
@@ -234,9 +202,9 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
     // 文件删除
     @Override
     @Transactional
-    public void deleteAttachment(String sessionId) throws BusinessException{
+    public void deleteAttachment(String sessionId) throws BusinessException {
         ExperimentReport experimentReport = experimentReportDao.findBySessionId(sessionId);
-        if( experimentReport == null || !experimentReport.hasAttachment()){
+        if (experimentReport == null || !experimentReport.hasAttachment()) {
             throw new BusinessException("附件不存在");
         }
 
@@ -269,7 +237,7 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ExperimentReport> getReportList(Long studentId){
+    public List<ExperimentReport> getReportList(Long studentId) {
         try {
             log.info("获取学生报告列表，studentId: {}", studentId);
             return experimentReportDao.findByStudentId(studentId);
@@ -280,7 +248,7 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
     }
 
     @Override
-    public List<ExperimentReport> getSubmittedAndGradedReports(){
+    public List<ExperimentReport> getSubmittedAndGradedReports() {
         return experimentReportDao.findSubmittedAndGradedReports();
     }
 
@@ -288,12 +256,75 @@ public class ExperimentReportServiceImpl implements ExperimentReportService {
         int updated = experimentReportDao.updateManualScore(sessionId, score, comment);
         return updated > 0;
     }
+
     @Override
     public ExperimentReport getManualScore(String sessionId) {
         return experimentReportDao.getManualScoreBySessionId(sessionId);
     }
+
     @Override
     public boolean deleteManualScore(String sessionId) {
         return experimentReportDao.deleteManualScore(sessionId);
     }
+
+    @Override
+    public Double calculateAverageScore(Long studentId) {
+        System.out.println("【进入平均分计算】学生ID: " + studentId); // 新增
+
+        try {
+            List<ExperimentReport> gradedReports = experimentReportDao.findByStudentIdAndStatus(
+                    studentId, ExperimentReport.Status.GRADED
+            );
+
+            System.out.println("【查询结果】报告数量: " + (gradedReports != null ? gradedReports.size() : 0)); // 新增
+
+            if (gradedReports == null || gradedReports.isEmpty()) {
+                System.out.println("【无评分报告】返回null"); // 新增
+                return null;
+            }
+
+            double sum = gradedReports.stream()
+                    .peek(report -> System.out.println("处理报告ID:" + report.getId() + " 分数:" + report.getScore())) // 新增
+                    .filter(report -> report.getScore() != null)
+                    .mapToDouble(report -> report.getScore().doubleValue())
+                    .sum();
+
+            System.out.println("【计算结果】总分: " + sum + " 平均分: " + (sum / gradedReports.size())); // 新增
+            return sum / gradedReports.size();
+        } catch (Exception e) {
+            log.error("计算平均分出错", e);
+            return null;
+        }
+    }
+
+//    @Override
+//    public ExperimentReport publishReport(ExperimentReport report) {
+//        report.setStatus(ExperimentReport.Status.DRAFT);
+//        experimentReportDao.insertReport(report);
+//        return report;
+//    }
+
+    @Override
+    @Transactional
+    public List<ExperimentReport> publishReport(List<Long> studentIds, ExperimentReport templateReport) {
+
+        List<ExperimentReport> reports = new ArrayList<>();
+        String sessionPrefix = "SESS" + System.currentTimeMillis() ;
+
+        // 为每个学生创建报告
+        for (int i = 0; i < studentIds.size(); i++) {
+            ExperimentReport report = new ExperimentReport(templateReport);// 使用拷贝构造
+            report.setStudentId(studentIds.get(i));
+            report.setStatus(ExperimentReport.Status.DRAFT);
+            report.setSessionId(sessionPrefix + i); // 生成唯一sessionId
+
+            reports.add(report);
+        }
+
+        // 批量插入
+        experimentReportDao.batchInsertReports(reports);
+
+        return reports;
+    }
+
 }

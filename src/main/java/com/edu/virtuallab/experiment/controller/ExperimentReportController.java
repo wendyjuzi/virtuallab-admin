@@ -1,20 +1,13 @@
 package com.edu.virtuallab.experiment.controller;
 
 import com.edu.virtuallab.common.exception.BusinessException;
-import com.edu.virtuallab.experiment.dto.ManualScoreRequest;
 import com.edu.virtuallab.experiment.model.ExperimentReport;
 import com.edu.virtuallab.experiment.service.ExperimentReportService;
-import com.edu.virtuallab.resource.model.Resource;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
@@ -22,17 +15,14 @@ import com.edu.virtuallab.log.annotation.OperationLogRecord;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/experiment")
@@ -71,7 +61,8 @@ public class ExperimentReportController {
     }
 
     @GetMapping("/students/{studentId}/reports")
-    public ResponseEntity<List<ExperimentReport>> getReportList(@PathVariable Long studentId) {
+    public ResponseEntity<List<ExperimentReport>> getReportList(
+            @PathVariable Long studentId) {
         List<ExperimentReport> reports = experimentReportService.getReportList(studentId);
         return ResponseEntity.ok(reports != null ? reports : Collections.emptyList());
     }
@@ -113,21 +104,6 @@ public class ExperimentReportController {
                 status
         );
         return ResponseEntity.ok(report);
-    }
-
-    @PostMapping("/teacherReport/{sessionId}/grade")
-    public ResponseEntity<ExperimentReport> gradeReport(
-            @PathVariable String sessionId,
-            @RequestParam ExperimentReport.Status status,
-            @RequestParam String comment,
-            @RequestParam BigDecimal score){
-        ExperimentReport gradedReport = experimentReportService.gradeReport(
-                sessionId,
-                status,
-                comment,
-                score
-        );
-        return ResponseEntity.ok(gradedReport);
     }
 
     // 上传附件
@@ -205,5 +181,19 @@ public class ExperimentReportController {
         }
     }
 
+    // 发布实验报告
+    @PostMapping("/project/publish-report")
+    public List<ExperimentReport> publishReport(
+            @RequestParam("studentIds") String studentIdsStr,
+            @RequestBody ExperimentReport report) {
+
+        // 将逗号分隔的字符串转为List<Long>
+        List<Long> studentIds = Arrays.stream(studentIdsStr.split(","))
+                .map(str -> Long.valueOf(str))
+                .collect(Collectors.toList());
+
+        log.info("为{}个学生创建实验报告: {}", studentIds.size(), studentIds);
+        return experimentReportService.publishReport(studentIds, report);
+    }
 
 }

@@ -498,15 +498,21 @@ public class ResourceShareServiceImpl implements ResourceShareService {
     // 通知相关
     @Override
     public void sendShareNotification(String sender, String receiver, Long resourceId, String shareType) {
-        // 这里可以插入share_notifications表，或调用通知服务
-        // 示例：
-        // Notification notification = new Notification();
-        // notification.setUserId(receiver);
-        // notification.setType("share");
-        // notification.setTitle("资源分享通知");
-        // notification.setContent(String.format("用户 %s 向您分享了资源", sender));
-        // notification.setLink("/resource/shared/" + resourceId);
-        // notificationService.createNotification(notification);
+        // 查询被分享用户信息
+        User targetUser = userService.getByUsername(receiver);
+        Resource resource = resourceService.getById(resourceId);
+        if (targetUser == null || resource == null) {
+            return;
+        }
+        Notification notification = new Notification();
+        notification.setUserId(targetUser.getId());
+        notification.setType(com.edu.virtuallab.common.enums.NotificationType.RESOURCE_SHARED);
+        notification.setTitle("资源分享通知");
+        notification.setContent(String.format("用户 %s 向您分享了资源【%s】", sender, resource.getName()));
+        notification.setLink("/resource/shared/" + resourceId);
+        notification.setRelatedId(resourceId);
+        notification.setCreatedAt(new java.util.Date());
+        notificationService.createNotification(notification);
     }
 
     @Override

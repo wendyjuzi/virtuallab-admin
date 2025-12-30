@@ -1,17 +1,24 @@
 package com.edu.virtuallab.experiment.service.impl;
 
+import com.edu.virtuallab.experiment.dao.ExperimentProjectDao;
 import com.edu.virtuallab.experiment.dao.StudentClassDao;
 import com.edu.virtuallab.experiment.service.StudentClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentClassServiceImpl implements StudentClassService {
+    private final StudentClassDao studentClassDao;
     @Autowired
-    private StudentClassDao studentClassDao;
+    public StudentClassServiceImpl(StudentClassDao studentClassDao) {
+        this.studentClassDao = studentClassDao;
+    }
+
 
     @Override
     public void selectClass(Long studentId, Long classId) {
@@ -44,4 +51,12 @@ public class StudentClassServiceImpl implements StudentClassService {
     public List<Map<String, Object>> getAllClasses() {
         return studentClassDao.findAllClasses();
     }
+
+    @Override
+    public List<Long> getStudentIdsByClassId(Long classId) {
+        List<Long> studentIds = studentClassDao.findStudentIdsByClassId(classId);
+        System.out.println("[autoGroupStudents] 查询到学生ID: " + studentIds);
+        return studentIds;
+    }
+
 } 

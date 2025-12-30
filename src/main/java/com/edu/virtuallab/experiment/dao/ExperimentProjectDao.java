@@ -7,6 +7,8 @@ import java.util.List;
 import com.edu.virtuallab.project.model.Project;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import com.edu.virtuallab.experiment.dto.NameValueDTO;
+import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface ExperimentProjectDao {
@@ -58,4 +60,17 @@ public interface ExperimentProjectDao {
             @Param("level") String level,
             @Param("keyword") String keyword
     );
+
+    // 实验类型分布
+    List<NameValueDTO> countByType();
+    // 实验活跃度趋势
+    List<NameValueDTO> countActiveByDay();
+    // 实验完成率排行
+    List<NameValueDTO> rankByFinishRate();
+    // 实验参与人数Top5
+    List<NameValueDTO> topByParticipants();
+    int countAll();
+
+    @Select("SELECT class_id as classId FROM experiment_project_class WHERE project_id = #{projectId}")
+    List<Long> findClassIdsByProjectId(@Param("projectId") Long projectId);
 }

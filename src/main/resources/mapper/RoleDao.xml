@@ -187,4 +187,11 @@
         ORDER BY level ASC, create_time DESC
     </select>
 
+    <select id="findCodesByIds" resultType="string">
+        SELECT code FROM role WHERE id IN
+        <foreach item="id" collection="roleIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
 </mapper> 

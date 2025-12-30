@@ -8,5 +8,5 @@ public interface ResourceCommentService {
     List<ResourceComment> getCommentsByResourceId(Long resourceId);
     ResourceComment getCommentById(Long id);
     int updateComment(ResourceComment comment);
-    int deleteComment(Long id);
+    int deleteComment(Long id, Long userId);
 }

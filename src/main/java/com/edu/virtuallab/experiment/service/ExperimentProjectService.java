@@ -53,4 +53,11 @@ public interface ExperimentProjectService {
             int size
     );
     List<String> getAdminUsernames();
+
+    ExperimentProject getProjectDetailsForReport(Long projectId);
+
+    //根据项目id获取班级id
+    Long  getClassIdByProjectId(Long projectId);
+
+
 }

@@ -14,12 +14,11 @@ import com.edu.virtuallab.experiment.model.ExperimentProject;
 import com.edu.virtuallab.experiment.service.ExperimentProjectService;
 import com.edu.virtuallab.experiment.model.StudentProjectProgress;
 import com.edu.virtuallab.experiment.service.ProjectTeamService;
-import com.edu.virtuallab.project.model.Project;
+import io.micrometer.core.ipc.http.HttpSender;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -100,6 +99,10 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
         project.setPurpose(request.getPurpose());
         project.setMethod(request.getMethod());
         project.setSteps(request.getSteps());
+        project.setScreenshot(request.getScreenshot());
+        project.setSceneData(request.getSceneData());
+        project.setExperimentParams(request.getExperimentParams());
+        project.setSceneJsonPath(request.getSceneJsonPath());
         // ✅ 设置创建者用户名
         project.setCreatedBy(createdBy);
 
@@ -241,6 +244,8 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
             String keyword,
             int pageNum,
             int pageSize) {
+
+        System.out.println("===开始查询学生实验项目===");
         // 1. 根据学生ID查询班级ID列表
         List<Long> classIds = studentClassDao.findClassIdsByStudentId(studentId);
         if (classIds.isEmpty()) {
@@ -261,13 +266,19 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
                         StudentProjectProgress::getStatus
                 ));
 
-        // 4. 批量查询成绩
+        // 修改成绩映射逻辑，处理null和类型转换
         Map<Long, BigDecimal> scoreMap = reportDao.findByStudentId(studentId).stream()
-                .filter(r -> projectIds.contains(Long.parseLong(r.getProjectId()))) // 转换为Long
+                .filter(r -> {
+                    try {
+                        Long.parseLong(r.getProjectId()); // 验证projectId可转为Long
+                        return true;
+                    } catch (NumberFormatException e) {
+                        return false; // 跳过无效ID
+                    }
+                })
                 .collect(Collectors.toMap(
-                        r -> Long.parseLong(r.getProjectId()), // 键转换为Long
-                        r -> r.getScore() != null ? r.getScore() : null,
-                        (existing, replacement) -> existing != null ? existing : replacement
+                        r -> Long.parseLong(r.getProjectId()),
+                        r -> r.getScore() != null ? r.getScore() : BigDecimal.ZERO // 处理null
                 ));
 
         // 5. 根据项目ID列表分页获取项目详情
@@ -299,7 +310,17 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
                     );
 
                     // 设置成绩
-                    dto.setScore(scoreMap.get(project.getId()));
+                    // 修改成绩映射逻辑
+                    dto.setScore(Optional.ofNullable(scoreMap.get(project.getId()))
+                            .orElse(BigDecimal.ZERO)); // 处理null值
+
+                    // 添加属性复制保护
+                    try {
+                        BeanUtils.copyProperties(project, dto);
+                    } catch (Exception e) {
+                        System.out.println("属性复制失败: project={}");
+                        throw new RuntimeException("数据转换异常");
+                    }
 
                     return dto;
                 })
@@ -352,4 +373,19 @@ public class ExperimentProjectServiceImpl implements ExperimentProjectService {
                 .map(User::getUsername)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public ExperimentProject getProjectDetailsForReport(Long projectId) {
+        return projectDao.findById(projectId);
+    }
+
+    @Override
+    public Long getClassIdByProjectId(Long projectId) {
+        Long classId = experimentProjectClassDao.findClassIdByProjectId(projectId);
+        if (classId == null) {
+            throw new RuntimeException("未找到项目对应的班级");
+        }
+        return classId;
+    }
+
 }

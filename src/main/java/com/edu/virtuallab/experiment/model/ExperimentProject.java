@@ -70,6 +70,13 @@ public class ExperimentProject {
     private String publishStatus; // 发布状态: unpublished/published
     private LocalDateTime publishTime; // 发布时间
 
+    private String screenshot; // 实验截图（base64或url）
+    private String sceneData; // 3D场景JSON
+    private String experimentParams; // 参数JSON
+    private String sceneJsonPath;
+    public String getSceneJsonPath() { return sceneJsonPath; }
+    public void setSceneJsonPath(String sceneJsonPath) { this.sceneJsonPath = sceneJsonPath; }
+
     @TableField(exist = false)
     private String config; // three.js参数(JSON字符串)
     @TableField(exist = false)

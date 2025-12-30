@@ -1,6 +1,7 @@
 package com.edu.virtuallab.experiment.controller;
 
 import com.edu.virtuallab.experiment.dto.StudentClassActionRequest;
+import com.edu.virtuallab.experiment.service.ExperimentProjectService;
 import com.edu.virtuallab.experiment.service.StudentClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/student/class")
@@ -15,6 +18,8 @@ public class StudentClassController {
 
     @Autowired
     private StudentClassService studentClassService;
+    @Autowired
+    private ExperimentProjectService experimentProjectService;
 
     /**
      * 学生选择班级
@@ -84,5 +89,11 @@ public class StudentClassController {
         res.put("code", 200);
         res.put("classList", classList);
         return res;
+    }
+
+    @GetMapping("/report/{projectId}")
+    public List<Long> getStudentIds(@PathVariable Long projectId){
+        Long classId = experimentProjectService.getClassIdByProjectId(projectId);
+        return studentClassService.getStudentIdsByClassId(classId);
     }
 } 
